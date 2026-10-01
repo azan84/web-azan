@@ -6,14 +6,14 @@
   <link rel="apple-touch-icon" href="assets/images/Icon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Web Apps — Dr. Mohd Azan Bin Mohammed Sapardi</title>
-  <meta name="description" content="Free interactive web apps you can run right in your browser — Caturmatik (chess x times-tables), the DBKL Lift & Escalator simulator suite, and an image-to-3D-keychain maker. By Dr. Mohd Azan Bin Mohammed Sapardi, IIUM." />
-  <meta name="keywords" content="Caturmatik, chess sifir app, DBKL lift escalator simulator, ISO 25745 lift energy, image to keychain 3D print, Dr Azan Sapardi web apps, IIUM interactive tools" />
+  <meta name="description" content="Free interactive web apps you can run right in your browser — the DBKL Lift & Escalator simulator suite and an image-to-3D-keychain maker. By Dr. Mohd Azan Bin Mohammed Sapardi, IIUM." />
+  <meta name="keywords" content="DBKL lift escalator simulator, ISO 25745 lift energy, image to keychain 3D print, Dr Azan Sapardi web apps, IIUM interactive tools" />
   <link rel="canonical" href="https://azan.biomechemical.com/webapp.html" />
   <meta name="theme-color" content="#fafaf7" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Web Apps — Dr. Mohd Azan Bin Mohammed Sapardi" />
-  <meta property="og:description" content="Free interactive web apps you can run right in your browser — Caturmatik, a 12-simulator lift & escalator training suite, and an image-to-3D-keychain maker." />
+  <meta property="og:description" content="Free interactive web apps you can run right in your browser — a 12-simulator lift & escalator training suite, and an image-to-3D-keychain maker." />
   <meta property="og:url" content="https://azan.biomechemical.com/webapp.html" />
   <meta property="og:image" content="https://azan.biomechemical.com/portrait_sapardi.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -95,7 +95,7 @@
     </div>
   </div>
 
-  <!-- ===== INTERACTIVE APP (Caturmatik) ===== -->
+  <!-- ===== INTERACTIVE APPS ===== -->
   <section class="sim-showcase" id="apps">
     <div class="container">
       <div class="section-header reveal">
@@ -103,65 +103,6 @@
         <h2 class="section-title">Run Them in Your Browser</h2>
         <div class="underline-accent"></div>
       </div>
-
-      <figure class="sim-figure clay reveal">
-        <a class="sim-media caturmatik-poster" href="caturmatik/" aria-label="Open and play Caturmatik">
-          <svg class="sim-gif" viewBox="0 0 480 300" role="img" aria-label="Caturmatik — a chessboard with a times-table question card">
-            <defs>
-              <linearGradient id="catBg" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#0f766e"/>
-                <stop offset="1" stop-color="#134e4a"/>
-              </linearGradient>
-              <pattern id="catBoard" width="56" height="56" patternUnits="userSpaceOnUse">
-                <rect width="56" height="56" fill="#eaf2f0"/>
-                <rect width="28" height="28" fill="#2f8f84"/>
-                <rect x="28" y="28" width="28" height="28" fill="#2f8f84"/>
-              </pattern>
-              <filter id="catShadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.28"/>
-              </filter>
-            </defs>
-
-            <rect width="480" height="300" fill="url(#catBg)"/>
-
-            <!-- chessboard -->
-            <rect x="40" y="38" width="224" height="224" rx="6" fill="url(#catBoard)" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
-
-            <!-- pieces (Unicode chess glyphs) -->
-            <text x="82"  y="80"  font-size="30" text-anchor="middle" dominant-baseline="central" fill="#ffffff">&#9819;</text>
-            <text x="194" y="108" font-size="34" text-anchor="middle" dominant-baseline="central" fill="#ffffff">&#9818;</text>
-            <text x="166" y="164" font-size="30" text-anchor="middle" dominant-baseline="central" fill="#12211f">&#9823;</text>
-            <text x="110" y="192" font-size="34" text-anchor="middle" dominant-baseline="central" fill="#12211f">&#9822;</text>
-
-            <!-- sifir question card -->
-            <g filter="url(#catShadow)">
-              <rect x="298" y="74" width="150" height="104" rx="18" fill="#ffffff"/>
-            </g>
-            <text x="318" y="100" font-family="'JetBrains Mono', monospace" font-size="12" letter-spacing="2" fill="#0f766e">SIFIR</text>
-            <text x="318" y="135" font-family="'JetBrains Mono', monospace" font-size="30" font-weight="700" fill="#12211f">7 &#215; 8</text>
-            <text x="318" y="163" font-family="'JetBrains Mono', monospace" font-size="20" font-weight="600" fill="#12211f">= 56</text>
-            <text x="396" y="163" font-size="20" fill="#f59e0b">&#10003;</text>
-          </svg>
-          <span class="sim-badge"><span class="sim-dot"></span>Play in browser</span>
-        </a>
-
-        <figcaption class="sim-caption">
-          <h3 style="margin:0 0 0.4rem;font-size:1.05rem;font-weight:600;color:var(--ink)">Caturmatik &mdash; Chess &times; Sifir</h3>
-          <p class="sim-desc">
-            A teaching twist on chess: <b>every move must be unlocked by a times-table (sifir) question</b>. Choose a move, answer the multiplication prompt correctly, and the piece advances &mdash; turning ordinary play into rapid mental-arithmetic drill. Built as an installable <em>Progressive Web App</em> that runs fully <b>offline</b>, with same-device two-player mode and an optional online room for cross-device matches.
-          </p>
-          <ul class="sim-meta">
-            <li><span class="k">Concept</span><span class="v">Chess &times; Sifir</span></li>
-            <li><span class="k">Platform</span><span class="v">PWA &middot; Offline</span></li>
-            <li><span class="k">Players</span><span class="v">2P local / online</span></li>
-            <li><span class="k">Cost</span><span class="v">Free</span></li>
-          </ul>
-          <a class="caturmatik-play" href="caturmatik/" aria-label="Open and play Caturmatik">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-            Play Caturmatik
-          </a>
-        </figcaption>
-      </figure>
 
       <!-- Interactive App 2: DBKL Lift & Escalator Simulator Suite -->
       <figure class="sim-figure clay reveal">

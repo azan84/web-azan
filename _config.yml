@@ -1,0 +1,4 @@
+# Jekyll config for GitHub Pages.
+# Paths listed here stay in the repo but are not published to azan.biomechemical.com.
+exclude:
+  - caturmatik/
