@@ -31,9 +31,10 @@
   <!-- Fonts: Instrument Serif (display), Inter Tight (body), JetBrains Mono (code/stats) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/styles.css?v=10" />
+  <link rel="stylesheet" href="assets/css/v3.css?v=1" />
 
   <!-- Structured data: Person (rich, for Google Knowledge Panel) -->
   <script type="application/ld+json">
@@ -150,303 +151,68 @@
     </div>
   </nav>
 
-  <!-- ===== HERO (v2 — editorial + antigravity) ===== -->
-  <section class="hero hero-v2" id="hero" tabindex="-1" data-antigravity>
-
-    <!-- Curl-noise flow-field canvas (wake around a virtual cylinder) -->
-    <canvas id="flowCanvas" class="flow-canvas" aria-hidden="true"></canvas>
-
-    <!-- Static streamline sketch — distill-style backdrop lines -->
-    <svg class="flow-streamlines" aria-hidden="true" viewBox="0 0 1200 600" preserveAspectRatio="none">
-      <defs>
-        <linearGradient id="streamFade" x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0"    stop-color="currentColor" stop-opacity="0"/>
-          <stop offset="0.15" stop-color="currentColor" stop-opacity="0.55"/>
-          <stop offset="0.85" stop-color="currentColor" stop-opacity="0.55"/>
-          <stop offset="1"    stop-color="currentColor" stop-opacity="0"/>
-        </linearGradient>
-      </defs>
-      <g stroke="url(#streamFade)" fill="none" stroke-width="1" stroke-linecap="round">
-        <!-- Streamlines curving around a hidden cylinder at ~(860, 330) -->
-        <path d="M 0 90  C 360 90, 600 110, 860 190 S 1200 270, 1200 285"/>
-        <path d="M 0 150 C 360 150, 600 170, 860 235 S 1200 300, 1200 312"/>
-        <path d="M 0 210 C 360 210, 600 230, 860 285 S 1200 335, 1200 345"/>
-        <path d="M 0 270 C 360 270, 600 285, 860 330 S 1200 370, 1200 378"/>
-        <path d="M 0 330 C 360 330, 600 340, 860 375 S 1200 405, 1200 412"/>
-        <path d="M 0 390 C 360 390, 600 395, 860 420 S 1200 440, 1200 446"/>
-        <path d="M 0 450 C 360 450, 600 450, 860 465 S 1200 475, 1200 480"/>
-        <path d="M 0 510 C 360 510, 600 505, 860 510 S 1200 510, 1200 514"/>
-      </g>
-      <g stroke="currentColor" fill="none" stroke-width="0.6" opacity="0.18" stroke-dasharray="3 4">
-        <!-- Vortex-shedding wake dashes downstream -->
-        <path d="M 900 310 C 960 290, 1020 360, 1080 320 S 1180 330, 1200 325"/>
-        <path d="M 900 350 C 960 370, 1020 300, 1080 345 S 1180 340, 1200 342"/>
-      </g>
-    </svg>
-
-    <!-- Physics-lagged particle field (14 engineering glyphs) -->
-    <div class="particle-field" aria-hidden="true">
-
-      <!-- p1 — Gear (mechanical) -->
-      <span class="particle p1">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>
-        </svg>
-      </span>
-
-      <!-- p2 — Turbine blade (aero) -->
-      <span class="particle p2 amber">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="1.5"/>
-          <path d="M12 10.5C12 7 14 4 18 3c-1 4-3 6-6 7.5z"/>
-          <path d="M10.5 12C7 12 4 10 3 6c4 1 6 3 7.5 6z"/>
-          <path d="M12 13.5C12 17 10 20 6 21c1-4 3-6 6-7.5z"/>
-          <path d="M13.5 12C17 12 20 14 21 18c-4-1-6-3-7.5-6z"/>
-        </svg>
-      </span>
-
-      <!-- p3 — Pump impeller (curved vanes) -->
-      <span class="particle p3">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <circle cx="12" cy="12" r="1.8"/>
-          <path d="M12 10.2 C 14 8, 17 8, 18 10"/>
-          <path d="M13.8 12 C 16 14, 16 17, 14 18"/>
-          <path d="M12 13.8 C 10 16, 7 16, 6 14"/>
-          <path d="M10.2 12 C 8 10, 8 7, 10 6"/>
-        </svg>
-      </span>
-
-      <!-- p4 — Vortex (fluid mechanics) -->
-      <span class="particle p4 amber">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 12 m 0 -8 a 8 8 0 1 1 -8 8"/>
-          <path d="M12 12 m 0 -5 a 5 5 0 1 1 -5 5"/>
-          <path d="M12 12 m 0 -2 a 2 2 0 1 1 -2 2"/>
-        </svg>
-      </span>
-
-      <!-- p5 — Pitot tube / gauge -->
-      <span class="particle p5">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="9"/>
-          <path d="M12 7v5l3 2"/>
-          <path d="M12 3v2M12 19v2M3 12h2M19 12h2"/>
-        </svg>
-      </span>
-
-      <!-- p6 — Oscilloscope trace -->
-      <span class="particle p6 sage">
-        <svg viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="none">
-          <path d="M2 12 Q 8 2, 14 12 T 26 12 T 38 12 T 46 12"/>
-        </svg>
-      </span>
-
-      <!-- p7 — Shock diamond (supersonic) -->
-      <span class="particle p7 amber">
-        <svg viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="none">
-          <path d="M2 12 L 8 4 L 14 12 L 8 20 Z"/>
-          <path d="M14 12 L 20 6 L 26 12 L 20 18 Z" opacity="0.75"/>
-          <path d="M26 12 L 32 8 L 38 12 L 32 16 Z" opacity="0.55"/>
-          <path d="M38 12 L 46 12" stroke-dasharray="2 2"/>
-        </svg>
-      </span>
-
-      <!-- p8 — Microalgae cell (bio-process) -->
-      <span class="particle p8 sage">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <ellipse cx="12" cy="12" rx="9" ry="6"/>
-          <circle cx="9"  cy="11" r="1.2"/>
-          <circle cx="14" cy="13" r="1"/>
-          <circle cx="15" cy="10" r="0.7"/>
-          <path d="M3 12 Q 8 7, 12 12 T 21 12" opacity="0.5"/>
-        </svg>
-      </span>
-
-      <!-- p9 — Hex molecular ring -->
-      <span class="particle p9">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 3 L 20 7.5 L 20 16.5 L 12 21 L 4 16.5 L 4 7.5 Z"/>
-          <circle cx="12" cy="3"    r="1"/>
-          <circle cx="20" cy="7.5"  r="1"/>
-          <circle cx="20" cy="16.5" r="1"/>
-          <circle cx="12" cy="21"   r="1"/>
-          <circle cx="4"  cy="16.5" r="1"/>
-          <circle cx="4"  cy="7.5"  r="1"/>
-        </svg>
-      </span>
-
-      <!-- p10 — Caliper (instrumentation) -->
-      <span class="particle p10">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 10h18v3H3z"/>
-          <path d="M7 7v3M11 7v3M15 7v3M19 7v3"/>
-          <path d="M9 13v4"/>
-          <path d="M9 17l-3 3M9 17l3 3"/>
-        </svg>
-      </span>
-
-      <!-- p11 — CFD mesh (grid with deflection) -->
-      <span class="particle p11 sage">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 6 Q 12 3, 21 6"/>
-          <path d="M3 12 Q 12 9, 21 12"/>
-          <path d="M3 18 Q 12 15, 21 18"/>
-          <path d="M6 3 Q 5 12, 6 21"/>
-          <path d="M12 3 Q 11 12, 12 21"/>
-          <path d="M18 3 Q 17 12, 18 21"/>
-        </svg>
-      </span>
-
-      <!-- p12 — Sine wave (signal) -->
-      <span class="particle p12 amber">
-        <svg viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="none">
-          <path d="M2 12 C 8 2, 14 22, 20 12 S 32 2, 38 12 S 46 22, 46 12"/>
-        </svg>
-      </span>
-
-      <!-- p13 — Shaft alignment crosshair -->
-      <span class="particle p13">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="9"/>
-          <circle cx="12" cy="12" r="5"/>
-          <path d="M12 1v4M12 19v4M1 12h4M19 12h4"/>
-          <circle cx="12" cy="12" r="1" fill="currentColor"/>
-        </svg>
-      </span>
-
-      <!-- p14 — IoT antenna / signal -->
-      <span class="particle p14">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="14" r="2"/>
-          <path d="M8.5 10.5a5 5 0 0 0 0 7M15.5 10.5a5 5 0 0 1 0 7"/>
-          <path d="M5 7a10 10 0 0 0 0 14M19 7a10 10 0 0 1 0 14"/>
-        </svg>
-      </span>
-    </div>
-
-    <div class="container">
-      <div class="hero-inner">
-
-        <div class="hero-content">
-          <p class="hero-eyebrow">Kulliyyah of Engineering · IIUM</p>
-
-          <h1 class="hero-display">
-            Dr. Mohd Azan <span class="italicize">Bin&nbsp;Mohammed Sapardi</span>
-          </h1>
-          <div class="hero-display-rule" aria-hidden="true"></div>
-
-          <p class="hero-subhead">
-            Assistant Professor
-            <span class="sep">·</span> CFD
-            <span class="sep">·</span> MHD
-            <span class="sep">·</span> Rotating Equipment
-          </p>
-
-          <p class="hero-bio">
-            Researching fluid dynamics from <b>supersonic jets</b> to <b>magnetohydrodynamic duct flows</b> — then bridging simulation and hardware through <b>mechanical automation and IoT condition monitoring</b>, with excursions into flow stability and wake-induced vibration energy harvesting.
-          </p>
-
-          <div class="hero-chips">
-            <span class="hero-chip">Computational Fluid Dynamics</span>
-            <span class="hero-chip">Magnetohydrodynamics</span>
-            <span class="hero-chip">Internal Flow</span>
-            <span class="hero-chip">Flow Stability</span>
-            <span class="hero-chip">Aerospace</span>
-            <span class="hero-chip">Automation &amp; IoT</span>
-          </div>
-
-          <div class="hero-stats">
-            <div class="hero-stat"><span class="hs-n" data-count-to="166">166</span><span class="hs-l">Citations</span></div>
-            <div class="hero-stat"><span class="hs-n" data-count-to="6">6</span><span class="hs-l">h-index</span></div>
-            <div class="hero-stat"><span class="hs-n" data-count-to="20">20</span><span class="hs-l">Publications</span></div>
-            <div class="hero-stat"><span class="hs-n" data-count-to="8">8</span><span class="hs-l">Grants</span></div>
-            <div class="hero-stat"><span class="hs-n" data-count-to="10">10</span><span class="hs-l">Students</span></div>
-          </div>
+  <!-- ===== HERO: tuft field (cursor = cylinder in a uniform stream) ===== -->
+  <section class="v3-hero" id="hero" tabindex="-1" data-tuftfield aria-labelledby="hero-title">
+    <canvas class="v3-hero-canvas" data-tuft-canvas aria-hidden="true"></canvas>
+    <div class="container v3-hero-grid">
+      <div class="v3-hero-copy">
+        <p class="v3-role">Assistant Professor, Kulliyyah of Engineering, IIUM</p>
+        <h1 class="v3-name" id="hero-title">Dr. Mohd Azan<br/>Bin Mohammed Sapardi</h1>
+        <p class="v3-lead">I study how fluids move: supersonic jets, liquid metals under magnetic fields, and the wakes that shake structures. Then I put sensors on the machines those flows drive.</p>
+        <div class="v3-cta">
+          <a class="v3-btn v3-btn-solid" href="academics.html">Read publications</a>
+          <a class="v3-btn v3-btn-line" href="students.html">Supervision &amp; courses</a>
         </div>
-
-        <aside class="hero-portrait">
-          <img src="assets/images/portrait_azan_new.jpg" alt="Dr. Mohd Azan Bin Mohammed Sapardi — portrait" loading="eager" decoding="async" />
-          <p class="hero-sig">
-            <b>Monash · UM · IIUM</b><br/>
-            Ph.D., M.Eng., B.Eng. (Mechatronics)
-          </p>
-        </aside>
-
+        <dl class="v3-stats">
+          <div><dt>Citations</dt><dd data-count-to="166">166</dd></div>
+          <div><dt>h-index</dt><dd data-count-to="6">6</dd></div>
+          <div><dt>Publications</dt><dd data-count-to="20">20</dd></div>
+          <div><dt>Grants</dt><dd data-count-to="8">8</dd></div>
+          <div><dt>Students</dt><dd data-count-to="10">10</dd></div>
+        </dl>
       </div>
+      <figure class="v3-portrait">
+        <img data-flow-obstacle src="assets/images/portrait_azan_new.jpg" alt="Portrait of Dr. Mohd Azan Bin Mohammed Sapardi" width="320" height="320" loading="eager" decoding="async" />
+        <figcaption>Ph.D. Monash University</figcaption>
+      </figure>
+    </div>
+    <div class="v3-legend">
+      <span class="v3-legend-left">
+        <button type="button" class="v3-pause" data-tuft-toggle aria-pressed="false"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><rect x="3.5" y="3" width="3" height="10" rx="1" fill="currentColor"/><rect x="9.5" y="3" width="3" height="10" rx="1" fill="currentColor"/></svg><span data-tuft-toggle-label>Pause flow</span></button>
+        <span class="v3-legend-hint">Your cursor is a cylinder in the stream. Click to send a pressure pulse.</span>
+      </span>
+      <span class="v3-colorbar" aria-hidden="true"><i></i><b>slow</b><b>fast</b></span>
     </div>
   </section>
 
   <!-- ===== ABOUT ===== -->
-  <section class="about" id="about">
-    <div class="container">
-      <div class="section-header reveal">
-        <p class="section-subtitle">Get to Know Me</p>
-        <h2 class="section-title">About Me</h2>
-        <div class="underline-accent"></div>
+  <section class="v3-section v3-about" id="about">
+    <div class="container v3-about-grid">
+      <div>
+        <h2 class="v3-h2">From mechatronics to fluid dynamics, and back</h2>
+        <p>I am an Assistant Professor at the Kulliyyah of Engineering, International Islamic University Malaysia (IIUM). My Ph.D. at Monash University, Melbourne, was in computational fluid dynamics and flow stability. Since then my research has covered supersonic jet flows, magnetohydrodynamic (MHD) duct flows, wake-induced vibration energy harvesting and passive flow control, funded by national research grants. I supervise Ph.D. and Master&rsquo;s students across these areas.</p>
+        <p>My engineering started in <b>mechatronics</b>, and lately it has come full circle. I now work on <b>mechanical automation and IoT condition monitoring</b>: networked sensors that stream vibration, temperature and pressure data, flag faults before they become breakdowns, and turn ordinary equipment into self-reporting systems. Simulation predicts how a machine <em>should</em> behave; the sensors show how it <em>actually</em> does.</p>
       </div>
-      <div class="about-card clay reveal">
-        <div class="about-content">
-          <p>Dr. Mohd Azan Bin Mohammed Sapardi is an Assistant Professor at the Kulliyyah of Engineering, International Islamic University Malaysia (IIUM). He holds a Ph.D. in Engineering from Monash University, Melbourne, specializing in computational fluid dynamics and flow stability. His research spans supersonic jet flows, magnetohydrodynamic (MHD) duct flows, wake-induced vibration energy harvesting, and passive flow control strategies. He actively supervises PhD and Master's students and has led multiple research projects funded by national grants.</p>
-          <p>But his engineering story began in <b>mechatronics</b> &mdash; and lately it has come full circle. Alongside the fluid dynamics, Dr. Azan is now exploring <b>mechanical automation and IoT-based condition monitoring</b>: arming machines with networked sensors that stream live vibration, temperature, and pressure data, flag faults before they turn into breakdowns, and turn ordinary equipment into smart, self-reporting systems. Where his simulations predict how a machine <em>should</em> behave, the sensors reveal how it <em>actually</em> does &mdash; the same engineering, now instrumented, connected, and watched in real time.</p>
-          <ul class="edu-list">
-            <li class="edu-item">
-              <div class="edu-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5BBFB5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 3 6 3s6-1.9 6-3v-5"/></svg>
-              </div>
-              <div>
-                <p>Ph.D in Engineering</p>
-                <p class="edu-uni">Monash University, Melbourne</p>
-              </div>
-            </li>
-            <li class="edu-item">
-              <div class="edu-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5BBFB5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 3 6 3s6-1.9 6-3v-5"/></svg>
-              </div>
-              <div>
-                <p>Master of Engineering</p>
-                <p class="edu-uni">University of Malaya (UM)</p>
-              </div>
-            </li>
-            <li class="edu-item">
-              <div class="edu-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5BBFB5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 3 6 3s6-1.9 6-3v-5"/></svg>
-              </div>
-              <div>
-                <p>Bachelor of Engineering (Mechatronics)</p>
-                <p class="edu-uni">International Islamic University Malaysia (IIUM)</p>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
+      <ol class="v3-timeline" aria-label="Education">
+        <li><span class="v3-tl-deg">B.Eng. (Mechatronics)</span><span class="v3-tl-uni">International Islamic University Malaysia</span></li>
+        <li><span class="v3-tl-deg">M.Eng.</span><span class="v3-tl-uni">University of Malaya</span></li>
+        <li><span class="v3-tl-deg">Ph.D. in Engineering</span><span class="v3-tl-uni">Monash University, Melbourne</span></li>
+        <li class="now"><span class="v3-tl-deg">Assistant Professor</span><span class="v3-tl-uni">Kulliyyah of Engineering, IIUM</span></li>
+      </ol>
     </div>
   </section>
 
-  <!-- flow-wave divider -->
-  <div class="flow-divider" aria-hidden="true">
-    <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
-      <path class="wline"       d="M0 30 Q 150 0 300 30 T 600 30 T 900 30 T 1200 30"/>
-      <path class="wline amber" d="M0 38 Q 150 12 300 38 T 600 38 T 900 38 T 1200 38"/>
-      <path class="wline"       d="M0 22 Q 150 -12 300 22 T 600 22 T 900 22 T 1200 22" opacity="0.5"/>
-    </svg>
-  </div>
-
-  <!-- ===== RESEARCH INTERESTS ===== -->
-  <section class="research" id="research">
+  <!-- ===== RESEARCH ===== -->
+  <section class="v3-section v3-research" id="research">
     <div class="container">
-      <div class="section-header reveal">
-        <p class="section-subtitle">What I Work On</p>
-        <h2 class="section-title">Research Interests</h2>
-        <div class="underline-accent"></div>
-      </div>
-      <div class="research-grid">
+      <h2 class="v3-h2">Research</h2>
+      <p class="v3-intro">Seven threads, one question underneath: what does the flow do, and can we predict it before the hardware tells us?</p>
+      <div class="research-grid v3-research-grid">
 
         <!-- CFD — flowing streamlines -->
-        <div class="research-card clay reveal" tabindex="0">
+        <div class="research-card" tabindex="0">
           <div class="research-icon">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#5BBFB5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <g class="fx-dash">
                 <path d="M2 6c4-3 8-3 12 0s8 3 8 3"/>
                 <path d="M2 12c4-3 8-3 12 0s8 3 8 3"/>
@@ -459,9 +225,9 @@
         </div>
 
         <!-- Supersonic Jet Flows — shock diamonds -->
-        <div class="research-card clay reveal" tabindex="0">
+        <div class="research-card" tabindex="0">
           <div class="research-icon">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#5BBFB5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path class="fx-wave" d="M2 12 L 6 8 L 10 12 L 6 16 Z"/>
               <path class="fx-wave" style="animation-delay:-0.5s" d="M10 12 L 14 9 L 18 12 L 14 15 Z" opacity="0.75"/>
               <path class="fx-wave" style="animation-delay:-1s" d="M18 12 L 22 10.5 L 22 13.5 Z" opacity="0.5"/>
@@ -472,9 +238,9 @@
         </div>
 
         <!-- MHD — magnetic field pulsing between poles -->
-        <div class="research-card clay reveal" tabindex="0">
+        <div class="research-card" tabindex="0">
           <div class="research-icon">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#5BBFB5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M6 4v16M18 4v16"/>
               <g class="fx-pulse">
                 <path d="M6 8c4 2 8-2 12 0"/>
@@ -487,9 +253,9 @@
         </div>
 
         <!-- Flow Stability — oscillating sine waves -->
-        <div class="research-card clay reveal" tabindex="0">
+        <div class="research-card" tabindex="0">
           <div class="research-icon">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#5BBFB5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path class="fx-wave" d="M2 6c1.5-3 3-4.5 5-4.5s3 3 5 3 3.5-3 5-3 3.5 1.5 5 4.5"/>
               <path class="fx-wave" style="animation-delay:-0.3s" d="M2 12c1.5-3 3-4.5 5-4.5s3 3 5 3 3.5-3 5-3 3.5 1.5 5 4.5"/>
               <path class="fx-wave" style="animation-delay:-0.6s" d="M2 18c1.5-3 3-4.5 5-4.5s3 3 5 3 3.5-3 5-3 3.5 1.5 5 4.5"/>
@@ -500,15 +266,15 @@
         </div>
 
         <!-- Wake-Induced Vibration — rotating vortex -->
-        <div class="research-card clay reveal" tabindex="0">
+        <div class="research-card" tabindex="0">
           <div class="research-icon">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#5BBFB5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <g class="fx-vortex">
                 <path d="M12 12 m 0 -8 a 8 8 0 1 1 -8 8"/>
                 <path d="M12 12 m 0 -5 a 5 5 0 1 1 -5 5"/>
                 <path d="M12 12 m 0 -2 a 2 2 0 1 1 -2 2"/>
               </g>
-              <circle cx="12" cy="12" r="1.2" fill="#F5A623" stroke="none"/>
+              <circle cx="12" cy="12" r="1.2" fill="var(--flow-warm)" stroke="none"/>
             </svg>
           </div>
           <h3>Wake-Induced Vibration &amp; Energy Harvesting</h3>
@@ -516,15 +282,15 @@
         </div>
 
         <!-- Passive Flow Control — pressure gauge with spinning needle -->
-        <div class="research-card clay reveal" tabindex="0">
+        <div class="research-card" tabindex="0">
           <div class="research-icon">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#5BBFB5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="9"/>
-              <circle cx="12" cy="12" r="9" class="fx-ping" stroke="#5BBFB5" stroke-width="1.2" opacity="0.4"/>
+              <circle cx="12" cy="12" r="9" class="fx-ping" stroke="currentColor" stroke-width="1.2" opacity="0.4"/>
               <g class="fx-spin" style="transform-origin:12px 12px;">
                 <path d="M12 12 L 16 8"/>
               </g>
-              <circle cx="12" cy="12" r="1.2" fill="#F5A623" stroke="none"/>
+              <circle cx="12" cy="12" r="1.2" fill="var(--flow-warm)" stroke="none"/>
               <path d="M6 18h12" stroke-width="1.2" opacity="0.5"/>
             </svg>
           </div>
@@ -533,15 +299,15 @@
         </div>
 
         <!-- Automation & IoT — a sensor node broadcasting live telemetry -->
-        <div class="research-card clay reveal" tabindex="0">
+        <div class="research-card" tabindex="0">
           <div class="research-icon">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#5BBFB5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <rect x="9.3" y="13.5" width="5.4" height="6.5" rx="1.3"/>
               <g class="fx-pulse">
                 <path d="M6.4 10.6a7 7 0 0 1 11.2 0"/>
                 <path d="M9 8.8a3.5 3.5 0 0 1 6 0"/>
               </g>
-              <circle cx="12" cy="6.6" r="1.3" fill="#F5A623" stroke="none"/>
+              <circle cx="12" cy="6.6" r="1.3" fill="var(--flow-warm)" stroke="none"/>
             </svg>
           </div>
           <h3>Mechanical Automation &amp; IoT Monitoring</h3>
@@ -552,60 +318,33 @@
     </div>
   </section>
 
-  <!-- flow-wave divider -->
-  <div class="flow-divider" aria-hidden="true">
-    <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
-      <path class="wline"       d="M0 30 Q 200 55 400 30 T 800 30 T 1200 30"/>
-      <path class="wline amber" d="M0 38 Q 200 60 400 38 T 800 38 T 1200 38"/>
-    </svg>
-  </div>
-
-  <!-- ===== EXPLORE MORE ===== -->
-  <section class="quick-links">
-    <div class="container">
-      <div class="section-header reveal">
-        <p class="section-subtitle">Explore More</p>
-        <h2 class="section-title">Discover My Work</h2>
-        <div class="underline-accent"></div>
-      </div>
-      <div class="quick-grid reveal">
-        <a href="academics.html" class="quick-card clay">
-          <div class="quick-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5BBFB5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="13" y2="11"/>
-            </svg>
-          </div>
-          <h3>Publications &amp; Grants</h3>
-          <p>20 publications, 166 citations, and 8 funded research grants</p>
-        </a>
-        <a href="students.html" class="quick-card clay">
-          <div class="quick-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5BBFB5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 3 6 3s6-1.9 6-3v-5"/>
-            </svg>
-          </div>
-          <h3>Students &amp; Resources</h3>
-          <p>Postgraduate supervision and course materials</p>
-        </a>
-        <a href="personal.html" class="quick-card clay">
-          <div class="quick-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5BBFB5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
-            </svg>
-          </div>
-          <h3>Gallery &amp; Contact</h3>
-          <p>Life beyond research and ways to connect</p>
-        </a>
-      </div>
+  <!-- ===== EXPLORE ===== -->
+  <section class="v3-section v3-explore">
+    <div class="container v3-explore-grid">
+      <a href="academics.html" class="v3-explore-link">
+        <span class="v3-explore-t">Publications &amp; grants</span>
+        <span class="v3-explore-d">20 publications, 166 citations, 8 funded projects, plus CFD showcase videos</span>
+      </a>
+      <a href="students.html" class="v3-explore-link">
+        <span class="v3-explore-t">Students &amp; courses</span>
+        <span class="v3-explore-d">Postgraduate supervision and lecture materials</span>
+      </a>
+      <a href="webapp.html" class="v3-explore-link">
+        <span class="v3-explore-t">Apps</span>
+        <span class="v3-explore-d">Interactive engineering simulators you can run in the browser</span>
+      </a>
+      <a href="blog.html" class="v3-explore-link">
+        <span class="v3-explore-t">Blog</span>
+        <span class="v3-explore-d">Essays on energy, IoT, running and research practice</span>
+      </a>
     </div>
   </section>
 
   <footer class="footer">
-    <p>&copy; 2025 Dr. Mohd Azan Bin Mohammed Sapardi. All rights reserved.</p>
+    <p>&copy; 2026 Dr. Mohd Azan Bin Mohammed Sapardi. All rights reserved.</p>
   </footer>
 
   <script src="assets/js/script.js"></script>
-  <script src="assets/js/scientific-fx.js"></script>
-  <script src="assets/js/antigravity.js" defer></script>
+  <script src="assets/js/tuftfield.js" defer></script>
 </body>
 </html>

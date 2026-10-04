@@ -18,24 +18,42 @@
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/styles.css?v=10" />
+  <link rel="stylesheet" href="assets/css/v3.css?v=1" />
+  <link rel="stylesheet" href="assets/css/v3-pages.css?v=1" />
+  <script>
+    (function(){
+      const p = new URLSearchParams(window.location.search).get('theme');
+      const t = p || localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
 
   <style>
     /* ── LDL Blog extras ── */
 
     /* ─ Callout box ─ */
     .blog-callout {
-      border-left: 3px solid var(--accent-1, #c06b12);
+      border-left: 3px solid var(--accent-1);
       padding: 1rem 1.25rem;
       margin: 1.75rem 0;
-      background: var(--surface-2, rgba(255,255,255,0.04));
-      border-radius: 0 8px 8px 0;
+      background: var(--accent-1-soft);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
     }
-    .blog-callout p { margin: 0; font-style: italic; }
-    .blog-callout.blue { border-left-color: #2e86de; }
-    .blog-callout.green { border-left-color: #1a9060; }
-    .blog-callout.red { border-left-color: #c84040; }
+    .blog-callout p { margin: 0; font-style: italic; color: var(--ink-2); }
+    .blog-callout.blue {
+      border-left-color: var(--accent-1);
+      background: var(--accent-1-soft);
+    }
+    .blog-callout.green {
+      border-left-color: var(--flow-mid);
+      background: color-mix(in srgb, var(--flow-mid) 8%, transparent);
+    }
+    .blog-callout.red {
+      border-left-color: var(--flow-hot);
+      background: color-mix(in srgb, var(--flow-hot) 8%, transparent);
+    }
 
     /* ─ Stat cards row ─ */
     .health-stats {
@@ -46,26 +64,28 @@
     }
     .stat-chip {
       padding: 1rem;
-      border-radius: 12px;
+      border-radius: var(--radius-md);
       text-align: center;
-      border: 1px solid var(--border, rgba(0,0,0,0.1));
+      border: 1px solid var(--hairline);
       position: relative;
       overflow: hidden;
+      background: var(--bg-sunk);
     }
-    .stat-chip.good  { background: rgba(26,144,96,0.08);  border-color: rgba(26,144,96,0.3); }
-    .stat-chip.warn  { background: rgba(200,64,64,0.08);  border-color: rgba(200,64,64,0.4); }
-    .stat-chip .stat-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; margin-bottom: 0.3rem; }
-    .stat-chip .stat-value { font-size: 1.45rem; font-weight: 700; line-height: 1; }
-    .stat-chip .stat-unit  { font-size: 0.68rem; opacity: 0.55; margin-top: 0.25rem; }
-    .stat-chip.good .stat-value { color: #1a9060; }
-    .stat-chip.warn .stat-value { color: #c84040; }
+    .stat-chip.good  { background: color-mix(in srgb, var(--flow-mid) 8%, var(--bg-sunk)); border-color: color-mix(in srgb, var(--flow-mid) 28%, var(--hairline)); }
+    .stat-chip.warn  { background: color-mix(in srgb, var(--flow-hot) 8%, var(--bg-sunk)); border-color: color-mix(in srgb, var(--flow-hot) 28%, var(--hairline)); }
+    .stat-chip .stat-label { font-size: 0.72rem; font-weight: 600; text-transform: none; letter-spacing: normal; color: var(--ink-3); margin-bottom: 0.35rem; }
+    .stat-chip .stat-value { font-size: 1.4rem; font-weight: 600; line-height: 1; font-family: var(--font-display); }
+    .stat-chip .stat-unit  { font-size: 0.72rem; color: var(--ink-3); margin-top: 0.3rem; }
+    .stat-chip.good .stat-value { color: var(--accent-1); }
+    .stat-chip.warn .stat-value { color: var(--accent-1); }
     .stat-chip .stat-tag {
       position: absolute; top: 6px; right: 6px;
-      font-size: 0.58rem; font-weight: 700; text-transform: uppercase;
-      padding: 2px 5px; border-radius: 4px;
+      font-size: 0.62rem; font-weight: 600; text-transform: none;
+      padding: 2px 6px; border-radius: 999px;
+      display: inline-flex; align-items: center; gap: 3px;
     }
-    .stat-chip.good .stat-tag { background: rgba(26,144,96,0.2); color: #1a9060; }
-    .stat-chip.warn .stat-tag { background: rgba(200,64,64,0.2); color: #c84040; }
+    .stat-chip.good .stat-tag { background: color-mix(in srgb, var(--flow-mid) 18%, transparent); color: var(--accent-1); }
+    .stat-chip.warn .stat-tag { background: color-mix(in srgb, var(--flow-hot) 18%, transparent); color: var(--accent-1); }
 
     /* ─ Sleep-LDL mechanism infographic ─ */
     .mechanism-grid {
@@ -75,37 +95,41 @@
       margin: 2rem 0;
     }
     .mech-card {
-      padding: 1.1rem 1.1rem 0.9rem;
-      border-radius: 12px;
-      border: 1px solid var(--border, rgba(0,0,0,0.1));
-      background: var(--surface-2, rgba(0,0,0,0.03));
+      padding: 1.25rem 1.15rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--hairline);
+      background: var(--bg-sunk);
       position: relative;
     }
     .mech-icon {
-      font-size: 1.6rem;
-      margin-bottom: 0.5rem;
-      display: block;
+      margin-bottom: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-1);
     }
-    .mech-card h4 { font-size: 0.88rem; font-weight: 700; margin: 0 0 0.4rem; }
-    .mech-card p  { font-size: 0.83rem; margin: 0; opacity: 0.8; line-height: 1.5; }
+    .mech-card h4 { font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; margin: 0 0 0.4rem; color: var(--ink); }
+    .mech-card p  { font-size: 0.88rem; margin: 0; color: var(--ink-2); line-height: 1.55; }
     .mech-num {
-      position: absolute; top: 0.7rem; right: 0.9rem;
-      font-size: 2.5rem; font-weight: 900; opacity: 0.05;
-      font-family: 'JetBrains Mono', monospace;
+      position: absolute; top: 0.75rem; right: 0.9rem;
+      font-size: 2.2rem; font-weight: 700; opacity: 0.08;
+      font-family: var(--font-mono);
+      color: var(--ink);
     }
 
     /* ─ Sleep cycle animation ─ */
     .sleep-anim-wrap {
       margin: 2rem 0;
-      border-radius: 14px;
-      border: 1px solid var(--border, rgba(0,0,0,0.1));
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--hairline);
       padding: 1.5rem;
-      background: var(--surface-2, rgba(0,0,0,0.03));
+      background: var(--bg-sunk);
       overflow: hidden;
     }
     .sleep-anim-wrap h4 {
-      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.08em; opacity: 0.5; margin: 0 0 1rem;
+      font-family: var(--font-display);
+      font-size: 0.95rem; font-weight: 600; text-transform: none;
+      letter-spacing: normal; color: var(--ink); margin: 0 0 1rem;
     }
     .sleep-chart { position: relative; width: 100%; height: 110px; }
     .sleep-chart svg { width: 100%; height: 100%; overflow: visible; }
@@ -117,44 +141,28 @@
       margin: 1.5rem 0;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 0.75rem;
+      gap: 0.85rem;
     }
     .sleep-tips li {
       display: flex;
       gap: 0.75rem;
       align-items: flex-start;
-      padding: 0.75rem 1rem;
-      border-radius: 10px;
-      border: 1px solid var(--border, rgba(0,0,0,0.08));
-      background: var(--surface-2, rgba(0,0,0,0.02));
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--hairline);
+      background: var(--bg-sunk);
       font-size: 0.88rem;
     }
-    .tip-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.05rem; }
-    .tip-text strong { display: block; font-size: 0.82rem; margin-bottom: 0.1rem; }
-    .tip-text span { opacity: 0.7; font-size: 0.79rem; line-height: 1.45; }
+    .tip-icon { flex-shrink: 0; margin-top: 0.15rem; color: var(--accent-1); display: inline-flex; }
+    .tip-text strong { display: block; font-size: 0.88rem; font-weight: 600; color: var(--ink); margin-bottom: 0.15rem; }
+    .tip-text span { color: var(--ink-2); font-size: 0.82rem; line-height: 1.45; }
 
     /* ─ Cortisol pulse animation ─ */
     @keyframes cortisol-pulse {
       0%, 100% { opacity: 0.25; r: 4; }
-      50%       { opacity: 1;    r: 7; }
+      50%       { opacity: 1;    r: 6; }
     }
     .cortisol-dot { animation: cortisol-pulse 2s ease-in-out infinite; }
-
-    /* ─ Floating Zzz particles ─ */
-    @keyframes floatUp {
-      0%   { transform: translateY(0)   scale(1);   opacity: 0.8; }
-      100% { transform: translateY(-60px) scale(1.3); opacity: 0; }
-    }
-    .zzz-particle {
-      animation: floatUp var(--dur, 2.5s) ease-in var(--delay, 0s) infinite;
-      font-style: italic;
-      font-weight: 700;
-      font-size: var(--sz, 14px);
-      position: absolute;
-      color: var(--accent-1, #c06b12);
-      opacity: 0;
-      pointer-events: none;
-    }
 
     /* ─ Progress bar for personal commitment ─ */
     .commit-bar-wrap {
@@ -162,16 +170,17 @@
     }
     .commit-bar-label {
       display: flex; justify-content: space-between;
-      font-size: 0.8rem; font-weight: 600; margin-bottom: 0.4rem;
+      font-size: 0.85rem; font-weight: 500; margin-bottom: 0.45rem;
+      color: var(--ink-2);
     }
     .commit-bar-track {
       height: 8px; border-radius: 99px;
-      background: var(--border, rgba(0,0,0,0.1));
+      background: var(--hairline);
       overflow: hidden;
     }
     .commit-bar-fill {
       height: 100%; border-radius: 99px;
-      background: linear-gradient(90deg, #c06b12, #e8993a);
+      background: var(--accent-1);
       transform-origin: left;
       animation: growBar 1.8s cubic-bezier(.22,.68,0,1.2) forwards;
       transform: scaleX(0);
@@ -181,12 +190,11 @@
       to   { transform: scaleX(1); }
     }
     .commit-bar-fill.green {
-      background: linear-gradient(90deg, #1a9060, #34d399);
+      background: var(--flow-mid);
     }
     .commit-bar-fill.blue {
-      background: linear-gradient(90deg, #2e86de, #60aaff);
+      background: var(--accent-1);
     }
-
   </style>
 </head>
 <body class="has-tokens">
@@ -215,18 +223,13 @@
   </nav>
 
   <!-- ===== PAGE BANNER ===== -->
-  <section class="page-banner page-banner-v2">
-    <div class="glyph-layer" id="glyphLayer" aria-hidden="true">
-      <span class="sci-glyph g1" data-depth="1.2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
-      <span class="sci-glyph g2 amber" data-depth="0.8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M12 12 m 0 -8 a 8 8 0 1 1 -8 8"/><path d="M12 12 m 0 -5 a 5 5 0 1 1 -5 5"/></svg></span>
-      <span class="sci-glyph g3" data-depth="1.6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg></span>
-      <span class="sci-glyph g4" data-depth="1.0"><svg viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 12 Q 8 2, 14 12 T 26 12 T 38 12 T 46 12"/></svg></span>
-    </div>
+  <section class="page-banner page-banner-v2 v3-banner" data-tuftfield data-tuft-intensity="0.55">
+    <canvas data-tuft-canvas aria-hidden="true"></canvas>
+    <button type="button" class="v3-pause v3-banner-pause" data-tuft-toggle aria-pressed="false"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><rect x="3.5" y="3" width="3" height="10" rx="1" fill="currentColor"/><rect x="9.5" y="3" width="3" height="10" rx="1" fill="currentColor"/></svg><span data-tuft-toggle-label>Pause flow</span></button>
     <div class="container">
-      <p class="banner-desc"><a href="blog.html" style="color:var(--accent-1);text-decoration:none;">&larr; Back to Blog</a></p>
+      <p class="banner-desc"><a href="blog.html">&larr; Back to blog</a></p>
       <h1>I Exercise. I Eat Less.<br/>So Why Is My LDL Still High?</h1>
-      <p class="banner-desc">May 2026 &nbsp;&middot;&nbsp; Health &amp; Lifestyle</p>
-      <div class="underline-accent"></div>
+      <p class="banner-desc">May 2026 &nbsp;&middot;&nbsp; Health and lifestyle</p>
     </div>
   </section>
 
@@ -246,27 +249,27 @@
         <!-- Checkup result cards -->
         <div class="health-stats">
           <div class="stat-chip good">
-            <div class="stat-tag">&#10003; OK</div>
+            <div class="stat-tag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> OK</div>
             <div class="stat-label">Blood Pressure</div>
             <div class="stat-value">Normal</div>
           </div>
           <div class="stat-chip good">
-            <div class="stat-tag">&#10003; OK</div>
+            <div class="stat-tag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> OK</div>
             <div class="stat-label">Blood Glucose</div>
             <div class="stat-value">Normal</div>
           </div>
           <div class="stat-chip good">
-            <div class="stat-tag">&#10003; OK</div>
+            <div class="stat-tag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> OK</div>
             <div class="stat-label">Liver Function</div>
             <div class="stat-value">Normal</div>
           </div>
           <div class="stat-chip good">
-            <div class="stat-tag">&#10003; OK</div>
+            <div class="stat-tag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> OK</div>
             <div class="stat-label">Kidney</div>
             <div class="stat-value">Normal</div>
           </div>
           <div class="stat-chip warn">
-            <div class="stat-tag">&#9888; High</div>
+            <div class="stat-tag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> High</div>
             <div class="stat-label">LDL Cholesterol</div>
             <div class="stat-value">Elevated</div>
             <div class="stat-unit">the stubborn one</div>
@@ -297,24 +300,24 @@
               <line x1="42" y1="60" x2="595" y2="60" stroke="currentColor" stroke-width="0.4" stroke-dasharray="3,4" opacity="0.12"/>
               <line x1="42" y1="88" x2="595" y2="88" stroke="currentColor" stroke-width="0.4" stroke-dasharray="3,4" opacity="0.12"/>
 
-              <!-- Good sleep path (green) -->
+              <!-- Good sleep path (flow-mid) -->
               <polyline
                 points="42,12 70,60 100,88 130,60 160,36 190,60 220,88 250,60 280,36 310,60 340,88 370,60 400,36 430,60 460,88 490,60 520,36 560,60 595,12"
-                fill="none" stroke="#1a9060" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+                fill="none" stroke="var(--flow-mid)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
               <!-- REM periods highlighted -->
-              <rect x="148" y="28" width="48" height="16" rx="4" fill="#1a9060" opacity="0.15"/>
-              <rect x="268" y="28" width="48" height="16" rx="4" fill="#1a9060" opacity="0.15"/>
-              <rect x="388" y="28" width="48" height="16" rx="4" fill="#1a9060" opacity="0.15"/>
-              <rect x="508" y="28" width="48" height="16" rx="4" fill="#1a9060" opacity="0.15"/>
-              <text x="172" y="40" font-size="7" text-anchor="middle" fill="#1a9060" opacity="0.9" font-weight="700">REM</text>
-              <text x="292" y="40" font-size="7" text-anchor="middle" fill="#1a9060" opacity="0.9" font-weight="700">REM</text>
-              <text x="412" y="40" font-size="7" text-anchor="middle" fill="#1a9060" opacity="0.9" font-weight="700">REM</text>
-              <text x="532" y="40" font-size="7" text-anchor="middle" fill="#1a9060" opacity="0.9" font-weight="700">REM</text>
+              <rect x="148" y="28" width="48" height="16" rx="4" fill="var(--flow-mid)" opacity="0.15"/>
+              <rect x="268" y="28" width="48" height="16" rx="4" fill="var(--flow-mid)" opacity="0.15"/>
+              <rect x="388" y="28" width="48" height="16" rx="4" fill="var(--flow-mid)" opacity="0.15"/>
+              <rect x="508" y="28" width="48" height="16" rx="4" fill="var(--flow-mid)" opacity="0.15"/>
+              <text x="172" y="40" font-size="7" text-anchor="middle" fill="var(--flow-mid)" opacity="0.95" font-weight="700">REM</text>
+              <text x="292" y="40" font-size="7" text-anchor="middle" fill="var(--flow-mid)" opacity="0.95" font-weight="700">REM</text>
+              <text x="412" y="40" font-size="7" text-anchor="middle" fill="var(--flow-mid)" opacity="0.95" font-weight="700">REM</text>
+              <text x="532" y="40" font-size="7" text-anchor="middle" fill="var(--flow-mid)" opacity="0.95" font-weight="700">REM</text>
 
               <!-- Cut line (sleep deprivation) -->
-              <line x1="350" y1="6" x2="350" y2="100" stroke="#c84040" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.7"/>
-              <text x="354" y="18" font-size="8" fill="#c84040" opacity="0.9" font-weight="700">Woke up here</text>
-              <text x="354" y="28" font-size="7" fill="#c84040" opacity="0.7">(missed 2 REM cycles)</text>
+              <line x1="350" y1="6" x2="350" y2="100" stroke="var(--flow-hot)" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.8"/>
+              <text x="354" y="18" font-size="8" fill="var(--flow-hot)" opacity="0.9" font-weight="700">Woke up here</text>
+              <text x="354" y="28" font-size="7" fill="var(--flow-hot)" opacity="0.7">(missed 2 REM cycles)</text>
 
               <!-- Time labels -->
               <text x="42"  y="108" font-size="7.5" text-anchor="middle" fill="currentColor" opacity="0.4">10 pm</text>
@@ -324,12 +327,12 @@
               <text x="595" y="108" font-size="7.5" text-anchor="middle" fill="currentColor" opacity="0.4">6 am</text>
 
               <!-- Cortisol dots -->
-              <circle cx="280" cy="36" r="4" fill="#c06b12" class="cortisol-dot" style="animation-delay:0s"/>
-              <circle cx="350" cy="36" r="4" fill="#c84040" class="cortisol-dot" style="animation-delay:0.6s"/>
-              <circle cx="420" cy="36" r="4" fill="#c84040" class="cortisol-dot" style="animation-delay:1.2s"/>
+              <circle cx="280" cy="36" r="4" fill="var(--flow-warm)" class="cortisol-dot" style="animation-delay:0s"/>
+              <circle cx="350" cy="36" r="4" fill="var(--flow-hot)" class="cortisol-dot" style="animation-delay:0.6s"/>
+              <circle cx="420" cy="36" r="4" fill="var(--flow-hot)" class="cortisol-dot" style="animation-delay:1.2s"/>
             </svg>
           </div>
-          <p style="font-size:0.78rem;opacity:0.5;margin:0.5rem 0 0;text-align:center;">
+          <p style="font-size:0.78rem;opacity:0.6;margin:0.5rem 0 0;text-align:center;">
             Green curve = full 7–8 hour sleep. Red dashed line = typical early wake-up. REM cycles in the second half of the night are the most restorative — and the ones most often sacrificed.
           </p>
         </div>
@@ -342,25 +345,33 @@
 
         <div class="mechanism-grid">
           <div class="mech-card">
-            <span class="mech-icon">&#127774;</span>
+            <span class="mech-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            </span>
             <div class="mech-num">01</div>
             <h4>Cortisol Surge</h4>
             <p>Sleep deprivation triggers a chronic low-grade stress response. Cortisol levels stay elevated. Chronically high cortisol signals the liver to ramp up VLDL production — which converts to LDL in the bloodstream.</p>
           </div>
           <div class="mech-card">
-            <span class="mech-icon">&#127973;</span>
+            <span class="mech-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </span>
             <div class="mech-num">02</div>
             <h4>Liver Working Overtime</h4>
             <p>The liver performs most of its cholesterol regulation during deep sleep. If deep sleep is consistently cut short, the liver's ability to clear LDL from circulation is impaired — even if you are eating well.</p>
           </div>
           <div class="mech-card">
-            <span class="mech-icon">&#129504;</span>
+            <span class="mech-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            </span>
             <div class="mech-num">03</div>
             <h4>Hunger Hormone Chaos</h4>
             <p>Poor sleep dysregulates ghrelin and leptin. Even if you eat modestly overall, the types of food you crave shift toward high-fat and high-sugar options — which quietly bump dietary cholesterol intake.</p>
           </div>
           <div class="mech-card">
-            <span class="mech-icon">&#128167;</span>
+            <span class="mech-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+            </span>
             <div class="mech-num">04</div>
             <h4>Reduced HDL Activity</h4>
             <p>HDL (the "good" cholesterol) actively removes LDL from arterial walls. Sleep deprivation reduces HDL's functionality, meaning less LDL gets cleared — even when HDL levels look normal on a report.</p>
@@ -389,42 +400,54 @@
 
         <ul class="sleep-tips">
           <li>
-            <span class="tip-icon">&#127769;</span>
+            <span class="tip-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </span>
             <div class="tip-text">
               <strong>Fixed bedtime window</strong>
               <span>Lights out by 11:30 pm most nights. The body's circadian rhythm responds to consistency more than to duration alone.</span>
             </div>
           </li>
           <li>
-            <span class="tip-icon">&#128267;</span>
+            <span class="tip-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            </span>
             <div class="tip-text">
               <strong>No screens after 10:30 pm</strong>
               <span>Blue light suppresses melatonin production by up to 50%. Switching to reading or journaling in the last hour makes a measurable difference.</span>
             </div>
           </li>
           <li>
-            <span class="tip-icon">&#127978;</span>
+            <span class="tip-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+            </span>
             <div class="tip-text">
               <strong>Cool, dark room</strong>
               <span>Core body temperature needs to drop ~1&deg;C for sleep to initiate properly. A cooler room accelerates this and deepens slow-wave sleep.</span>
             </div>
           </li>
           <li>
-            <span class="tip-icon">&#9749;</span>
+            <span class="tip-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
+            </span>
             <div class="tip-text">
               <strong>Caffeine cutoff at 2 pm</strong>
               <span>Caffeine has a half-life of roughly 5&ndash;6 hours. A 4 pm coffee still has significant adenosine-blocking activity at midnight.</span>
             </div>
           </li>
           <li>
-            <span class="tip-icon">&#127947;</span>
+            <span class="tip-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5v14M18 5v14M2 9v6M22 9v6M6 12h12"/></svg>
+            </span>
             <div class="tip-text">
               <strong>Keep exercising, but earlier</strong>
               <span>Intense exercise within 2&ndash;3 hours of bedtime elevates cortisol and core temperature, delaying sleep onset. Morning or afternoon sessions are better.</span>
             </div>
           </li>
           <li>
-            <span class="tip-icon">&#128203;</span>
+            <span class="tip-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
+            </span>
             <div class="tip-text">
               <strong>Track &amp; recheck in 3 months</strong>
               <span>The only way to know if sleep quality is the primary driver is to improve it consistently and retest. Science requires data, even on yourself.</span>
@@ -434,15 +457,15 @@
 
         <!-- Self-assessment progress bars -->
         <div class="commit-bar-wrap">
-          <div class="commit-bar-label"><span>Sleep consistency (target: 7&ndash;8 hrs)</span><span style="color:#c06b12">Starting now</span></div>
+          <div class="commit-bar-label"><span>Sleep consistency (target: 7&ndash;8 hrs)</span><span style="color:var(--accent-1)">Starting now</span></div>
           <div class="commit-bar-track"><div class="commit-bar-fill" style="width:25%"></div></div>
         </div>
         <div class="commit-bar-wrap">
-          <div class="commit-bar-label"><span>Exercise frequency (target: 4&times;/week)</span><span style="color:#2e86de">Moderate</span></div>
+          <div class="commit-bar-label"><span>Exercise frequency (target: 4&times;/week)</span><span style="color:var(--accent-1)">Moderate</span></div>
           <div class="commit-bar-track"><div class="commit-bar-fill blue" style="width:55%"></div></div>
         </div>
         <div class="commit-bar-wrap">
-          <div class="commit-bar-label"><span>Dietary quality (already reasonable)</span><span style="color:#1a9060">On track</span></div>
+          <div class="commit-bar-label"><span>Dietary quality (already reasonable)</span><span style="color: var(--accent-1)">On track</span></div>
           <div class="commit-bar-track"><div class="commit-bar-fill green" style="width:72%"></div></div>
         </div>
 
@@ -463,11 +486,11 @@
   </section>
 
   <footer class="footer">
-    <p>&copy; 2025 Dr. Mohd Azan Bin Mohammed Sapardi. All rights reserved.</p>
+    <p>&copy; 2026 Dr. Mohd Azan Bin Mohammed Sapardi. All rights reserved.</p>
   </footer>
 
   <script src="assets/js/script.js"></script>
-  <script src="assets/js/scientific-fx.js"></script>
+  <script src="assets/js/tuftfield.js" defer></script>
 
   <script>
     /* Animate progress bars on scroll-into-view */

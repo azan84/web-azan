@@ -12,74 +12,92 @@
   <meta property="og:description" content="The showroom, traction machines, cabin samples, and the 248-metre test tower — and the story of how ThyssenKrupp's elevator arm became TKE." />
   <meta property="og:image" content="https://azan.biomechemical.com/assets/images/tke-visit.jpg" />
   <meta property="og:url" content="https://azan.biomechemical.com/blog-tke-zhongshan.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/v3.css?v=1" />
+  <link rel="stylesheet" href="assets/css/v3-pages.css?v=1" />
+  <script>
+    (function() {
+      const p = new URLSearchParams(window.location.search).get('theme');
+      const theme = p || localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
   <style>
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; }
 
     body {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 18px;
+      font-family: var(--font-body);
+      font-size: 1.0625rem;
       line-height: 1.7;
-      color: #1f1f1f;
-      background: #fafaf7;
+      color: var(--ink-2);
+      background: var(--bg);
       -webkit-font-smoothing: antialiased;
     }
 
-    .wrap { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 56px 24px 80px; }
 
     .back-link {
       display: inline-block;
       margin-bottom: 28px;
-      color: #e63946;
+      color: var(--accent-1);
       text-decoration: none;
-      font-size: 15px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      letter-spacing: 0.02em;
+      font-size: 0.95rem;
+      font-family: var(--font-body);
+      font-weight: 500;
     }
     .back-link:hover { text-decoration: underline; }
 
     .post-meta {
-      font-size: 14px;
-      color: #777;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      color: var(--ink-3);
+      font-family: var(--font-mono);
       margin-bottom: 14px;
+      text-transform: none;
+      letter-spacing: normal;
     }
 
     h1 {
-      font-family: "Playfair Display", Georgia, serif;
-      font-size: 2.4rem;
-      line-height: 1.2;
-      margin: 0 0 12px;
-      color: #1a1a1a;
-      border-bottom: 3px solid #e63946;
-      padding-bottom: 16px;
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 3.5vw, 2.6rem);
+      line-height: 1.15;
+      margin: 0 0 16px;
+      color: var(--ink);
+      border-bottom: 1px solid var(--hairline);
+      padding-bottom: 18px;
+      letter-spacing: -0.025em;
+      font-weight: 600;
     }
 
     h2 {
-      font-family: "Playfair Display", Georgia, serif;
-      font-size: 1.6rem;
+      font-family: var(--font-display);
+      font-size: clamp(1.35rem, 2vw, 1.65rem);
       margin: 48px 0 14px;
-      color: #1a1a1a;
-      border-left: 4px solid #e63946;
+      color: var(--ink);
+      border-left: 3px solid var(--accent-1);
       padding-left: 14px;
+      letter-spacing: -0.02em;
+      font-weight: 600;
     }
 
     h3 {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       margin: 28px 0 10px;
-      color: #e63946;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--accent-1);
+      font-family: var(--font-display);
+      font-weight: 600;
     }
 
     p { margin: 0 0 18px; }
 
     .lead {
-      font-size: 1.18rem;
-      color: #444;
+      font-size: 1.15rem;
+      color: var(--ink-2);
       font-style: italic;
       margin-bottom: 30px;
+      line-height: 1.6;
     }
 
     /* Figures / photos */
@@ -87,107 +105,109 @@
     figure img {
       width: 100%;
       height: auto;
-      border-radius: 10px;
-      box-shadow: 0 8px 28px rgba(0,0,0,0.14);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--hairline);
       display: block;
     }
     figcaption {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size: 14px;
-      color: #777;
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      color: var(--ink-3);
       margin-top: 12px;
       text-align: center;
       line-height: 1.5;
     }
-    figcaption strong { color: #1a1a1a; }
+    figcaption strong { color: var(--ink); }
 
     .highlight-box {
-      background: #fff5f5;
-      border-left: 5px solid #e63946;
-      border-radius: 4px;
-      padding: 20px 24px;
+      background: var(--accent-1-soft);
+      border-left: 3px solid var(--accent-1);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 18px 22px;
       margin: 28px 0;
-      box-shadow: 0 2px 8px rgba(230, 57, 70, 0.08);
     }
     .highlight-box p { margin: 0; }
-    .highlight-box strong { color: #e63946; }
+    .highlight-box strong { color: var(--accent-1); }
 
     /* Spec card for the test-tower numbers */
     .spec-card {
-      background: #0d0d0d;
-      color: #e8e8e8;
-      font-family: "JetBrains Mono", "Courier New", Consolas, monospace;
-      font-size: 15px;
+      background: var(--bg-elev);
+      color: var(--ink-2);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
       line-height: 1.75;
-      padding: 24px 26px;
-      border-radius: 8px;
+      padding: 22px 24px;
+      border-radius: var(--radius-md);
       margin: 28px 0;
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--hairline);
     }
     .spec-card .title {
-      color: #ffd54a;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-size: 12px;
-      margin-bottom: 16px;
+      color: var(--accent-1);
+      font-size: 0.8rem;
+      margin-bottom: 14px;
       display: block;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: normal;
     }
-    .spec-card .row { display: flex; justify-content: space-between; gap: 16px; padding: 5px 0; border-bottom: 1px dashed #333; }
+    .spec-card .row { display: flex; justify-content: space-between; gap: 16px; padding: 6px 0; border-bottom: 1px dashed var(--hairline); }
     .spec-card .row:last-child { border-bottom: none; }
-    .spec-card .k { color: #9aa0a6; }
-    .spec-card .v { color: #fff; font-weight: 600; text-align: right; }
-    .spec-card .v.accent { color: #ffd54a; }
+    .spec-card .k { color: var(--ink-3); }
+    .spec-card .v { color: var(--ink); font-weight: 600; text-align: right; }
+    .spec-card .v.accent { color: var(--accent-1); }
 
     blockquote.takeaway {
       margin: 36px 0 24px;
       padding: 22px 26px;
-      background: #1a1a1a;
-      color: #fafaf7;
-      border-radius: 6px;
-      font-size: 1.15rem;
+      background: var(--bg-sunk);
+      color: var(--ink);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-md);
+      font-size: 1.1rem;
       font-style: italic;
       text-align: center;
     }
     blockquote.takeaway strong {
       display: block;
       margin-top: 10px;
-      color: #ffd54a;
+      color: var(--accent-1);
       font-style: normal;
-      letter-spacing: 0.04em;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      text-transform: none;
+      letter-spacing: normal;
     }
 
     .footer-link {
       margin-top: 44px;
       text-align: center;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size: 15px;
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      color: var(--ink-3);
     }
     .footer-link a {
-      color: #e63946;
+      color: var(--accent-1);
       text-decoration: none;
-      border-bottom: 1px solid #e63946;
+      border-bottom: 1px solid var(--hairline);
       padding-bottom: 2px;
     }
     .footer-link a:hover { opacity: 0.8; }
 
-    a.inline { color: #e63946; }
+    a.inline { color: var(--accent-1); }
 
     @media (max-width: 600px) {
-      body { font-size: 17px; }
-      .wrap { padding: 28px 18px 60px; }
-      h1 { font-size: 1.8rem; }
-      h2 { font-size: 1.35rem; }
-      .spec-card { font-size: 13px; padding: 18px; }
+      .wrap { padding: 32px 18px 60px; }
+      .spec-card { font-size: 0.84rem; padding: 16px; }
       .spec-card .row { flex-direction: column; gap: 2px; }
       .spec-card .v { text-align: left; }
     }
   </style>
 </head>
-<body>
+<body class="wrap-body">
 
   <div class="wrap">
 
-    <a href="blog.html" class="back-link">&larr; Back to Blog</a>
+    <a href="blog.html" class="back-link">&larr; Back to blog</a>
 
     <p class="post-meta">April 2025 &middot; Travel &middot; Engineering</p>
 
@@ -278,7 +298,7 @@
 
     <blockquote class="takeaway">
       The best engineering is the kind you never notice &mdash; because someone, somewhere, tested it inside a 248-metre tower first.
-      <strong>TKE ZHONGSHAN &middot; APRIL 2025</strong>
+      <strong>TKE Zhongshan &middot; April 2025</strong>
     </blockquote>
 
     <p class="footer-link">

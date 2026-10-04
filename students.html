@@ -17,8 +17,17 @@
   <meta property="og:image" content="https://azan.biomechemical.com/portrait_sapardi.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css?v=10">
+  <link rel="stylesheet" href="assets/css/v3.css?v=1" />
+  <link rel="stylesheet" href="assets/css/v3-pages.css?v=1" />
+  <script>
+    (function(){
+      const p = new URLSearchParams(window.location.search).get('theme');
+      const t = p || localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
 </head>
 <body class="has-tokens">
 
@@ -47,17 +56,12 @@
   </nav>
 
   <!-- ===== PAGE BANNER ===== -->
-  <section class="page-banner page-banner-v2">
-    <div class="glyph-layer" id="glyphLayer" aria-hidden="true">
-      <span class="sci-glyph g1" data-depth="1.2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg></span>
-      <span class="sci-glyph g2 amber" data-depth="0.8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M12 12 m 0 -8 a 8 8 0 1 1 -8 8"/><path d="M12 12 m 0 -5 a 5 5 0 1 1 -5 5"/></svg></span>
-      <span class="sci-glyph g3" data-depth="1.6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="2"/><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7"/><path d="M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14"/></svg></span>
-      <span class="sci-glyph g4" data-depth="1.0"><svg viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 12 Q 8 2, 14 12 T 26 12 T 38 12 T 46 12"/></svg></span>
-    </div>
+  <section class="page-banner page-banner-v2 v3-banner" data-tuftfield data-tuft-intensity="0.55">
+    <canvas data-tuft-canvas aria-hidden="true"></canvas>
+    <button type="button" class="v3-pause v3-banner-pause" data-tuft-toggle aria-pressed="false"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><rect x="3.5" y="3" width="3" height="10" rx="1" fill="currentColor"/><rect x="9.5" y="3" width="3" height="10" rx="1" fill="currentColor"/></svg><span data-tuft-toggle-label>Pause flow</span></button>
     <div class="container">
-      <h1>Students & Resources</h1>
+      <h1>Students &amp; resources</h1>
       <p class="banner-desc">Postgraduate supervision and course materials</p>
-      <div class="underline-accent"></div>
     </div>
   </section>
 
@@ -65,13 +69,11 @@
   <section class="supervision" id="supervision">
     <div class="container">
       <div class="section-header reveal">
-        <p class="section-subtitle">Mentorship</p>
-        <h2 class="section-title">Postgraduate Supervision</h2>
-        <div class="underline-accent"></div>
+        <h2 class="section-title">Postgraduate supervision</h2>
       </div>
 
       <!-- Current Students -->
-      <h3 class="sup-section-label reveal">Current Students (In Progress)</h3>
+      <h3 class="sup-section-label reveal">Current students</h3>
       <div class="sup-grid">
 
         <div class="sup-card clay reveal">
@@ -90,8 +92,8 @@
 
       </div>
 
-      <!-- Graduated Students -->
-      <h3 class="sup-section-label reveal">Graduated Students</h3>
+      <!-- Graduated students -->
+      <h3 class="sup-section-label reveal">Graduated students</h3>
       <div class="sup-grid">
 
         <div class="sup-card clay reveal">
@@ -158,9 +160,7 @@
   <section class="courses" id="courses">
     <div class="container">
       <div class="section-header reveal">
-        <p class="section-subtitle">Teaching</p>
-        <h2 class="section-title">Course Resources</h2>
-        <div class="underline-accent"></div>
+        <h2 class="section-title">Course resources</h2>
       </div>
 
       <div class="courses-grid">
@@ -174,7 +174,7 @@
           <p class="course-sem">Modul Latihan Profesional &middot; DBKL</p>
           <ul class="resource-list">
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Bahagian 1 &mdash; Keselamatan &amp; Perundangan</p>
                 <p class="resource-type">Google Slides</p>
@@ -182,7 +182,7 @@
               <a href="https://docs.google.com/presentation/d/112vrQlgQNUc6l1GZSXbuUPsQEq86198X/edit?usp=sharing" class="resource-link" target="_blank" rel="noopener">Open</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Bahagian 2 &mdash; Rekabentuk &amp; Analisis Trafik</p>
                 <p class="resource-type">Google Slides</p>
@@ -190,7 +190,7 @@
               <a href="https://docs.google.com/presentation/d/1YHBqegWhW4v_MXqcySbYCqO-L_ni2sKe/edit?usp=sharing" class="resource-link" target="_blank" rel="noopener">Open</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Bahagian 3 &mdash; Penjimatan Tenaga &amp; Kos Operasi</p>
                 <p class="resource-type">Google Slides</p>
@@ -198,7 +198,7 @@
               <a href="https://docs.google.com/presentation/d/1ueUkaALQxZI3eJUanVU4kcJhz3GRkM_P/edit?usp=sharing" class="resource-link" target="_blank" rel="noopener">Open</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Bahagian 4 &mdash; Operasi, Penyelenggaraan &amp; Diagnosis Kerosakan</p>
                 <p class="resource-type">PowerPoint</p>
@@ -206,7 +206,7 @@
               <a href="courses/dbkl/Bahagian_4.pptx" class="resource-link" download>Download</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Rumusan Modul Lif &amp; Eskalator</p>
                 <p class="resource-type">PowerPoint</p>
@@ -214,7 +214,7 @@
               <a href="courses/dbkl/Rumusan_Modul_Lif_Eskalator.pptx" class="resource-link" download>Download</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Slaid Simulator (English)</p>
                 <p class="resource-type">PowerPoint</p>
@@ -222,7 +222,7 @@
               <a href="courses/dbkl/Lift_Escalator_Simulators_Deck_EN.pptx" class="resource-link" download>Download</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Slaid Simulator (Bahasa Melayu)</p>
                 <p class="resource-type">PowerPoint</p>
@@ -241,7 +241,7 @@
           <p class="course-sem">Semester II 2025/2026</p>
           <ul class="resource-list">
             <li class="resource-item">
-              <span class="resource-icon">&#128196;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Lab Manual</p>
                 <p class="resource-type">PDF</p>
@@ -249,7 +249,7 @@
               <a href="#" class="resource-link">Download</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128196;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Lab Report Template</p>
                 <p class="resource-type">PDF</p>
@@ -257,7 +257,7 @@
               <a href="#" class="resource-link">Download</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128193;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">All Materials</p>
                 <p class="resource-type">Google Drive</p>
@@ -276,7 +276,7 @@
           <p class="course-sem">Semester I 2025/2026</p>
           <ul class="resource-list">
             <li class="resource-item">
-              <span class="resource-icon">&#128196;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Chapter 1: Intro to CFD</p>
                 <p class="resource-type">PDF</p>
@@ -284,7 +284,7 @@
               <a href="#" class="resource-link">Download</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128196;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Chapter 2: Governing Equations</p>
                 <p class="resource-type">PDF</p>
@@ -292,7 +292,7 @@
               <a href="#" class="resource-link">Download</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#9654;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Tutorial 1: ANSYS Fluent</p>
                 <p class="resource-type">YouTube</p>
@@ -300,7 +300,7 @@
               <a href="#" class="resource-link">Watch</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128193;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">All Materials</p>
                 <p class="resource-type">Google Drive</p>
@@ -319,7 +319,7 @@
           <p class="course-sem">Semester 1 2026/2027</p>
           <ul class="resource-list">
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Chapter 1</p>
                 <p class="resource-type">Lecture slides (PPT)</p>
@@ -327,7 +327,7 @@
               <a href="courses/mech2340/FM_2e_SI_Chap01_lecture.ppt" class="resource-link" download>Download</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Chapter 2</p>
                 <p class="resource-type">Lecture slides (PPTX)</p>
@@ -335,7 +335,7 @@
               <a href="courses/mech2340/FM_2e_SI_Chap02_lecture.pptx" class="resource-link" download>Download</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Chapter 3</p>
                 <p class="resource-type">Lecture slides (PPT)</p>
@@ -343,7 +343,7 @@
               <a href="courses/mech2340/FM_2e_SI_Chap03_lecture.ppt" class="resource-link" download>Download</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Chapter 4</p>
                 <p class="resource-type">Lecture slides (PPT)</p>
@@ -351,7 +351,7 @@
               <a href="courses/mech2340/FM_2e_SI_Chap04_lecture.ppt" class="resource-link" download>Download</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Chapter 5</p>
                 <p class="resource-type">Lecture slides (PPTX)</p>
@@ -359,7 +359,7 @@
               <a href="courses/mech2340/FM_2e_SI_Chap05_lecture.pptx" class="resource-link" download>Download</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Chapter 6</p>
                 <p class="resource-type">Lecture slides (PPTX)</p>
@@ -367,7 +367,7 @@
               <a href="courses/mech2340/FM_2e_SI_Chap06_lecture.pptx" class="resource-link" download>Download</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Chapter 7</p>
                 <p class="resource-type">Lecture slides (PPTX)</p>
@@ -375,7 +375,7 @@
               <a href="courses/mech2340/FM_2e_SI_Chap07_lecture.pptx" class="resource-link" download>Download</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Chapter 8</p>
                 <p class="resource-type">Lecture slides (PPT)</p>
@@ -383,7 +383,7 @@
               <a href="courses/mech2340/FM_2e_SI_Chap08_lecture.ppt" class="resource-link" download>Download</a>
             </li>
             <li class="resource-item">
-              <span class="resource-icon">&#128202;</span>
+              <span class="resource-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
               <div class="resource-info">
                 <p class="resource-name">Chapter 9</p>
                 <p class="resource-type">Lecture slides (PPT)</p>
@@ -400,11 +400,11 @@
   <!-- ===== FOOTER ===== -->
   <footer class="footer">
     <div class="container">
-      <p>&copy; 2025 Dr. Mohd Azan Bin Mohammed Sapardi. All rights reserved.</p>
+      <p>&copy; 2026 Dr. Mohd Azan Bin Mohammed Sapardi. All rights reserved.</p>
     </div>
   </footer>
 
   <script src="assets/js/script.js"></script>
-  <script src="assets/js/scientific-fx.js"></script>
+  <script src="assets/js/tuftfield.js" defer></script>
 </body>
 </html>

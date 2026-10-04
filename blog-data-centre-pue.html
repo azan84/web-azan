@@ -18,18 +18,27 @@
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/styles.css?v=10" />
+  <link rel="stylesheet" href="assets/css/v3.css?v=1" />
+  <link rel="stylesheet" href="assets/css/v3-pages.css?v=1" />
+  <script>
+    (function(){
+      const p = new URLSearchParams(window.location.search).get('theme');
+      const t = p || localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <style>
     /* ── Blog-specific extras ── */
     .blog-callout {
-      border-left: 3px solid var(--accent-1, #c06b12);
+      border-left: 3px solid var(--accent-1);
       padding: 1rem 1.25rem;
       margin: 1.75rem 0;
-      background: var(--bg-sunk, rgba(0,0,0,0.03));
-      border-radius: 0 8px 8px 0;
+      background: var(--accent-1-soft);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
     }
-    .blog-callout p { margin: 0; font-style: italic; }
+    .blog-callout p { margin: 0; font-style: italic; color: var(--ink-2); }
 
     /* Two electricity bills */
     .two-bills {
@@ -41,31 +50,31 @@
     @media (max-width: 600px) { .two-bills { grid-template-columns: 1fr; } }
     .tb-box {
       padding: 1rem 1.25rem;
-      border-radius: 10px;
-      border: 1px solid var(--hairline, rgba(0,0,0,0.1));
-      background: var(--bg-sunk, rgba(0,0,0,0.03));
+      border-radius: var(--radius-md);
+      border: 1px solid var(--hairline);
+      background: var(--bg-sunk);
     }
     .tb-box h4 {
       margin: 0 0 0.45rem;
-      font-size: 0.78rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: normal;
     }
-    .tb-box.compute h4 { color: #1a9060; }
-    .tb-box.cool h4 { color: #e0532a; }
-    .tb-box p { margin: 0; font-size: 0.93rem; }
+    .tb-box.compute h4 { color: var(--accent-1); }
+    .tb-box.cool h4 { color: var(--accent-1); }
+    .tb-box p { margin: 0; font-size: 0.93rem; color: var(--ink-2); }
 
     /* PUE formula chip */
     .pue-formula {
       text-align: center;
-      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-family: var(--font-mono);
       font-size: 1.02rem;
       font-weight: 600;
-      color: var(--ink, inherit);
-      background: var(--bg-sunk, rgba(0,0,0,0.03));
-      border: 1px solid var(--hairline, rgba(0,0,0,0.1));
-      border-radius: 10px;
+      color: var(--ink);
+      background: var(--bg-sunk);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-md);
       padding: 0.95rem 1rem;
       margin: 1.5rem 0;
     }
@@ -76,21 +85,21 @@
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-family: var(--font-mono);
       font-weight: 700;
       margin-bottom: 0.4rem;
     }
-    .pue-ends .lo { color: #1a9060; font-size: 1.5rem; }
-    .pue-ends .hi { color: #c8362a; font-size: 1.5rem; }
+    .pue-ends .lo { color: var(--accent-1); font-size: 1.5rem; }
+    .pue-ends .hi { color: var(--accent-1); font-size: 1.5rem; }
     .pue-bar {
       height: 12px;
       border-radius: 999px;
-      background: linear-gradient(90deg, #1a9060, #eab308 45%, #e0532a 80%, #c8362a);
+      background: linear-gradient(90deg, var(--flow-mid), var(--flow-warm) 50%, var(--flow-hot));
     }
     .pue-cap {
       text-align: center;
       font-size: 0.85rem;
-      color: var(--ink-3, #6b7280);
+      color: var(--ink-3);
       font-style: italic;
       margin: 0.55rem 0 0;
     }
@@ -123,18 +132,13 @@
   </nav>
 
   <!-- ===== PAGE BANNER ===== -->
-  <section class="page-banner page-banner-v2">
-    <div class="glyph-layer" id="glyphLayer" aria-hidden="true">
-      <span class="sci-glyph g1 amber" data-depth="1.2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M12 12 m 0 -8 a 8 8 0 1 1 -8 8"/><path d="M12 12 m 0 -5 a 5 5 0 1 1 -5 5"/></svg></span>
-      <span class="sci-glyph g2" data-depth="0.8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 12h8M8 15h5"/></svg></span>
-      <span class="sci-glyph g3" data-depth="1.6"><svg viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 12 Q 8 2, 14 12 T 26 12 T 38 12 T 46 12"/></svg></span>
-      <span class="sci-glyph g4" data-depth="1.0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20v-5a8 8 0 0 1 16 0v5" /><path d="M2 20h20M9 20v-4M15 20v-4"/></svg></span>
-    </div>
+  <section class="page-banner page-banner-v2 v3-banner" data-tuftfield data-tuft-intensity="0.55">
+    <canvas data-tuft-canvas aria-hidden="true"></canvas>
+    <button type="button" class="v3-pause v3-banner-pause" data-tuft-toggle aria-pressed="false"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><rect x="3.5" y="3" width="3" height="10" rx="1" fill="currentColor"/><rect x="9.5" y="3" width="3" height="10" rx="1" fill="currentColor"/></svg><span data-tuft-toggle-label>Pause flow</span></button>
     <div class="container">
-      <p class="banner-desc"><a href="blog.html" style="color:var(--accent-1);text-decoration:none;">&larr; Back to Blog</a></p>
+      <p class="banner-desc"><a href="blog.html">&larr; Back to blog</a></p>
       <h1>The One Number Data Centres Brag About</h1>
-      <p class="banner-desc">July 2026 &nbsp;&middot;&nbsp; What &ldquo;PUE&rdquo; Really Measures</p>
-      <div class="underline-accent"></div>
+      <p class="banner-desc">July 2026 &nbsp;&middot;&nbsp; What &ldquo;PUE&rdquo; really measures</p>
     </div>
   </section>
 
@@ -199,10 +203,10 @@
   </section>
 
   <footer class="footer">
-    <p>&copy; 2025 Dr. Mohd Azan Bin Mohammed Sapardi. All rights reserved.</p>
+    <p>&copy; 2026 Dr. Mohd Azan Bin Mohammed Sapardi. All rights reserved.</p>
   </footer>
 
   <script src="assets/js/script.js"></script>
-  <script src="assets/js/scientific-fx.js"></script>
+  <script src="assets/js/tuftfield.js" defer></script>
 </body>
 </html>

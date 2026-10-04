@@ -17,8 +17,17 @@
   <meta property="og:image" content="https://azan.biomechemical.com/portrait_sapardi.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/styles.css?v=10" />
+  <link rel="stylesheet" href="assets/css/v3.css?v=1" />
+  <link rel="stylesheet" href="assets/css/v3-pages.css?v=1" />
+  <script>
+    (function(){
+      const p = new URLSearchParams(window.location.search).get('theme');
+      const t = p || localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
 </head>
 <body class="has-tokens">
 
@@ -46,17 +55,12 @@
   </nav>
 
   <!-- ===== BANNER ===== -->
-  <div class="page-banner page-banner-v2">
-    <div class="glyph-layer" id="glyphLayer" aria-hidden="true">
-      <span class="sci-glyph g1" data-depth="1.2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg></span>
-      <span class="sci-glyph g2 amber" data-depth="0.8"><svg viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 12 L 8 4 L 14 12 L 8 20 Z"/><path d="M14 12 L 20 6 L 26 12 L 20 18 Z" opacity="0.6"/></svg></span>
-      <span class="sci-glyph g3" data-depth="1.6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
-      <span class="sci-glyph g4" data-depth="1.0"><svg viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 12 Q 8 2, 14 12 T 26 12 T 38 12 T 46 12"/></svg></span>
-    </div>
+  <div class="page-banner page-banner-v2 v3-banner" data-tuftfield data-tuft-intensity="0.55">
+    <canvas data-tuft-canvas aria-hidden="true"></canvas>
+    <button type="button" class="v3-pause v3-banner-pause" data-tuft-toggle aria-pressed="false"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><rect x="3.5" y="3" width="3" height="10" rx="1" fill="currentColor"/><rect x="9.5" y="3" width="3" height="10" rx="1" fill="currentColor"/></svg><span data-tuft-toggle-label>Pause flow</span></button>
     <div class="container">
       <h1>Academics</h1>
       <p class="banner-desc">Publications, research grants, and scholarly contributions</p>
-      <div class="underline-accent"></div>
     </div>
   </div>
 
@@ -64,9 +68,7 @@
   <section class="sim-showcase" id="simulation">
     <div class="container">
       <div class="section-header reveal">
-        <p class="section-subtitle">Featured Simulations</p>
-        <h2 class="section-title">Computational Research in Action</h2>
-        <div class="underline-accent"></div>
+        <h2 class="section-title">Computational research in action</h2>
       </div>
 
       <!-- Simulation 1: CFD-DEM Fluidized Bed -->
@@ -204,9 +206,7 @@
   <section class="publications" id="publications">
     <div class="container">
       <div class="section-header reveal">
-        <p class="section-subtitle">Academic Output</p>
         <h2 class="section-title">Publications</h2>
-        <div class="underline-accent"></div>
       </div>
       <div class="pub-controls reveal">
         <input type="text" class="pub-search" id="pubSearch" placeholder="Search by title, journal, or keyword..." />
@@ -229,55 +229,53 @@
   <section class="grants" id="grants">
     <div class="container">
       <div class="section-header reveal">
-        <p class="section-subtitle">Research Funding</p>
-        <h2 class="section-title">Research Grants</h2>
-        <div class="underline-accent"></div>
+        <h2 class="section-title">Research grants</h2>
       </div>
 
-      <!-- On-Going -->
-      <h3 style="color: #5BBFB5; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.25rem; padding-bottom: 0.5rem; border-bottom: 2px solid rgba(91, 191, 181, 0.15);">On-Going</h3>
+      <!-- Ongoing -->
+      <h3 class="grants-section-heading">Ongoing</h3>
       <div class="grants-grid reveal" style="margin-bottom: 3rem;">
-        <div class="grant-card clay">
-          <div class="grant-tags"><span class="grant-tag ongoing">On-Going</span></div>
+        <div class="grant-card">
+          <div class="grant-tags"><span class="grant-tag ongoing">Ongoing</span></div>
           <h3>Development of Sustainable Compact Power Generators for Reliable Off-Grid Communication System at Normally Unmanned Hub (NUH)</h3>
           <p class="grant-year">2025 &ndash; Present</p>
         </div>
-        <div class="grant-card clay">
-          <div class="grant-tags"><span class="grant-tag ongoing">On-Going</span></div>
+        <div class="grant-card">
+          <div class="grant-tags"><span class="grant-tag ongoing">Ongoing</span></div>
           <h3>The Integration of Turbulence Promoter and IoT in Tubular Photobioreactor for the Cultivation of Scenedesmus Sp Microalgae</h3>
           <p class="grant-year">2023 &ndash; Present</p>
         </div>
-        <div class="grant-card clay">
-          <div class="grant-tags"><span class="grant-tag ongoing">On-Going</span></div>
+        <div class="grant-card">
+          <div class="grant-tags"><span class="grant-tag ongoing">Ongoing</span></div>
           <h3>The Effect of Recurrent Pedal Pressings and Sitting Posture on the Driver's Fatigue During Road Traffic Delay via System Identification Models and Deep Learning Techniques</h3>
           <p class="grant-year">2021 &ndash; Present</p>
         </div>
-        <div class="grant-card clay">
-          <div class="grant-tags"><span class="grant-tag ongoing">On-Going</span></div>
+        <div class="grant-card">
+          <div class="grant-tags"><span class="grant-tag ongoing">Ongoing</span></div>
           <h3>Critical Axial Distance and Angle of Inclination of Substrate for Graphene Synthesis using Tubular Chemical Vapour Deposition</h3>
           <p class="grant-year">2019 &ndash; Present</p>
         </div>
       </div>
 
       <!-- Completed -->
-      <h3 style="color: #F5A623; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.25rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(245, 166, 35, 0.1);">Completed</h3>
+      <h3 class="grants-section-heading">Completed</h3>
       <div class="grants-grid reveal">
-        <div class="grant-card clay">
+        <div class="grant-card">
           <div class="grant-tags"><span class="grant-tag completed">Completed</span></div>
           <h3>Investigation of wake-induced vibration for energy harvesting</h3>
           <p class="grant-year">2020 &ndash; 2024</p>
         </div>
-        <div class="grant-card clay">
+        <div class="grant-card">
           <div class="grant-tags"><span class="grant-tag completed">Completed</span></div>
           <h3>Prototyping of Artificial Intelligent Embedded IoT based Driveline for Electric Coaster</h3>
           <p class="grant-year">2019 &ndash; 2022</p>
         </div>
-        <div class="grant-card clay">
+        <div class="grant-card">
           <div class="grant-tags"><span class="grant-tag completed">Completed</span></div>
           <h3>Passive control of the discrete tonal noise of NACA0015 airfoil for optimum aerodynamic and noise performances</h3>
           <p class="grant-year">2018 &ndash; 2022</p>
         </div>
-        <div class="grant-card clay">
+        <div class="grant-card">
           <div class="grant-tags"><span class="grant-tag completed">Completed</span></div>
           <h3>Effect of abrupt geometry change on the flow structure and heat transfer efficiency in a Magnetohydrodynamic (MHD) flow</h3>
           <p class="grant-year">2018 &ndash; 2022</p>
@@ -287,11 +285,11 @@
   </section>
 
   <footer class="footer">
-    <p>&copy; 2025 Dr. Mohd Azan Bin Mohammed Sapardi. All rights reserved.</p>
+    <p>&copy; 2026 Dr. Mohd Azan Bin Mohammed Sapardi. All rights reserved.</p>
   </footer>
 
   <script src="assets/js/script.js"></script>
-  <script src="assets/js/scientific-fx.js"></script>
+  <script src="assets/js/tuftfield.js" defer></script>
   <script>
     // ── Publication Data ──
     const publications = [

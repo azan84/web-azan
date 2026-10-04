@@ -17,8 +17,17 @@
   <meta property="og:image" content="https://azan.biomechemical.com/portrait_sapardi.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/styles.css?v=10" />
+  <link rel="stylesheet" href="assets/css/v3.css?v=1" />
+  <link rel="stylesheet" href="assets/css/v3-pages.css?v=1" />
+  <script>
+    (function(){
+      const p = new URLSearchParams(window.location.search).get('theme');
+      const t = p || localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
 </head>
 <body class="has-tokens">
 
@@ -46,17 +55,12 @@
   </nav>
 
   <!-- ===== PAGE BANNER ===== -->
-  <section class="page-banner page-banner-v2">
-    <div class="glyph-layer" id="glyphLayer" aria-hidden="true">
-      <span class="sci-glyph g1 amber" data-depth="1.2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M12 12 m 0 -8 a 8 8 0 1 1 -8 8"/><path d="M12 12 m 0 -5 a 5 5 0 1 1 -5 5"/></svg></span>
-      <span class="sci-glyph g2" data-depth="0.8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg></span>
-      <span class="sci-glyph g3" data-depth="1.6"><svg viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 12 Q 8 2, 14 12 T 26 12 T 38 12 T 46 12"/></svg></span>
-      <span class="sci-glyph g4" data-depth="1.0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L 20 7.5 L 20 16.5 L 12 21 L 4 16.5 L 4 7.5 Z"/><circle cx="12" cy="12" r="1.2"/></svg></span>
-    </div>
+  <section class="page-banner page-banner-v2 v3-banner" data-tuftfield data-tuft-intensity="0.55">
+    <canvas data-tuft-canvas aria-hidden="true"></canvas>
+    <button type="button" class="v3-pause v3-banner-pause" data-tuft-toggle aria-pressed="false"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><rect x="3.5" y="3" width="3" height="10" rx="1" fill="currentColor"/><rect x="9.5" y="3" width="3" height="10" rx="1" fill="currentColor"/></svg><span data-tuft-toggle-label>Pause flow</span></button>
     <div class="container">
       <h1>Blog</h1>
       <p class="banner-desc">Thoughts and opinions on energy, engineering, and the world</p>
-      <div class="underline-accent"></div>
     </div>
   </section>
 
@@ -69,49 +73,49 @@
           <p class="blog-card-date">July 2026</p>
           <h3 class="blog-card-title">The One Number Data Centres Brag About</h3>
           <p class="blog-card-excerpt">Every data centre pays two electricity bills &mdash; one to compute, one to stay cool &mdash; and &ldquo;PUE&rdquo; is the ratio everyone shows off. But in our study, a single test rig gave PUE anywhere from 1.05 to 7.81 without changing the hardware. A friendly, jargon-free look at what the number really means (and when it fools you).</p>
-          <span class="blog-read-more">Read More &rarr;</span>
+          <span class="blog-read-more">Read story</span>
         </a>
 
         <a href="blog-ldl-sleep.html" class="blog-card clay">
           <p class="blog-card-date">May 2026</p>
           <h3 class="blog-card-title">I Exercise. I Eat Less. So Why Is My LDL Still High?</h3>
           <p class="blog-card-excerpt">My recent medical checkup came back mostly fine &mdash; except for one stubborn number: LDL cholesterol. I run, I lift weights, I eat modestly. The usual explanations did not add up. My prime suspect? Chronic sleep deprivation, and the surprisingly deep link between poor sleep and elevated cholesterol.</p>
-          <span class="blog-read-more">Read More &rarr;</span>
+          <span class="blog-read-more">Read story</span>
         </a>
 
         <a href="blog-iot-magic.html" class="blog-card clay">
           <p class="blog-card-date">May 2026</p>
           <h3 class="blog-card-title">The Magic of IoT: Teaching Old Things New Tricks</h3>
           <p class="blog-card-excerpt">Ever wished a piece of equipment could just text you when it's done? That's the Internet of Things&mdash;giving "dumb" objects a brain and a voice. A friendly walkthrough of microcontrollers, sensors, and how MQTT brokers route messages, complete with an interactive dashboard simulation.</p>
-          <span class="blog-read-more">Read More &rarr;</span>
+          <span class="blog-read-more">Read story</span>
         </a>
 
         <a href="blog-why-i-run.html" class="blog-card clay">
           <p class="blog-card-date">April 2026</p>
           <h3 class="blog-card-title">Why I Run (And No, It's Not For Weight Loss)</h3>
           <p class="blog-card-excerpt">A 30-minute run burns about one muffin&mdash;you cannot out-run a bad diet. So why bother? As a mechanical engineer, I run because the heart is an engine, and engines that idle at lower RPM last longer. The math: almost a billion fewer heartbeats over a lifetime.</p>
-          <span class="blog-read-more">Read More &rarr;</span>
+          <span class="blog-read-more">Read story</span>
         </a>
 
         <a href="blog-problem-identification.html" class="blog-card clay">
           <p class="blog-card-date">April 2026</p>
           <h3 class="blog-card-title">Stop Solving the Wrong Problem: A Guide to Problem Identification and Root Cause Analysis</h3>
           <p class="blog-card-excerpt">Most people treat symptoms, not problems. A car battery that keeps dying is not the problem&mdash;it is a clue. Learn how the 5 Whys technique, Fishbone diagrams, and a precise problem statement can save you from the most expensive mistake in engineering: solving the wrong thing perfectly.</p>
-          <span class="blog-read-more">Read More &rarr;</span>
+          <span class="blog-read-more">Read story</span>
         </a>
 
         <a href="blog-2030-mirage.html" class="blog-card clay">
           <p class="blog-card-date">April 2026</p>
           <h3 class="blog-card-title">The 2030 Mirage: Why a 20% Fuel Drop Proves We Aren't Ready for a Post-Oil World</h3>
           <p class="blog-card-excerpt">Not too long ago, energy analysts handed us a sobering projection: by 2030, humanity needed to be fully prepared to navigate a world without petroleum. Sitting here in 2026, with that deadline just four short years away, we have to ask ourselves&mdash;are we even close to ready?</p>
-          <span class="blog-read-more">Read More &rarr;</span>
+          <span class="blog-read-more">Read story</span>
         </a>
 
         <a href="blog-tke-zhongshan.html" class="blog-card clay">
           <p class="blog-card-date">April 2025</p>
           <h3 class="blog-card-title">Inside TKE Zhongshan: A Visit to One of the World's Most Amazing Lift Companies</h3>
           <p class="blog-card-excerpt">In April 2025 I toured TK Elevator (TKE) in Zhongshan, China &mdash; a masterclass in vertical transport. From gearless traction motors and a &ldquo;curtain-shop&rdquo; wall of door finishes to luxury cabins and a purpose-built 248-metre test tower, here is what I saw &mdash; plus the real story of how ThyssenKrupp's elevator arm became TKE.</p>
-          <span class="blog-read-more">Read More &rarr;</span>
+          <span class="blog-read-more">Read story</span>
         </a>
 
       </div>
@@ -119,10 +123,10 @@
   </section>
 
   <footer class="footer">
-    <p>&copy; 2025 Dr. Mohd Azan Bin Mohammed Sapardi. All rights reserved.</p>
+    <p>&copy; 2026 Dr. Mohd Azan Bin Mohammed Sapardi. All rights reserved.</p>
   </footer>
 
   <script src="assets/js/script.js"></script>
-  <script src="assets/js/scientific-fx.js"></script>
+  <script src="assets/js/tuftfield.js" defer></script>
 </body>
 </html>

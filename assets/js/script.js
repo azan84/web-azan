@@ -13,7 +13,7 @@ if (navToggle && navLinks) {
 // ── Active page ──
 (function () {
   const page = window.location.pathname.split('/').pop() || 'index.html';
-  const map = { 'index.html': 'Home', 'academics.html': 'Academics', 'students.html': 'Students', 'blog.html': 'Blog', 'personal.html': 'Personal' };
+  const map = { 'index.html': 'Home', 'academics.html': 'Academics', 'webapp.html': 'Apps', 'students.html': 'Students', 'blog.html': 'Blog', 'personal.html': 'Personal' };
   const label = map[page];
   if (!label) return;
   document.querySelectorAll('.nav-links a').forEach(a => { if (a.textContent.trim() === label) a.classList.add('active'); });
@@ -86,6 +86,10 @@ function handleContactSubmit(e) {
     const activeLink = navList.querySelector('a.active');
     // Delay one frame so layout is settled (especially after font swap)
     requestAnimationFrame(() => requestAnimationFrame(() => moveTo(activeLink)));
+    // Re-measure once web fonts / images have loaded (link widths change on font swap)
+    const settle = () => moveTo(navList.querySelector('a.active'));
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(settle);
+    window.addEventListener('load', settle);
 
     // Hover: slide to hovered link
     navList.querySelectorAll('a').forEach(a => {
@@ -213,4 +217,15 @@ function handleContactSubmit(e) {
   }, { threshold: 0.35 });
 
   videos.forEach((v) => obs.observe(v));
+})();
+
+// ── Research cards: play the icon micro-animations only on hover / focus ──
+(function () {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('.research-card').forEach(function (card) {
+    card.addEventListener('mouseenter', function () { card.classList.add('fx-play'); });
+    card.addEventListener('mouseleave', function () { card.classList.remove('fx-play'); });
+    card.addEventListener('focusin',  function () { card.classList.add('fx-play'); });
+    card.addEventListener('focusout', function () { card.classList.remove('fx-play'); });
+  });
 })();
