@@ -341,7 +341,8 @@ blockquote.takeaway {
 .pyr-svg .tier text { fill: #fff; font: 600 10.5px var(--font-body); text-anchor: middle; pointer-events: none; }
 .pyr-svg.has-sel .tier { opacity: .45; }
 .pyr-svg.has-sel .tier.sel { opacity: 1; }
-.pyr-big { font: 700 1.35rem var(--font-display); color: var(--ink); line-height: 1.2; }
+.pyr-big { font: 700 2.6rem var(--font-mono); color: var(--ink); line-height: 1; }
+.pyr-name { font: 600 1.05rem var(--font-display); color: var(--ink); margin-top: .3rem; }
 .pyr-axis { display: flex; justify-content: space-between; font: .72rem var(--font-mono); color: var(--ink-3); margin-top: .35rem; }
 
 /* ── Flip cards (difficult learners, post 3) ── */

@@ -355,11 +355,19 @@
       svg.classList.add('has-sel');
       tiers.forEach((x) => x.classList.toggle('sel', x === t));
       tiers.forEach((x) => x.setAttribute('aria-pressed', String(x === t)));
-      big.textContent = t.dataset.n;
+      $('.pyr-name', w).textContent = t.dataset.n;
       txt.innerHTML = t.dataset.d;
+      const target = +t.dataset.p;
+      if (reduced) { big.textContent = target + '%'; return; }
+      const start = performance.now();
+      (function step(now) {
+        const k = Math.min(1, (now - start) / 600);
+        big.textContent = Math.round(target * (1 - Math.pow(1 - k, 3))) + '%';
+        if (k < 1) requestAnimationFrame(step);
+      })(start);
     }
     tiers.forEach((t) => {
-      t.setAttribute('tabindex', '0'); t.setAttribute('role', 'button'); t.setAttribute('aria-label', t.dataset.n);
+      t.setAttribute('tabindex', '0'); t.setAttribute('role', 'button'); t.setAttribute('aria-label', `${t.dataset.n}: ${t.dataset.p} percent`);
       t.addEventListener('click', () => sel(t));
       t.addEventListener('mouseenter', () => sel(t));
       t.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); sel(t); } });
