@@ -26,9 +26,33 @@
   </url>
   <url>
     <loc>https://azan.biomechemical.com/blog.html</loc>
-    <lastmod>2026-07-11</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://azan.biomechemical.com/blog-ttt-day1-adult-learning.html</loc>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://azan.biomechemical.com/blog-ttt-day2-course-design.html</loc>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://azan.biomechemical.com/blog-ttt-day3-delivery-evaluation.html</loc>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://azan.biomechemical.com/blog-ttt-presentation-days.html</loc>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://azan.biomechemical.com/blog-data-centre-pue.html</loc>

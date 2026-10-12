@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="assets/images/Icon.png" />
+  <link rel="apple-touch-icon" href="assets/images/Icon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>18 Presenters, One Nervous Lecturer: The TTT Assessment Days | Dr. Mohd Azan Bin Mohammed Sapardi</title>
+  <meta name="description" content="The final two days of HRDC TTT: 18 mock presentations on 4x4 driving, safety, cybersecurity, mental health, process engineering, hygiene, tourism, problem identification and IoT, and a best-presenter award." />
+  <link rel="canonical" href="https://azan.biomechemical.com/blog-ttt-presentation-days.html" />
+  <meta name="theme-color" content="#fafaf7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="18 Presenters, One Nervous Lecturer: The TTT Assessment Days — Dr. Mohd Azan Bin Mohammed Sapardi" />
+  <meta property="og:description" content="The final two days of HRDC TTT: 18 mock presentations on 4x4 driving, safety, cybersecurity, mental health, process engineering, hygiene, tourism, problem identification and IoT, and a best-presenter award." />
+  <meta property="og:url" content="https://azan.biomechemical.com/blog-ttt-presentation-days.html" />
+  <meta property="og:image" content="https://azan.biomechemical.com/assets/images/ttt-award.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=10" />
+  <link rel="stylesheet" href="assets/css/v3.css?v=1" />
+  <link rel="stylesheet" href="assets/css/v3-pages.css?v=1" />
+  <script>
+    (function(){
+      const p = new URLSearchParams(window.location.search).get('theme');
+      const t = p || localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <style>
+    /* ── TTT series extras ── */
+    .blog-article-content figure { margin: 2rem 0; }
+    .blog-article-content figure img {
+      width: 100%; height: auto; display: block;
+      border-radius: var(--radius-md); border: 1px solid var(--hairline);
+    }
+    .blog-article-content figcaption {
+      font-size: 0.88rem; color: var(--ink-3); margin-top: 0.7rem;
+      text-align: center; line-height: 1.5;
+    }
+    .blog-article-content figcaption strong { color: var(--ink); }
+    .photo-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin: 2rem 0; }
+    .photo-pair figure { margin: 0; }
+    @media (max-width: 600px) { .photo-pair { grid-template-columns: 1fr; } }
+
+    .blog-callout {
+      border-left: 3px solid var(--accent-1);
+      padding: 1rem 1.25rem; margin: 1.75rem 0;
+      background: var(--accent-1-soft);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+    .blog-callout p { margin: 0; color: var(--ink-2); }
+    .blog-callout p + p { margin-top: 0.6rem; }
+
+    .series-nav {
+      margin: 0 0 2rem; padding: 1rem 1.25rem;
+      background: var(--bg-sunk); border: 1px solid var(--hairline);
+      border-radius: var(--radius-md); font-size: 0.92rem;
+    }
+    .series-nav p { margin: 0 0 0.5rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-3); }
+    .series-nav ol { margin: 0; padding-left: 1.25rem; }
+    .series-nav li { margin: 0.2rem 0; }
+    .series-nav li.current { font-weight: 600; color: var(--ink); }
+    .series-nav a { color: var(--accent-1); text-decoration: none; }
+    .series-nav a:hover { text-decoration: underline; }
+
+    .card-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.9rem; margin: 1.75rem 0;
+    }
+    .mini-card {
+      padding: 1rem 1.1rem; border-radius: var(--radius-md);
+      border: 1px solid var(--hairline); background: var(--bg-sunk);
+    }
+    .mini-card h4 {
+      margin: 0 0 0.4rem; font-size: 0.95rem; font-weight: 600;
+      color: var(--accent-1); font-family: var(--font-display);
+      text-transform: none; letter-spacing: normal;
+    }
+    .mini-card p { margin: 0; text-align: left; font-size: 0.9rem; color: var(--ink-2); line-height: 1.55; }
+    .mini-card .big {
+      display: block; font-family: var(--font-mono); font-size: 1.6rem;
+      font-weight: 600; color: var(--ink); margin-bottom: 0.2rem;
+    }
+
+    .flow-steps { counter-reset: step; list-style: none; padding: 0; margin: 1.75rem 0; }
+    .flow-steps li { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start; }
+    .flow-steps li::before {
+      counter-increment: step; content: counter(step);
+      flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 50%;
+      background: var(--accent-1); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 0.88rem; font-family: var(--font-mono);
+    }
+    .flow-steps li div strong { display: block; margin-bottom: 0.15rem; color: var(--ink); }
+
+    .ttt-table { width: 100%; border-collapse: collapse; margin: 1.75rem 0; font-size: 0.92rem; }
+    .ttt-table th, .ttt-table td {
+      padding: 0.65rem 0.9rem; border: 1px solid var(--hairline);
+      text-align: left; vertical-align: top;
+    }
+    .ttt-table th { background: var(--bg-sunk); color: var(--ink); font-weight: 600; font-size: 0.88rem; }
+    .ttt-table td:first-child { font-weight: 600; color: var(--accent-1); white-space: nowrap; }
+    .table-scroll { overflow-x: auto; }
+
+    .bar-row { display: flex; align-items: center; gap: 0.75rem; margin: 0.45rem 0; font-size: 0.9rem; }
+    .bar-row .lbl { width: 9.5rem; flex-shrink: 0; color: var(--ink-2); }
+    .bar-row .bar { height: 1.1rem; border-radius: 4px; background: var(--accent-1); opacity: 0.85; }
+    .bar-row .bar.dim { opacity: 0.4; }
+    .bar-row .val { font-family: var(--font-mono); font-size: 0.85rem; color: var(--ink); }
+    .bars { margin: 1.5rem 0; padding: 1rem 1.25rem; border: 1px solid var(--hairline); border-radius: var(--radius-md); }
+    .bars p.cap { margin: 0.75rem 0 0; font-size: 0.85rem; color: var(--ink-3); }
+    @media (max-width: 600px) { .bar-row .lbl { width: 7rem; } }
+
+    blockquote.takeaway {
+      margin: 2.25rem 0 1.5rem; padding: 1.3rem 1.6rem;
+      background: var(--bg-sunk); color: var(--ink);
+      border: 1px solid var(--hairline); border-radius: var(--radius-md);
+      font-size: 1.08rem; font-style: italic; text-align: center;
+    }
+  </style>
+</head>
+<body class="has-tokens">
+
+  <div class="nav-progress" aria-hidden="true"></div>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">Dr. <span>Azan</span></a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="academics.html">Academics</a></li>
+        <li><a href="webapp.html">Apps</a></li>
+        <li><a href="students.html">Students</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="personal.html">Personal</a></li>
+      </ul>
+      <button class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+        <svg class="sun"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== PAGE BANNER ===== -->
+  <section class="page-banner page-banner-v2 v3-banner" data-tuftfield data-tuft-intensity="0.55">
+    <canvas data-tuft-canvas aria-hidden="true"></canvas>
+    <button type="button" class="v3-pause v3-banner-pause" data-tuft-toggle aria-pressed="false"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><rect x="3.5" y="3" width="3" height="10" rx="1" fill="currentColor"/><rect x="9.5" y="3" width="3" height="10" rx="1" fill="currentColor"/></svg><span data-tuft-toggle-label>Pause flow</span></button>
+    <div class="container">
+      <p class="banner-desc"><a href="blog.html">&larr; Back to blog</a></p>
+      <h1>18 Presenters, One Nervous Lecturer: The TTT Assessment Days</h1>
+      <p class="banner-desc">September 2026 &nbsp;&middot;&nbsp; TTT series, part 4 of 4 &nbsp;&middot;&nbsp; MIM, PJ33, Seksyen 13</p>
+    </div>
+  </section>
+
+  <!-- ===== ARTICLE ===== -->
+  <section class="blog-article">
+    <div class="container">
+      <article class="blog-article-content clay reveal drop-cap">
+
+        <nav class="series-nav" aria-label="TTT series">
+          <p>HRDC Train-the-Trainer &middot; 4-part series</p>
+          <ol>
+            <li><a href="blog-ttt-day1-adult-learning.html">Day 1 &middot; How adults actually learn</a></li>
+            <li><a href="blog-ttt-day2-course-design.html">Day 2 &middot; Designing a course that hooks</a></li>
+            <li><a href="blog-ttt-day3-delivery-evaluation.html">Day 3 &middot; Delivery, facilitation &amp; evaluation</a></li>
+            <li class="current">Days 4&ndash;5 &middot; 18 presenters, one nervous lecturer <em>(you are here)</em></li>
+          </ol>
+        </nav>
+
+        <p>Three days of theory. Five modules. Dozens of Kahoots. Then the last two days of the HRDC Train-the-Trainer programme, <strong>24 and 25 September 2026</strong>, were all about one thing: <strong>the mock presentation</strong>. Each of the 18 participants had to design a short training session using everything from the week (ROPES, the wow factor, ABCD objectives, the roadmap, the 17-item checklist, engagement every 8 minutes) and deliver it in front of Dr Raymond Lai and the rest of the class. This is where the 60% &ldquo;skills&rdquo; weighting lives. No pressure.</p>
+
+        <figure>
+          <img src="assets/images/ttt-group.jpg" alt="The 18 TTT participants and Dr Raymond Lai posing together in front of the MIM logo wall" loading="lazy" />
+          <figcaption><strong>The class of September 2026</strong> at the Malaysian Institute of Management, PJ33, Seksyen 13. Eighteen trainers, eighteen completely different worlds.</figcaption>
+        </figure>
+
+        <h2>Why This Lecturer Was Sweating</h2>
+
+        <p>Here&rsquo;s the thing. My friends and I, <strong>Dr Firdaus, Dr Dayana, Dr Wan and Dr Adibah</strong>, are university lecturers. We present for a living. You&rsquo;d think we would be the calmest people in the room.</p>
+
+        <p>We were not.</p>
+
+        <p>The rest of the class were <strong>industry experts</strong>, people who train others on safety, hygiene, process improvement, tourism, cybersecurity, mental health and, yes, 4&times;4 driving. These are people who train adults in the real world, where nobody is forced to attend for a grade and a bored audience simply walks out. A lecture and a training session turn out to be very different animals:</p>
+
+        <div class="card-grid">
+          <div class="mini-card"><h4>A university lecture</h4><p>Cover the syllabus. Students are graded, so they stay. Two hours, mostly talking. Success = they pass the final exam.</p></div>
+          <div class="mini-card"><h4>A TTT training session</h4><p>Close a competency gap. Engage every 8 minutes. Hook in the first two minutes. Success = they can <em>do</em> something on Monday.</p></div>
+        </div>
+
+        <p>So the evenings went into rebuilding old habits: fewer bullets, more activities, an Arial 60 title, and the magic sentence <em>&ldquo;Upon completion of this training, you will be able to:&rdquo;</em> Knowing the content cold was never the problem. The format was.</p>
+
+        <h2>A Crash Course in 18 Industries</h2>
+
+        <p>The best surprise of these two days was how much I <strong>learned</strong>. Every presenter was teaching their own speciality, so in two days I picked up mini-lessons on things I would never otherwise have studied. Here are some of the sessions I managed to photograph.</p>
+
+        <div class="photo-pair">
+          <figure>
+            <img src="assets/images/ttt-hazards.jpg" alt="A presenter in front of a slide titled How to Identify Hazards Before Starting a Workshop Task" loading="lazy" />
+            <figcaption><strong>Safety:</strong> how to identify hazards <em>before</em> starting a workshop task.</figcaption>
+          </figure>
+          <figure>
+            <img src="assets/images/ttt-hygiene.jpg" alt="A presenter beside an icebreaker slide introducing herself as a hygiene manager" loading="lazy" />
+            <figcaption><strong>Hygiene:</strong> an icebreaker straight out of the Day 2 playbook, from a hygiene manager.</figcaption>
+          </figure>
+        </div>
+
+        <div class="photo-pair">
+          <figure>
+            <img src="assets/images/ttt-burnout.jpg" alt="A presenter in front of a slide titled Preventing Burnout: Practical Stress Management" loading="lazy" />
+            <figcaption><strong>Mental health:</strong> &ldquo;Preventing Burnout: Practical Stress Management&rdquo;. Very relevant to a room of stressed presenters.</figcaption>
+          </figure>
+          <figure>
+            <img src="assets/images/ttt-process-mapping.jpg" alt="A presenter beside a slide titled Process Mapping" loading="lazy" />
+            <figcaption><strong>Process engineering:</strong> process mapping, which makes a workflow visible so you can improve it.</figcaption>
+          </figure>
+        </div>
+
+        <div class="photo-pair">
+          <figure>
+            <img src="assets/images/ttt-tourism.jpg" alt="A smiling presenter in front of a slide about designing integrated 3-day 2-night itinerary packages for homestay operators" loading="lazy" />
+            <figcaption><strong>Tourism:</strong> designing a 3-days-2-nights itinerary package for homestay operators. I now want to go on a homestay holiday.</figcaption>
+          </figure>
+          <figure>
+            <img src="assets/images/ttt-offroad.jpg" alt="A presenter in a cap standing beside a slide showing a vehicle on a sandy beach" loading="lazy" />
+            <figcaption><strong>4&times;4 and off-road:</strong> where the classroom suddenly smelled of sand and diesel.</figcaption>
+          </figure>
+        </div>
+
+        <div class="photo-pair">
+          <figure>
+            <img src="assets/images/ttt-five-whys.jpg" alt="A presenter in front of a slide titled Problem Identification: 5 Whys Technique" loading="lazy" />
+            <figcaption><strong>Problem identification:</strong> the 5 Whys technique, a topic close to my heart (see <a href="blog-problem-identification.html">this post</a>).</figcaption>
+          </figure>
+          <figure>
+            <img src="assets/images/ttt-did-you-know.jpg" alt="A presenter beside a slide opening with a Did You Know statistic" loading="lazy" />
+            <figcaption><strong>The wow factor in action:</strong> a &ldquo;Did you know?&rdquo; statistic to grab the room in the first minute.</figcaption>
+          </figure>
+        </div>
+
+        <p>There were also sessions on <strong>cybersecurity</strong> and more. By the end I had a mental notebook with everything from workshop hazard checks and burnout warning signs to itinerary planning and off-road driving. You could not design a more varied two-day short course if you tried. And because everyone was using the same ROPES skeleton, it was fascinating to watch eighteen people interpret the <em>same</em> structure in eighteen different ways. Some wow factors were statistics, some were stories, some were videos, and a few made the whole room go silent.</p>
+
+        <h2>My Turn: &ldquo;Did You Always?&rdquo;</h2>
+
+        <figure>
+          <img src="assets/images/ttt-azan-presenting.jpg" alt="Dr Azan presenting in front of a slide titled Did You Always?" loading="lazy" />
+          <figcaption><strong>Me, opening with the wow factor.</strong> Slide two of &ldquo;Create Your First IoT Idea&rdquo;: <em>Did you always&hellip;?</em></figcaption>
+        </figure>
+
+        <p>My session was <strong>&ldquo;Create Your First IoT Idea&rdquo;</strong>, a beginner-friendly introduction to the Internet of Things for people who have never touched a sensor. My usual lecture would start with &ldquo;IoT stands for&hellip;&rdquo; and a block diagram. TTT had beaten that habit out of me by Wednesday.</p>
+
+        <p>So I followed the Day 2 recipe. The <strong>fact</strong>: all of us forget things. Did I switch off the iron? Did I lock the gate? Where did I park? Hands up, everyone, including me. Then, gently, the serious version: news reports of young children left in parked cars, in our heat. Then the <strong>provoking question</strong>: <em>what if the car itself could notice, and tell you?</em> And finally the <strong>motivating question</strong>: <em>&ldquo;Are you ready?&rdquo;</em></p>
+
+        <p>From there it was ROPES all the way. A &ldquo;smart or not?&rdquo; icebreaker where everyone had to physically point at which gadget was IoT. One analogy used throughout: an IoT system is a <strong>body</strong>, where sensors are the eyes and ears, the controller is the brain, connectivity is the nerves, and actuators are the muscles. Then Tell-Show-Do-Feedback, with pairs designing their own IoT idea on an idea map. I also built in a few running jokes, because &ldquo;appropriate humour&rdquo; was on the checklist and I take checklists seriously. One example: the neighbour&rsquo;s cat, <em>Oyen</em>, who sets off every motion sensor in the neighbourhood and teaches you why your system needs a threshold.</p>
+
+        <p>Was I nervous? Very. The room had 17 people who train for a living. But once the pair activity started and the room filled with people sketching their own IoT ideas, I forgot to be nervous and started having fun. Which, according to item 15 on the checklist, was exactly the point.</p>
+
+        <h2>Alhamdulillah: Best Presenter</h2>
+
+        <p>At the end of Day 5, Dr Raymond announced the best presenters of the cohort. I honestly didn&rsquo;t expect to hear my name, considering the calibre of the people around me. <strong>Alhamdulillah</strong>, I was one of them.</p>
+
+        <figure>
+          <img src="assets/images/ttt-award.jpg" alt="Dr Azan receiving a copy of the book Ready for Takeoff from Dr Raymond Lai in the MIM training room" loading="lazy" />
+          <figcaption><strong>Receiving <em>Ready for Takeoff</em> from Dr Raymond Lai.</strong> A book he co-authored with his daughter, and now one of my favourite things on my shelf.</figcaption>
+        </figure>
+
+        <p>The prize was something money can&rsquo;t really buy: a copy of <strong><em>Ready for Takeoff</em></strong>, written by Dr Raymond himself together with his daughter. A trainer giving away a book he wrote with his own child is a very personal gift, and it meant a lot. Of everything I took home from the week, that book is my favourite.</p>
+
+        <div class="photo-pair">
+          <figure>
+            <img src="assets/images/ttt-group-cheer.jpg" alt="The TTT class posing with thumbs up and cheers in front of the MIM logo wall" loading="lazy" />
+            <figcaption>The &ldquo;we survived&rdquo; photo.</figcaption>
+          </figure>
+          <figure>
+            <img src="assets/images/ttt-classroom.jpg" alt="Participants at cluster tables in the MIM training room during the final session" loading="lazy" />
+            <figcaption>The final session: cluster tables, as the manual recommends.</figcaption>
+          </figure>
+        </div>
+
+        <h2>What I&rsquo;m Taking Back to My Own Classroom</h2>
+
+        <p>I went into TTT thinking I already knew how to teach. I came out knowing that I knew how to <em>lecture</em>, which is not the same thing. These are the changes I&rsquo;m making for my students:</p>
+
+        <ol class="flow-steps">
+          <li><div><strong>A real wow factor every class</strong>Fact, provoking question, motivating question. No more &ldquo;last week we covered&hellip;&rdquo;.</div></li>
+          <li><div><strong>Engagement every 8 minutes</strong>A question, a quick poll, a pair discussion, anything but a monologue.</div></li>
+          <li><div><strong>ABCD objectives, no &ldquo;understand&rdquo;</strong>If I can&rsquo;t observe it, it isn&rsquo;t an objective.</div></li>
+          <li><div><strong>Tell, show, do, feedback</strong>Not just in the lab. In the lecture hall too.</div></li>
+          <li><div><strong>Rehearse, rehearse, rehearse</strong>Even for the lecture I&rsquo;ve given ten times.</div></li>
+        </ol>
+
+        <p>A huge thank you to Dr Raymond Lai for a week that was genuinely fun, to MIM for hosting us, to the seventeen fellow participants who taught me more about safety, hygiene, tourism, mental health and 4&times;4s than I ever expected to learn in a training room, and to Dr Firdaus, Dr Dayana, Dr Wan and Dr Adibah for the moral support during the nervous moments.</p>
+
+        <blockquote class="takeaway">Eighteen presenters, five modules, one book. I came to learn how to train, and I left a better teacher.</blockquote>
+
+        <p>If you missed the earlier parts: <a href="blog-ttt-day1-adult-learning.html">Day 1 (how adults learn)</a>, <a href="blog-ttt-day2-course-design.html">Day 2 (course design)</a>, and <a href="blog-ttt-day3-delivery-evaluation.html">Day 3 (delivery and evaluation)</a>.</p>
+
+        <nav class="series-nav" aria-label="TTT series">
+          <p>HRDC Train-the-Trainer &middot; 4-part series</p>
+          <ol>
+            <li><a href="blog-ttt-day1-adult-learning.html">Day 1 &middot; How adults actually learn</a></li>
+            <li><a href="blog-ttt-day2-course-design.html">Day 2 &middot; Designing a course that hooks</a></li>
+            <li><a href="blog-ttt-day3-delivery-evaluation.html">Day 3 &middot; Delivery, facilitation &amp; evaluation</a></li>
+            <li class="current">Days 4&ndash;5 &middot; 18 presenters, one nervous lecturer <em>(you are here)</em></li>
+          </ol>
+        </nav>
+
+      </article>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2026 Dr. Mohd Azan Bin Mohammed Sapardi. All rights reserved.</p>
+  </footer>
+
+  <script src="assets/js/script.js"></script>
+  <script src="assets/js/tuftfield.js" defer></script>
+</body>
+</html>

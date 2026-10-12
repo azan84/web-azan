@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="assets/images/Icon.png" />
+  <link rel="apple-touch-icon" href="assets/images/Icon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rehearse, Rehearse, Rehearse: Day 3 of HRDC Train-the-Trainer | Dr. Mohd Azan Bin Mohammed Sapardi</title>
+  <meta name="description" content="Day 3 of HRDC TTT at MIM: the 90/20/8 rule, the 4Ps of delivery, voice modulation, Tell-Show-Do-Feedback, handling challenging learners, and Kirkpatrick-Phillips evaluation all the way to ROI." />
+  <link rel="canonical" href="https://azan.biomechemical.com/blog-ttt-day3-delivery-evaluation.html" />
+  <meta name="theme-color" content="#fafaf7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Rehearse, Rehearse, Rehearse: Day 3 of HRDC Train-the-Trainer — Dr. Mohd Azan Bin Mohammed Sapardi" />
+  <meta property="og:description" content="Day 3 of HRDC TTT at MIM: the 90/20/8 rule, the 4Ps of delivery, voice modulation, Tell-Show-Do-Feedback, handling challenging learners, and Kirkpatrick-Phillips evaluation all the way to ROI." />
+  <meta property="og:url" content="https://azan.biomechemical.com/blog-ttt-day3-delivery-evaluation.html" />
+  <meta property="og:image" content="https://azan.biomechemical.com/assets/images/ttt-facilitating.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=10" />
+  <link rel="stylesheet" href="assets/css/v3.css?v=1" />
+  <link rel="stylesheet" href="assets/css/v3-pages.css?v=1" />
+  <script>
+    (function(){
+      const p = new URLSearchParams(window.location.search).get('theme');
+      const t = p || localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <style>
+    /* ── TTT series extras ── */
+    .blog-article-content figure { margin: 2rem 0; }
+    .blog-article-content figure img {
+      width: 100%; height: auto; display: block;
+      border-radius: var(--radius-md); border: 1px solid var(--hairline);
+    }
+    .blog-article-content figcaption {
+      font-size: 0.88rem; color: var(--ink-3); margin-top: 0.7rem;
+      text-align: center; line-height: 1.5;
+    }
+    .blog-article-content figcaption strong { color: var(--ink); }
+    .photo-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin: 2rem 0; }
+    .photo-pair figure { margin: 0; }
+    @media (max-width: 600px) { .photo-pair { grid-template-columns: 1fr; } }
+
+    .blog-callout {
+      border-left: 3px solid var(--accent-1);
+      padding: 1rem 1.25rem; margin: 1.75rem 0;
+      background: var(--accent-1-soft);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+    .blog-callout p { margin: 0; color: var(--ink-2); }
+    .blog-callout p + p { margin-top: 0.6rem; }
+
+    .series-nav {
+      margin: 0 0 2rem; padding: 1rem 1.25rem;
+      background: var(--bg-sunk); border: 1px solid var(--hairline);
+      border-radius: var(--radius-md); font-size: 0.92rem;
+    }
+    .series-nav p { margin: 0 0 0.5rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-3); }
+    .series-nav ol { margin: 0; padding-left: 1.25rem; }
+    .series-nav li { margin: 0.2rem 0; }
+    .series-nav li.current { font-weight: 600; color: var(--ink); }
+    .series-nav a { color: var(--accent-1); text-decoration: none; }
+    .series-nav a:hover { text-decoration: underline; }
+
+    .card-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.9rem; margin: 1.75rem 0;
+    }
+    .mini-card {
+      padding: 1rem 1.1rem; border-radius: var(--radius-md);
+      border: 1px solid var(--hairline); background: var(--bg-sunk);
+    }
+    .mini-card h4 {
+      margin: 0 0 0.4rem; font-size: 0.95rem; font-weight: 600;
+      color: var(--accent-1); font-family: var(--font-display);
+      text-transform: none; letter-spacing: normal;
+    }
+    .mini-card p { margin: 0; text-align: left; font-size: 0.9rem; color: var(--ink-2); line-height: 1.55; }
+    .mini-card .big {
+      display: block; font-family: var(--font-mono); font-size: 1.6rem;
+      font-weight: 600; color: var(--ink); margin-bottom: 0.2rem;
+    }
+
+    .flow-steps { counter-reset: step; list-style: none; padding: 0; margin: 1.75rem 0; }
+    .flow-steps li { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start; }
+    .flow-steps li::before {
+      counter-increment: step; content: counter(step);
+      flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 50%;
+      background: var(--accent-1); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 0.88rem; font-family: var(--font-mono);
+    }
+    .flow-steps li div strong { display: block; margin-bottom: 0.15rem; color: var(--ink); }
+
+    .ttt-table { width: 100%; border-collapse: collapse; margin: 1.75rem 0; font-size: 0.92rem; }
+    .ttt-table th, .ttt-table td {
+      padding: 0.65rem 0.9rem; border: 1px solid var(--hairline);
+      text-align: left; vertical-align: top;
+    }
+    .ttt-table th { background: var(--bg-sunk); color: var(--ink); font-weight: 600; font-size: 0.88rem; }
+    .ttt-table td:first-child { font-weight: 600; color: var(--accent-1); white-space: nowrap; }
+    .table-scroll { overflow-x: auto; }
+
+    .bar-row { display: flex; align-items: center; gap: 0.75rem; margin: 0.45rem 0; font-size: 0.9rem; }
+    .bar-row .lbl { width: 9.5rem; flex-shrink: 0; color: var(--ink-2); }
+    .bar-row .bar { height: 1.1rem; border-radius: 4px; background: var(--accent-1); opacity: 0.85; }
+    .bar-row .bar.dim { opacity: 0.4; }
+    .bar-row .val { font-family: var(--font-mono); font-size: 0.85rem; color: var(--ink); }
+    .bars { margin: 1.5rem 0; padding: 1rem 1.25rem; border: 1px solid var(--hairline); border-radius: var(--radius-md); }
+    .bars p.cap { margin: 0.75rem 0 0; font-size: 0.85rem; color: var(--ink-3); }
+    @media (max-width: 600px) { .bar-row .lbl { width: 7rem; } }
+
+    blockquote.takeaway {
+      margin: 2.25rem 0 1.5rem; padding: 1.3rem 1.6rem;
+      background: var(--bg-sunk); color: var(--ink);
+      border: 1px solid var(--hairline); border-radius: var(--radius-md);
+      font-size: 1.08rem; font-style: italic; text-align: center;
+    }
+  </style>
+</head>
+<body class="has-tokens">
+
+  <div class="nav-progress" aria-hidden="true"></div>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">Dr. <span>Azan</span></a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="academics.html">Academics</a></li>
+        <li><a href="webapp.html">Apps</a></li>
+        <li><a href="students.html">Students</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="personal.html">Personal</a></li>
+      </ul>
+      <button class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+        <svg class="sun"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== PAGE BANNER ===== -->
+  <section class="page-banner page-banner-v2 v3-banner" data-tuftfield data-tuft-intensity="0.55">
+    <canvas data-tuft-canvas aria-hidden="true"></canvas>
+    <button type="button" class="v3-pause v3-banner-pause" data-tuft-toggle aria-pressed="false"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><rect x="3.5" y="3" width="3" height="10" rx="1" fill="currentColor"/><rect x="9.5" y="3" width="3" height="10" rx="1" fill="currentColor"/></svg><span data-tuft-toggle-label>Pause flow</span></button>
+    <div class="container">
+      <p class="banner-desc"><a href="blog.html">&larr; Back to blog</a></p>
+      <h1>Rehearse, Rehearse, Rehearse: Day 3 of HRDC Train-the-Trainer</h1>
+      <p class="banner-desc">September 2026 &nbsp;&middot;&nbsp; TTT series, part 3 of 4 &nbsp;&middot;&nbsp; MIM, PJ33, Seksyen 13</p>
+    </div>
+  </section>
+
+  <!-- ===== ARTICLE ===== -->
+  <section class="blog-article">
+    <div class="container">
+      <article class="blog-article-content clay reveal drop-cap">
+
+        <nav class="series-nav" aria-label="TTT series">
+          <p>HRDC Train-the-Trainer &middot; 4-part series</p>
+          <ol>
+            <li><a href="blog-ttt-day1-adult-learning.html">Day 1 &middot; How adults actually learn</a></li>
+            <li><a href="blog-ttt-day2-course-design.html">Day 2 &middot; Designing a course that hooks</a></li>
+            <li class="current">Day 3 &middot; Delivery, facilitation &amp; evaluation <em>(you are here)</em></li>
+            <li><a href="blog-ttt-presentation-days.html">Days 4&ndash;5 &middot; 18 presenters, one nervous lecturer</a></li>
+          </ol>
+        </nav>
+
+        <p>On Day 3 we moved from the hotel to the <strong>Malaysian Institute of Management&rsquo;s office in the PJ33 building, Seksyen 13</strong>: a smaller room, cluster tables, flipcharts on easels and a wall of books. It felt more like a workshop and less like a conference. That suited the day, because Module 4 was about the part of training that terrifies people most: <strong>standing up and delivering</strong>.</p>
+
+        <figure>
+          <img src="assets/images/ttt-facilitating.jpg" alt="Dr Raymond Lai standing among cluster tables of participants at the MIM training room, with flipcharts and a projector screen behind" loading="lazy" />
+          <figcaption><strong>Dr Raymond Lai at work in the MIM training room.</strong> Cluster seating, flipcharts everywhere, and nowhere to hide.</figcaption>
+        </figure>
+
+        <h2>What Do People Fear the Most?</h2>
+
+        <p>Module 4 opened with a bar chart (Janek Tuttar, 2011) ranking people&rsquo;s biggest fears. Number one, at 19.6%: <strong>public speaking</strong>. Heights came second. <strong>Death</strong> was further down at 9.7%. As the old joke goes, at a funeral most people would rather be in the coffin than giving the eulogy.</p>
+
+        <div class="bars" role="img" aria-label="Fear ranking: public speaking 19.6 percent, heights 15.9 percent, death 9.7 percent">
+          <div class="bar-row"><span class="lbl">Public speaking</span><span class="bar" style="width:78%"></span><span class="val">19.6%</span></div>
+          <div class="bar-row"><span class="lbl">Heights</span><span class="bar dim" style="width:63%"></span><span class="val">15.9%</span></div>
+          <div class="bar-row"><span class="lbl">Death</span><span class="bar dim" style="width:39%"></span><span class="val">9.7%</span></div>
+          <p class="cap">Selected bars from the opening slide of Module 4. Knowing that Thursday was presentation day, this chart was not reassuring.</p>
+        </div>
+
+        <h2>Prisoners, Vacationers and Explorers</h2>
+
+        <p>Dr Raymond sorted every training audience into three types, and I recognised all of them from my own lecture halls:</p>
+
+        <div class="card-grid">
+          <div class="mini-card"><h4>The Prisoner</h4><p>Sent by the boss. Resents being here. Minimal interest. (In university terms: the compulsory-subject student.)</p></div>
+          <div class="mini-card"><h4>The Vacationer</h4><p>Here for the break, the buffet and the free pen. Playful, passive.</p></div>
+          <div class="mini-card"><h4>The Explorer</h4><p>Curious, engaged, ready to learn. The dream.</p></div>
+        </div>
+
+        <p>The trainer&rsquo;s job is to <strong>turn prisoners and vacationers into explorers</strong>. The tools for that turned out to be surprisingly measurable.</p>
+
+        <h2>The Rules Behind Engagement</h2>
+
+        <div class="card-grid">
+          <div class="mini-card"><span class="big">90/20/8</span><h4>Bob Pike&rsquo;s rule</h4><p>No more than 90 min without a break, 20 min of lecture at a stretch, and involve the audience every <strong>8 minutes</strong>.</p></div>
+          <div class="mini-card"><span class="big">55/38/7</span><h4>Mehrabian</h4><p>Body language 55%, voice 38%, words 7%. How you say it matters more than you think.</p></div>
+          <div class="mini-card"><span class="big">5% &rarr; 90%</span><h4>Learning pyramid</h4><p>Retention after 24 h: lecture 5%, demonstration 30%, discussion 50%, practice 75%, teaching others 90%.</p></div>
+        </div>
+
+        <p>The <strong>Ebbinghaus forgetting curve</strong> showed retention collapsing over days, then resetting with each review. The <strong>primacy and recency effect</strong> explained why the opening and closing of a session are remembered best and the middle sags. That&rsquo;s why the middle needs engagement, activities and questions to hold it up.</p>
+
+        <div class="blog-callout">
+          <p><strong>Lecturer confession #3:</strong> A standard university lecture is 2 hours. By Bob Pike&rsquo;s rule, I should be involving students about 15 times per session. On a good day, I manage &ldquo;any questions?&rdquo; twice. On a bad day, the only interaction is the attendance sheet.</p>
+        </div>
+
+        <h2>The 4Ps of Delivery</h2>
+
+        <ol class="flow-steps">
+          <li><div><strong>Preparation</strong>Stimulate interest: the what, the why, the wow. Create relevance.</div></li>
+          <li><div><strong>Presentation</strong>Explain using questions, lots of examples, training aids.</div></li>
+          <li><div><strong>Practice</strong>Demonstrate, then let them try, then give feedback.</div></li>
+          <li><div><strong>Performance</strong>Assess whether they can apply it.</div></li>
+        </ol>
+
+        <h2>Voice, Body and the Three Golden Rules</h2>
+
+        <p>We watched short clips of famous speakers and broke down their technique. For the voice there were five Ps: <strong>projection, pace, pitch, pause, precision</strong>. For energy, the advice was to <strong>start at level 3</strong>. If you open at normal conversational energy and fade, the room literally falls asleep (the slide had cartoon learners to prove it). Filler words got their own &ldquo;Avoid Them!&rdquo; slide: <em>you know? umm, okay? right? ahh, er</em>. I have a sneaking suspicion &ldquo;okay?&rdquo; is my personal favourite.</p>
+
+        <p>Then came my favourite slide of the entire programme:</p>
+
+        <blockquote class="takeaway">The 3 Golden Presentation Rules:<br />#1 Rehearse. #2 Rehearse. #3 See rules #1 and #2.</blockquote>
+
+        <p>We were also pointed to PowerPoint&rsquo;s <strong>Rehearse with Coach</strong> feature, which listens to you and reports your pace, filler words and sensitive phrases. I suspect more than a few of us went home that night and talked to our laptops.</p>
+
+        <p>The <strong>presentation checklist</strong> we would be judged on had 17 items. They included: eye contact more than 90% of the time; an opening wow with &ldquo;What&rsquo;s in it for me?&rdquo; and &ldquo;Are you ready?&rdquo;; <em>talk to the participants, not to the slides</em>; engagement every 8 minutes; analogies; &ldquo;example, example, example&rdquo;; debriefs and transition statements; <strong>appropriate humour</strong>; and <strong>smile and have fun</strong>. I liked that humour and fun were on the official checklist. It isn&rsquo;t fluff. It&rsquo;s graded.</p>
+
+        <h2>Facilitation: Tell, Show, Do, Feedback</h2>
+
+        <p>Presenting is talking <em>to</em> people; facilitating is learning <em>with</em> them. The core rule on the slide was: <em>&ldquo;A trainer&rsquo;s primary goal is to ensure active engagement and participation by the learners to achieve the learning objectives.&rdquo;</em> The practical process is beautifully simple: <strong>Tell</strong> them how, <strong>Show</strong> them, let them <strong>Do</strong> it, then give <strong>Feedback</strong> that is constructive and actionable. It&rsquo;s exactly how we teach lab sessions, and almost never how we teach lectures.</p>
+
+        <p>Questioning got the <strong>FOID</strong> treatment, a ladder for building questions:</p>
+
+        <div class="card-grid">
+          <div class="mini-card"><span class="big">F</span><h4>Fact</h4><p>What do you know or recall?</p></div>
+          <div class="mini-card"><span class="big">O</span><h4>Opinion</h4><p>What do you think or feel?</p></div>
+          <div class="mini-card"><span class="big">I</span><h4>Importance</h4><p>Why does it matter?</p></div>
+          <div class="mini-card"><span class="big">D</span><h4>Do</h4><p>How will you apply it?</p></div>
+        </div>
+
+        <p>And when someone asks a question you can&rsquo;t answer? <strong>Focus, listen, rephrase, repeat</strong>, then either answer briefly, redirect it to the room (&ldquo;Has anyone here dealt with this?&rdquo;), or honestly defer it to later. Carl Rogers from Day 1 nodded approvingly.</p>
+
+        <h2>The Difficult Learners Field Guide</h2>
+
+        <p>This section was pure entertainment, because everyone in the room had met every one of these people, and possibly been a few of them:</p>
+
+        <div class="table-scroll">
+        <table class="ttt-table">
+          <thead><tr><th>Learner</th><th>What to do</th></tr></thead>
+          <tbody>
+            <tr><td>The Talker</td><td>Acknowledge them, then: &ldquo;Let&rsquo;s hear what others have to say.&rdquo;</td></tr>
+            <tr><td>The Quiet One</td><td>Ask a directly relevant question and call them by name.</td></tr>
+            <tr><td>The Sleeper</td><td>Move closer. Ask a question. (Proximity is a powerful alarm clock.)</td></tr>
+            <tr><td>The Arguer</td><td>Acknowledge their passion, ask for evidence, find common ground, or take it offline. Keep calm.</td></tr>
+            <tr><td>The Late Comer</td><td>Remind everyone of the ground rules, and thank the punctual ones.</td></tr>
+            <tr><td>The Bored</td><td>Create relevance, engage, call by name.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p>And the don&rsquo;ts: never argue, insult, ignore, get defensive, show anger, or let one participant hijack the session. We also went through eight seating layouts (cabaret, cluster, classroom, chevron, boardroom, U-shape, theatre, auditorium), and the &ldquo;good training room&rdquo; award went to <strong>cluster tables</strong>. That was exactly how MIM had set up our room. Point taken.</p>
+
+        <h2>Module 5: Did the Training Actually Work?</h2>
+
+        <p>The last module was the one my engineer brain enjoyed most, because it has numbers. Training effectiveness evaluation uses <strong>Kirkpatrick&rsquo;s four levels plus Jack Phillips&rsquo; ROI</strong>:</p>
+
+        <div class="bars" role="img" aria-label="Recommended evaluation targets: Level 1 100 percent, Level 2 60 percent, Level 3 30 percent, Level 4 10 percent, Level 5 5 percent of programmes">
+          <div class="bar-row"><span class="lbl">L1 Reaction</span><span class="bar" style="width:100%"></span><span class="val">100%</span></div>
+          <div class="bar-row"><span class="lbl">L2 Learning</span><span class="bar" style="width:60%"></span><span class="val">60%</span></div>
+          <div class="bar-row"><span class="lbl">L3 Behaviour</span><span class="bar" style="width:30%"></span><span class="val">30%</span></div>
+          <div class="bar-row"><span class="lbl">L4 Results</span><span class="bar" style="width:10%"></span><span class="val">10%</span></div>
+          <div class="bar-row"><span class="lbl">L5 ROI</span><span class="bar" style="width:5%"></span><span class="val">5%</span></div>
+          <p class="cap">Recommended share of programmes to evaluate at each level (from the TTT manual, citing AIHR). Levels 1&ndash;2 happen in the classroom; levels 3&ndash;5 happen back at the workplace.</p>
+        </div>
+
+        <p><strong>Level 1, Reaction</strong>, is the familiar &ldquo;happy sheet&rdquo;. <strong>Level 2, Learning</strong>, is post-test minus pre-test. <strong>Level 3, Behaviour</strong>, needs 3 to 6 months and was labelled the <em>weakest link</em> in the chain, because it&rsquo;s where the classroom meets the real job and good intentions go to die. <strong>Level 4, Results</strong>, needs 6 to 12 months and a clever trick for isolating the effect of the training from everything else going on:</p>
+
+        <div class="blog-callout">
+          <p>Sales rose by 1,000 units. Participants estimate training contributed <strong>40%</strong>, and they&rsquo;re <strong>90%</strong> confident in that estimate.<br />Credit to training = 1,000 &times; 0.40 &times; 0.90 = <strong>360 units</strong>.</p>
+          <p>The slide&rsquo;s wise note: <em>&ldquo;Be satisfied with evidence when proof is not possible.&rdquo;</em></p>
+        </div>
+
+        <p>Then <strong>Level 5, ROI</strong>: convert the benefits to money, add up the full cost of the programme (analysis, development, delivery, evaluation, including people&rsquo;s salaries), and compute <em>(benefit &minus; cost) / cost</em>. The worked example in the manual produced RM183,000 in benefits against RM37,373 in costs, an <strong>ROI of 389%</strong>. If you ever need to convince a CFO that training is not just a cost centre, that slide is your friend.</p>
+
+        <h2>Closing the Loop</h2>
+
+        <p>The programme wrapped up the way every module had: key takeaways, a reflection on the objectives, the five-module roadmap ticked off, and an <strong>action plan</strong>. For us, the action plan is real. After the TTT certificate of completion comes the HRD Corp <strong>accreditation</strong> step, with documents and videos to submit and up to six months of support from MIM.</p>
+
+        <p>But first there was a small matter of two days of assessed presentations, in front of a room full of experts from every industry imaginable. My heart rate went up just typing that sentence.</p>
+
+        <blockquote class="takeaway">Design gets them in the room. Delivery keeps them there. Evaluation proves it was worth it.</blockquote>
+
+        <p>Continue to <a href="blog-ttt-presentation-days.html">part 4: 18 Presenters, One Nervous Lecturer</a>, the presentations, the photos, and an unexpected gift.</p>
+
+        <nav class="series-nav" aria-label="TTT series">
+          <p>HRDC Train-the-Trainer &middot; 4-part series</p>
+          <ol>
+            <li><a href="blog-ttt-day1-adult-learning.html">Day 1 &middot; How adults actually learn</a></li>
+            <li><a href="blog-ttt-day2-course-design.html">Day 2 &middot; Designing a course that hooks</a></li>
+            <li class="current">Day 3 &middot; Delivery, facilitation &amp; evaluation <em>(you are here)</em></li>
+            <li><a href="blog-ttt-presentation-days.html">Days 4&ndash;5 &middot; 18 presenters, one nervous lecturer</a></li>
+          </ol>
+        </nav>
+
+      </article>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2026 Dr. Mohd Azan Bin Mohammed Sapardi. All rights reserved.</p>
+  </footer>
+
+  <script src="assets/js/script.js"></script>
+  <script src="assets/js/tuftfield.js" defer></script>
+</body>
+</html>

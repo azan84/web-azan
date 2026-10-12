@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="assets/images/Icon.png" />
+  <link rel="apple-touch-icon" href="assets/images/Icon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wow First, Bullets Later: Day 2 of HRDC Train-the-Trainer | Dr. Mohd Azan Bin Mohammed Sapardi</title>
+  <meta name="description" content="Day 2 of HRDC TTT: competency-based course design with ADDIE, the ROPES model, the three-step wow factor, ABCD learning objectives, roadmaps, Arial 60 titles and session plans." />
+  <link rel="canonical" href="https://azan.biomechemical.com/blog-ttt-day2-course-design.html" />
+  <meta name="theme-color" content="#fafaf7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Wow First, Bullets Later: Day 2 of HRDC Train-the-Trainer — Dr. Mohd Azan Bin Mohammed Sapardi" />
+  <meta property="og:description" content="Day 2 of HRDC TTT: competency-based course design with ADDIE, the ROPES model, the three-step wow factor, ABCD learning objectives, roadmaps, Arial 60 titles and session plans." />
+  <meta property="og:url" content="https://azan.biomechemical.com/blog-ttt-day2-course-design.html" />
+  <meta property="og:image" content="https://azan.biomechemical.com/assets/images/ttt-group-cheer.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=10" />
+  <link rel="stylesheet" href="assets/css/v3.css?v=1" />
+  <link rel="stylesheet" href="assets/css/v3-pages.css?v=1" />
+  <script>
+    (function(){
+      const p = new URLSearchParams(window.location.search).get('theme');
+      const t = p || localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <style>
+    /* ── TTT series extras ── */
+    .blog-article-content figure { margin: 2rem 0; }
+    .blog-article-content figure img {
+      width: 100%; height: auto; display: block;
+      border-radius: var(--radius-md); border: 1px solid var(--hairline);
+    }
+    .blog-article-content figcaption {
+      font-size: 0.88rem; color: var(--ink-3); margin-top: 0.7rem;
+      text-align: center; line-height: 1.5;
+    }
+    .blog-article-content figcaption strong { color: var(--ink); }
+    .photo-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin: 2rem 0; }
+    .photo-pair figure { margin: 0; }
+    @media (max-width: 600px) { .photo-pair { grid-template-columns: 1fr; } }
+
+    .blog-callout {
+      border-left: 3px solid var(--accent-1);
+      padding: 1rem 1.25rem; margin: 1.75rem 0;
+      background: var(--accent-1-soft);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+    .blog-callout p { margin: 0; color: var(--ink-2); }
+    .blog-callout p + p { margin-top: 0.6rem; }
+
+    .series-nav {
+      margin: 0 0 2rem; padding: 1rem 1.25rem;
+      background: var(--bg-sunk); border: 1px solid var(--hairline);
+      border-radius: var(--radius-md); font-size: 0.92rem;
+    }
+    .series-nav p { margin: 0 0 0.5rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-3); }
+    .series-nav ol { margin: 0; padding-left: 1.25rem; }
+    .series-nav li { margin: 0.2rem 0; }
+    .series-nav li.current { font-weight: 600; color: var(--ink); }
+    .series-nav a { color: var(--accent-1); text-decoration: none; }
+    .series-nav a:hover { text-decoration: underline; }
+
+    .card-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.9rem; margin: 1.75rem 0;
+    }
+    .mini-card {
+      padding: 1rem 1.1rem; border-radius: var(--radius-md);
+      border: 1px solid var(--hairline); background: var(--bg-sunk);
+    }
+    .mini-card h4 {
+      margin: 0 0 0.4rem; font-size: 0.95rem; font-weight: 600;
+      color: var(--accent-1); font-family: var(--font-display);
+      text-transform: none; letter-spacing: normal;
+    }
+    .mini-card p { margin: 0; text-align: left; font-size: 0.9rem; color: var(--ink-2); line-height: 1.55; }
+    .mini-card .big {
+      display: block; font-family: var(--font-mono); font-size: 1.6rem;
+      font-weight: 600; color: var(--ink); margin-bottom: 0.2rem;
+    }
+
+    .flow-steps { counter-reset: step; list-style: none; padding: 0; margin: 1.75rem 0; }
+    .flow-steps li { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start; }
+    .flow-steps li::before {
+      counter-increment: step; content: counter(step);
+      flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 50%;
+      background: var(--accent-1); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 0.88rem; font-family: var(--font-mono);
+    }
+    .flow-steps li div strong { display: block; margin-bottom: 0.15rem; color: var(--ink); }
+
+    .ttt-table { width: 100%; border-collapse: collapse; margin: 1.75rem 0; font-size: 0.92rem; }
+    .ttt-table th, .ttt-table td {
+      padding: 0.65rem 0.9rem; border: 1px solid var(--hairline);
+      text-align: left; vertical-align: top;
+    }
+    .ttt-table th { background: var(--bg-sunk); color: var(--ink); font-weight: 600; font-size: 0.88rem; }
+    .ttt-table td:first-child { font-weight: 600; color: var(--accent-1); white-space: nowrap; }
+    .table-scroll { overflow-x: auto; }
+
+    .bar-row { display: flex; align-items: center; gap: 0.75rem; margin: 0.45rem 0; font-size: 0.9rem; }
+    .bar-row .lbl { width: 9.5rem; flex-shrink: 0; color: var(--ink-2); }
+    .bar-row .bar { height: 1.1rem; border-radius: 4px; background: var(--accent-1); opacity: 0.85; }
+    .bar-row .bar.dim { opacity: 0.4; }
+    .bar-row .val { font-family: var(--font-mono); font-size: 0.85rem; color: var(--ink); }
+    .bars { margin: 1.5rem 0; padding: 1rem 1.25rem; border: 1px solid var(--hairline); border-radius: var(--radius-md); }
+    .bars p.cap { margin: 0.75rem 0 0; font-size: 0.85rem; color: var(--ink-3); }
+    @media (max-width: 600px) { .bar-row .lbl { width: 7rem; } }
+
+    blockquote.takeaway {
+      margin: 2.25rem 0 1.5rem; padding: 1.3rem 1.6rem;
+      background: var(--bg-sunk); color: var(--ink);
+      border: 1px solid var(--hairline); border-radius: var(--radius-md);
+      font-size: 1.08rem; font-style: italic; text-align: center;
+    }
+  </style>
+</head>
+<body class="has-tokens">
+
+  <div class="nav-progress" aria-hidden="true"></div>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">Dr. <span>Azan</span></a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="academics.html">Academics</a></li>
+        <li><a href="webapp.html">Apps</a></li>
+        <li><a href="students.html">Students</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="personal.html">Personal</a></li>
+      </ul>
+      <button class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+        <svg class="sun"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== PAGE BANNER ===== -->
+  <section class="page-banner page-banner-v2 v3-banner" data-tuftfield data-tuft-intensity="0.55">
+    <canvas data-tuft-canvas aria-hidden="true"></canvas>
+    <button type="button" class="v3-pause v3-banner-pause" data-tuft-toggle aria-pressed="false"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><rect x="3.5" y="3" width="3" height="10" rx="1" fill="currentColor"/><rect x="9.5" y="3" width="3" height="10" rx="1" fill="currentColor"/></svg><span data-tuft-toggle-label>Pause flow</span></button>
+    <div class="container">
+      <p class="banner-desc"><a href="blog.html">&larr; Back to blog</a></p>
+      <h1>Wow First, Bullets Later: Day 2 of HRDC Train-the-Trainer</h1>
+      <p class="banner-desc">September 2026 &nbsp;&middot;&nbsp; TTT series, part 2 of 4 &nbsp;&middot;&nbsp; Crystal Crown Hotel</p>
+    </div>
+  </section>
+
+  <!-- ===== ARTICLE ===== -->
+  <section class="blog-article">
+    <div class="container">
+      <article class="blog-article-content clay reveal drop-cap">
+
+        <nav class="series-nav" aria-label="TTT series">
+          <p>HRDC Train-the-Trainer &middot; 4-part series</p>
+          <ol>
+            <li><a href="blog-ttt-day1-adult-learning.html">Day 1 &middot; How adults actually learn</a></li>
+            <li class="current">Day 2 &middot; Designing a course that hooks <em>(you are here)</em></li>
+            <li><a href="blog-ttt-day3-delivery-evaluation.html">Day 3 &middot; Delivery, facilitation &amp; evaluation</a></li>
+            <li><a href="blog-ttt-presentation-days.html">Days 4&ndash;5 &middot; 18 presenters, one nervous lecturer</a></li>
+          </ol>
+        </nav>
+
+        <p>If Day 1 taught us how adults learn, Day 2 at the Crystal Crown Hotel taught us how to <strong>build</strong> something they will actually learn from. This was Module 3, <em>Design Competency-Based Training</em>, the thickest chunk of the manual. Halfway through it I realised that the slide decks I had been proudly reusing since my PhD days were, by TTT standards, crimes against typography.</p>
+
+        <p>The morning opened with a Padlet board and one question: <strong>&ldquo;What makes a great training course design?&rdquo;</strong> Everyone posted from their phones. The answers on the wall were good. The answers in our actual slide decks, as we were about to find out, were not.</p>
+
+        <h2>ADDIE: The Engineering Design Process in Disguise</h2>
+
+        <p>Competency-based training (CBT) is about equipping people with the specific competencies their role needs. The backbone is the <strong>ADDIE model</strong>, which the manual traces back to Florida State University and military training in the 1970s:</p>
+
+        <ol class="flow-steps">
+          <li><div><strong>Analyse</strong>Who is the audience, what do they need, and where are the competency gaps? (Hello again, TNA.)</div></li>
+          <li><div><strong>Design</strong>Objectives, methods, activities, resources.</div></li>
+          <li><div><strong>Develop</strong>Build the materials, pilot them, refine.</div></li>
+          <li><div><strong>Implement</strong>Facilitate and engage.</div></li>
+          <li><div><strong>Evaluate</strong>Did it work?</div></li>
+        </ol>
+
+        <p>As a mechanical engineer, I nearly applauded. This is the engineering design process with a different hat on: requirements, concept, prototype, deploy, test. I have taught that loop for years. I had just never applied it to my own lectures.</p>
+
+        <p>Alignment runs through all of it: <strong>overall goal &rarr; Bloom&rsquo;s taxonomy &rarr; learning objectives &rarr; learning outcomes</strong>. Bloom&rsquo;s pyramid (Remember, Understand, Apply, Analyse, Evaluate, Create) came back with a twist. Dr Raymond&rsquo;s slide labelled the lower levels &ldquo;Good&rdquo; and the top, <em>Create</em>, &ldquo;Great!&rdquo;. The aim of the week was to go from good to great.</p>
+
+        <h2>ROPES: The Skeleton of Every Good Session</h2>
+
+        <p>The model that shaped everything we built that week was <strong>ROPES</strong>. Once you see it, you can&rsquo;t unsee it, and every training session you attend afterwards gets silently graded:</p>
+
+        <div class="table-scroll">
+        <table class="ttt-table">
+          <thead><tr><th>Letter</th><th>Purpose</th><th>What goes in it</th></tr></thead>
+          <tbody>
+            <tr><td>R &middot; Review</td><td>Grab attention, warm up</td><td>Wow factor (lesson hook), icebreaker</td></tr>
+            <tr><td>O &middot; Overview</td><td>Set direction</td><td>Learning objectives, modules and submodules</td></tr>
+            <tr><td>P &middot; Presentation</td><td>Deliver the content clearly and logically</td><td>Methods, resources, sequencing, roadmap, visuals, colour contrast, transitions</td></tr>
+            <tr><td>E &middot; Exercise</td><td>Practise and assess</td><td>Learning activities, assessments</td></tr>
+            <tr><td>S &middot; Summary</td><td>Consolidate for transfer</td><td>Key takeaways, reflection on objectives, putting it together, action plan</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h2>R: The Wow Factor (Where Everyone Got Competitive)</h2>
+
+        <p>Every presentation should open with a <strong>wow factor</strong>, a lesson hook that makes the audience care in the first two minutes. The four basic ingredients are <em>statistics, story, question, video</em>, in any combination. What I didn&rsquo;t know was that there is a structure underneath, built on a <strong>Think &rarr; Feel &rarr; Do</strong> model:</p>
+
+        <ol class="flow-steps">
+          <li><div><strong>The fact (Think)</strong>A statistic, story or video that changes what they believe. <em>&ldquo;Did you know complaints rose 50% and sales dropped 60%&hellip;&rdquo;</em></div></li>
+          <li><div><strong>The provoking question (Feel)</strong>Something that stirs emotion. <em>&ldquo;Can we afford to let this go on?&rdquo;</em> or <em>&ldquo;What would it cost you if this goes wrong?&rdquo;</em></div></li>
+          <li><div><strong>The motivating question (Do)</strong>Get their commitment. <em>&ldquo;Are you ready to learn how to prevent that?&rdquo;</em></div></li>
+        </ol>
+
+        <p>A wow can be framed as a <strong>threat</strong> (&ldquo;this is costing us&rdquo;) or an <strong>opportunity</strong> (&ldquo;property prices rose 15% a year &mdash; are you excited to begin?&rdquo;). In our subgroup exercise we wrote a hook for a Sales Techniques course from a chart where costs went up 50% and sales went down 50%. The slide added, in red: <em>&ldquo;create the provoking and motivating questions (very important)!&rdquo;</em> Ten minutes, and the room got loud.</p>
+
+        <div class="blog-callout">
+          <p><strong>Lecturer confession #2:</strong> My usual lecture opener is &ldquo;Okay, last week we covered&hellip;&rdquo;. That is not a wow factor. That is a sedative.</p>
+          <p>I rebuilt my own TTT presentation, on creating your first IoT idea, around a much stronger hook. More on that in <a href="blog-ttt-presentation-days.html">part 4</a>.</p>
+        </div>
+
+        <p>Icebreakers also got a proper taxonomy: <strong>just for fun</strong> (two truths and a lie, a blind draw), <strong>based on the training objectives</strong> (brain teasers, gamification), and <strong>introducing the topic</strong> (a group discussion on the subject itself). The best icebreakers, it turns out, secretly teach.</p>
+
+        <h2>O: Objectives That Actually Mean Something</h2>
+
+        <p>A learning objective is a specific, measurable action participants can perform after the training. TTT uses the <strong>ABCD</strong> format:</p>
+
+        <div class="card-grid">
+          <div class="mini-card"><span class="big">A</span><h4>Audience</h4><p>Who?</p></div>
+          <div class="mini-card"><span class="big">B</span><h4>Behaviour</h4><p>Will do what?</p></div>
+          <div class="mini-card"><span class="big">C</span><h4>Condition</h4><p>Given what?</p></div>
+          <div class="mini-card"><span class="big">D</span><h4>Degree</h4><p>How well? How often?</p></div>
+        </div>
+
+        <p>And then there was the blacklist. Banned verbs: <strong>aware, know, understand, learn, ensure</strong>. The slide&rsquo;s verdict was <em>&ldquo;Too general!&rdquo;</em> I went quiet, because &ldquo;Students will understand&hellip;&rdquo; appears in more of my course outlines than I would like to admit. TTT prefers verbs you can observe. Knowledge: <em>define, state, explain</em>. Skills: <em>adjust, operate, assemble</em>. Attitude: <em>listen, accept, choose</em>.</p>
+
+        <p>Every objective slide also has to open with the same phrase: <em>&ldquo;Upon completion of this course, you will be able to:&rdquo;</em> You will see that exact sentence on the screen in several photos in part 4.</p>
+
+        <h2>P: Roadmaps, Colours, and the Cart Before the Horse</h2>
+
+        <p>Content <strong>sequencing</strong> got its own cartoon: a man pushing a cart in front of a horse, captioned <em>&ldquo;You are putting the cart before the horse!!&rdquo;</em> The rule is to move from general to specific, chunk the content, and make the logic obvious. Then show it as a <strong>roadmap</strong> (Module 1 &rarr; 2 &rarr; 3 on a winding road) and roll the modules out in exactly that order. The slide said <em>&ldquo;Always remember this!&rdquo;</em> and we did, because it was on the checklist.</p>
+
+        <p>On visuals, the manual is direct: more pictures, fewer bullets. Turn lists into diagrams and processes into flows. Never use red text on a black background, or the reverse. Animations should follow four principles: <em>simplicity, sequence, suitability, consistency</em>. In other words, the &ldquo;bounce-in-with-sound-effect&rdquo; transition is officially retired.</p>
+
+        <h2>The Content Design Checklist (a.k.a. The Commandments)</h2>
+
+        <p>This is where TTT feels very different from academic teaching. HRD Corp has a <strong>content design checklist</strong>, and assessors really do tick it. Some items carry an asterisk and the warning <em>&ldquo;Please pay attention to this. Do not make a mistake!!!&rdquo;</em> A sample:</p>
+
+        <div class="card-grid">
+          <div class="mini-card"><h4>Title slide</h4><p>Programme title in <strong>Arial 60, bold</strong>. Not 54. Not Calibri.</p></div>
+          <div class="mini-card"><h4>Slide titles*</h4><p>Arial 32&ndash;36, consistent on every slide.</p></div>
+          <div class="mini-card"><h4>Body text</h4><p>Arial 20. Your audience at the back row thanks you.</p></div>
+          <div class="mini-card"><h4>Modules*</h4><p>First Letter Of Every Word Capitalised.</p></div>
+          <div class="mini-card"><h4>Rollout*</h4><p>Modules appear in exactly the roadmap order.</p></div>
+          <div class="mini-card"><h4>Practical activity*</h4><p>&ldquo;A MUST&rdquo;. Not optional.</p></div>
+        </div>
+
+        <p>The full list also covers the wow factor, self-introduction, &ldquo;learning comfort&rdquo; rules, timekeeping, the icebreaker, learning methods, objectives, colour contrast, a conclusion, and a <strong>session plan</strong> placed after the Thank You slide. That night I reopened my own deck with the checklist beside it, and the red pen came out more often than I expected. The checklist doesn&rsquo;t care that you have a PhD.</p>
+
+        <h2>E and S: Do, Then Wrap It Up Properly</h2>
+
+        <p>The Exercise stage came with a quote attributed to Confucius: <em>&ldquo;I hear and I forget, I see and I remember, I do and I understand.&rdquo;</em> The menu of activities is wide: quizzes, brainstorming, case studies, hands-on work, games, role play and group discussion. Online tools include Kahoot!, Mentimeter, Blooket, Padlet, Slido and Google Forms. Assessments split cleanly into <strong>knowledge</strong> (the what and why: quiz, Q&amp;A, test, case study) and <strong>skills</strong> (the how: demonstration, role play, simulation, project).</p>
+
+        <p>The Summary is not just a &ldquo;Thank you, any questions?&rdquo; slide. It has four parts: key takeaways, reflection on the learning objectives, putting it all together on the roadmap, and an <strong>action plan</strong> with real dates. Then comes the <strong>session plan</strong>, which lists what is learnt, in what sequence, with what resources and methods, and how long each module takes. For a lecturer, it is basically a lesson plan, done properly.</p>
+
+        <h2>The Gallery Walk</h2>
+
+        <p>Module 3 ended with a <strong>gallery walk</strong>. Each team picked a lead and took one topic: training methods, training activities, the principles of animation, ABCD objectives, or the ROPES framework. For each one we had to answer three questions: <em>What is it about? Why is it important? How can it be applied in training?</em> Then the leads presented and everyone else wandered between the outputs to critique and steal ideas. Because it was our own course topics on the line, it turned into a free design review. My team's slides ended up full of IoT examples, which tells you exactly what I was rehearsing in my head all week.</p>
+
+        <blockquote class="takeaway">A great course is designed backwards, from what people must be able to do, and opened forwards, with a hook they can&rsquo;t ignore.</blockquote>
+
+        <p>That was the end of our two days at Crystal Crown. In <a href="blog-ttt-day3-delivery-evaluation.html">part 3</a> we move to MIM&rsquo;s office in PJ33 and learn to actually <em>deliver</em>: voice, body language, difficult learners, and how to prove a training programme made money.</p>
+
+        <nav class="series-nav" aria-label="TTT series">
+          <p>HRDC Train-the-Trainer &middot; 4-part series</p>
+          <ol>
+            <li><a href="blog-ttt-day1-adult-learning.html">Day 1 &middot; How adults actually learn</a></li>
+            <li class="current">Day 2 &middot; Designing a course that hooks <em>(you are here)</em></li>
+            <li><a href="blog-ttt-day3-delivery-evaluation.html">Day 3 &middot; Delivery, facilitation &amp; evaluation</a></li>
+            <li><a href="blog-ttt-presentation-days.html">Days 4&ndash;5 &middot; 18 presenters, one nervous lecturer</a></li>
+          </ol>
+        </nav>
+
+      </article>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2026 Dr. Mohd Azan Bin Mohammed Sapardi. All rights reserved.</p>
+  </footer>
+
+  <script src="assets/js/script.js"></script>
+  <script src="assets/js/tuftfield.js" defer></script>
+</body>
+</html>
