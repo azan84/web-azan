@@ -324,10 +324,16 @@
       const pct = (m) => (100 * m) / total;
       let t = 0, sinceBreak = 0, breaks = 0, blocks = 0;
       while (t < total) {
-        if (sinceBreak >= 90 && total - t > 10) {
-          const b = document.createElement('div'); b.className = 'plan-block brk';
-          b.style.left = pct(t) + '%'; b.style.width = pct(Math.min(10, total - t)) + '%';
-          track.appendChild(b); t += 10; sinceBreak = 0; breaks++; continue;
+        if (sinceBreak >= 90) {
+          // A break only makes sense if there is teaching left after it;
+          // otherwise just reset the clock (and never emit a zero-length block).
+          if (total - t > 10) {
+            const b = document.createElement('div'); b.className = 'plan-block brk';
+            b.style.left = pct(t) + '%'; b.style.width = pct(10) + '%';
+            track.appendChild(b); t += 10; breaks++;
+          }
+          sinceBreak = 0;
+          continue;
         }
         const len = Math.min(20, total - t, 90 - sinceBreak);
         const el = document.createElement('div'); el.className = 'plan-block';
