@@ -27,100 +27,10 @@
       const p = new URLSearchParams(window.location.search).get('theme');
       const t = p || localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
       document.documentElement.setAttribute('data-theme', t);
+      document.documentElement.classList.add('js');
     })();
   </script>
-  <style>
-    /* ── TTT series extras ── */
-    .blog-article-content figure { margin: 2rem 0; }
-    .blog-article-content figure img {
-      width: 100%; height: auto; display: block;
-      border-radius: var(--radius-md); border: 1px solid var(--hairline);
-    }
-    .blog-article-content figcaption {
-      font-size: 0.88rem; color: var(--ink-3); margin-top: 0.7rem;
-      text-align: center; line-height: 1.5;
-    }
-    .blog-article-content figcaption strong { color: var(--ink); }
-    .photo-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin: 2rem 0; }
-    .photo-pair figure { margin: 0; }
-    @media (max-width: 600px) { .photo-pair { grid-template-columns: 1fr; } }
-
-    .blog-callout {
-      border-left: 3px solid var(--accent-1);
-      padding: 1rem 1.25rem; margin: 1.75rem 0;
-      background: var(--accent-1-soft);
-      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    }
-    .blog-callout p { margin: 0; color: var(--ink-2); }
-    .blog-callout p + p { margin-top: 0.6rem; }
-
-    .series-nav {
-      margin: 0 0 2rem; padding: 1rem 1.25rem;
-      background: var(--bg-sunk); border: 1px solid var(--hairline);
-      border-radius: var(--radius-md); font-size: 0.92rem;
-    }
-    .series-nav p { margin: 0 0 0.5rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-3); }
-    .series-nav ol { margin: 0; padding-left: 1.25rem; }
-    .series-nav li { margin: 0.2rem 0; }
-    .series-nav li.current { font-weight: 600; color: var(--ink); }
-    .series-nav a { color: var(--accent-1); text-decoration: none; }
-    .series-nav a:hover { text-decoration: underline; }
-
-    .card-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 0.9rem; margin: 1.75rem 0;
-    }
-    .mini-card {
-      padding: 1rem 1.1rem; border-radius: var(--radius-md);
-      border: 1px solid var(--hairline); background: var(--bg-sunk);
-    }
-    .mini-card h4 {
-      margin: 0 0 0.4rem; font-size: 0.95rem; font-weight: 600;
-      color: var(--accent-1); font-family: var(--font-display);
-      text-transform: none; letter-spacing: normal;
-    }
-    .mini-card p { margin: 0; text-align: left; font-size: 0.9rem; color: var(--ink-2); line-height: 1.55; }
-    .mini-card .big {
-      display: block; font-family: var(--font-mono); font-size: 1.6rem;
-      font-weight: 600; color: var(--ink); margin-bottom: 0.2rem;
-    }
-
-    .flow-steps { counter-reset: step; list-style: none; padding: 0; margin: 1.75rem 0; }
-    .flow-steps li { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start; }
-    .flow-steps li::before {
-      counter-increment: step; content: counter(step);
-      flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 50%;
-      background: var(--accent-1); color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 600; font-size: 0.88rem; font-family: var(--font-mono);
-    }
-    .flow-steps li div strong { display: block; margin-bottom: 0.15rem; color: var(--ink); }
-
-    .ttt-table { width: 100%; border-collapse: collapse; margin: 1.75rem 0; font-size: 0.92rem; }
-    .ttt-table th, .ttt-table td {
-      padding: 0.65rem 0.9rem; border: 1px solid var(--hairline);
-      text-align: left; vertical-align: top;
-    }
-    .ttt-table th { background: var(--bg-sunk); color: var(--ink); font-weight: 600; font-size: 0.88rem; }
-    .ttt-table td:first-child { font-weight: 600; color: var(--accent-1); white-space: nowrap; }
-    .table-scroll { overflow-x: auto; }
-
-    .bar-row { display: flex; align-items: center; gap: 0.75rem; margin: 0.45rem 0; font-size: 0.9rem; }
-    .bar-row .lbl { width: 9.5rem; flex-shrink: 0; color: var(--ink-2); }
-    .bar-row .bar { height: 1.1rem; border-radius: 4px; background: var(--accent-1); opacity: 0.85; }
-    .bar-row .bar.dim { opacity: 0.4; }
-    .bar-row .val { font-family: var(--font-mono); font-size: 0.85rem; color: var(--ink); }
-    .bars { margin: 1.5rem 0; padding: 1rem 1.25rem; border: 1px solid var(--hairline); border-radius: var(--radius-md); }
-    .bars p.cap { margin: 0.75rem 0 0; font-size: 0.85rem; color: var(--ink-3); }
-    @media (max-width: 600px) { .bar-row .lbl { width: 7rem; } }
-
-    blockquote.takeaway {
-      margin: 2.25rem 0 1.5rem; padding: 1.3rem 1.6rem;
-      background: var(--bg-sunk); color: var(--ink);
-      border: 1px solid var(--hairline); border-radius: var(--radius-md);
-      font-size: 1.08rem; font-style: italic; text-align: center;
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/ttt-series.css?v=1" />
 </head>
 <body class="has-tokens">
 
@@ -185,9 +95,9 @@
         <p>Module 4 opened with a bar chart (Janek Tuttar, 2011) ranking people&rsquo;s biggest fears. Number one, at 19.6%: <strong>public speaking</strong>. Heights came second. <strong>Death</strong> was further down at 9.7%. As the old joke goes, at a funeral most people would rather be in the coffin than giving the eulogy.</p>
 
         <div class="bars" role="img" aria-label="Fear ranking: public speaking 19.6 percent, heights 15.9 percent, death 9.7 percent">
-          <div class="bar-row"><span class="lbl">Public speaking</span><span class="bar" style="width:78%"></span><span class="val">19.6%</span></div>
-          <div class="bar-row"><span class="lbl">Heights</span><span class="bar dim" style="width:63%"></span><span class="val">15.9%</span></div>
-          <div class="bar-row"><span class="lbl">Death</span><span class="bar dim" style="width:39%"></span><span class="val">9.7%</span></div>
+          <div class="bar-row"><span class="lbl">Public speaking</span><span class="bar" style="--w:78%"></span><span class="val">19.6%</span></div>
+          <div class="bar-row"><span class="lbl">Heights</span><span class="bar dim" style="--w:63%"></span><span class="val">15.9%</span></div>
+          <div class="bar-row"><span class="lbl">Death</span><span class="bar dim" style="--w:39%"></span><span class="val">9.7%</span></div>
           <p class="cap">Selected bars from the opening slide of Module 4. Knowing that Thursday was presentation day, this chart was not reassuring.</p>
         </div>
 
@@ -195,7 +105,7 @@
 
         <p>Dr Raymond sorted every training audience into three types, and I recognised all of them from my own lecture halls:</p>
 
-        <div class="card-grid">
+        <div class="card-grid fx-stagger">
           <div class="mini-card"><h4>The Prisoner</h4><p>Sent by the boss. Resents being here. Minimal interest. (In university terms: the compulsory-subject student.)</p></div>
           <div class="mini-card"><h4>The Vacationer</h4><p>Here for the break, the buffet and the free pen. Playful, passive.</p></div>
           <div class="mini-card"><h4>The Explorer</h4><p>Curious, engaged, ready to learn. The dream.</p></div>
@@ -205,16 +115,55 @@
 
         <h2>The Rules Behind Engagement</h2>
 
-        <div class="card-grid">
+        <div class="card-grid fx-stagger">
           <div class="mini-card"><span class="big">90/20/8</span><h4>Bob Pike&rsquo;s rule</h4><p>No more than 90 min without a break, 20 min of lecture at a stretch, and involve the audience every <strong>8 minutes</strong>.</p></div>
           <div class="mini-card"><span class="big">55/38/7</span><h4>Mehrabian</h4><p>Body language 55%, voice 38%, words 7%. How you say it matters more than you think.</p></div>
-          <div class="mini-card"><span class="big">5% &rarr; 90%</span><h4>Learning pyramid</h4><p>Retention after 24 h: lecture 5%, demonstration 30%, discussion 50%, practice 75%, teaching others 90%.</p></div>
+          <div class="mini-card"><span class="big">Listen &rarr; Teach</span><h4>Learning pyramid</h4><p>Passive methods (lecture, reading, video) sit at the top; doing, discussing and teaching others sit at the wide base.</p></div>
+        </div>
+
+        <div class="widget" data-widget="pyramid">
+          <div class="widget-head"><p class="widget-title">The learning pyramid: from passive to participatory</p><span class="widget-tag">hover or tap</span></div>
+          <div class="pyr-wrap">
+            <svg class="pyr-svg" viewBox="0 0 320 238" role="img" aria-label="Learning pyramid from lecture (passive) at the top to teaching others (participatory) at the base">
+              <g class="tier passive" data-n="Lecture" data-d="<em>passive</em> &middot; Listening to someone talk. The default university mode."><path d="M112.0 0 L208.0 0 L224.0 32 L96.0 32Z"/><text x="160.0" y="20">Lecture</text></g>
+              <g class="tier passive" data-n="Reading" data-d="<em>passive</em> &middot; Reading the notes or the textbook on your own."><path d="M96.0 34 L224.0 34 L240.0 66 L80.0 66Z"/><text x="160.0" y="54">Reading</text></g>
+              <g class="tier passive" data-n="Audio-visual" data-d="<em>passive</em> &middot; Slides with pictures, a video, an animation."><path d="M80.0 68 L240.0 68 L256.0 100 L64.0 100Z"/><text x="160.0" y="88">Audio-visual</text></g>
+              <g class="tier passive" data-n="Demonstration" data-d="<em>passive</em> &middot; Watching the trainer actually do it."><path d="M64.0 102 L256.0 102 L272.0 134 L48.0 134Z"/><text x="160.0" y="122">Demonstration</text></g>
+              <g class="tier active" data-n="Discussion" data-d="<em>participatory</em> &middot; Talking it through with peers. The first participatory tier."><path d="M48.0 136 L272.0 136 L288.0 168 L32.0 168Z"/><text x="160.0" y="156">Discussion</text></g>
+              <g class="tier active" data-n="Practice by doing" data-d="<em>participatory</em> &middot; Hands on: the learners do the task themselves."><path d="M32.0 170 L288.0 170 L304.0 202 L16.0 202Z"/><text x="160.0" y="190">Practice by doing</text></g>
+              <g class="tier active" data-n="Teach others" data-d="<em>participatory</em> &middot; Explaining it to someone else. The best way to learn is to teach."><path d="M16.0 204 L304.0 204 L320.0 236 L0.0 236Z"/><text x="160.0" y="224">Teach others</text></g>
+            </svg>
+            <div><div class="pyr-big" aria-live="polite"></div><p class="pyr-txt" style="margin:.4rem 0 0;font-size:.92rem"></p><p class="hint">Dark blue = passive, teal = participatory. The manual shows the classic version with retention percentages (lecture 5% up to teaching others 90%). Those exact numbers have shaky origins, so I&rsquo;ve left them out here. The direction is the useful part: the more learners <em>do</em>, the more sticks.</p></div>
+          </div>
         </div>
 
         <p>The <strong>Ebbinghaus forgetting curve</strong> showed retention collapsing over days, then resetting with each review. The <strong>primacy and recency effect</strong> explained why the opening and closing of a session are remembered best and the middle sags. That&rsquo;s why the middle needs engagement, activities and questions to hold it up.</p>
 
+        <div class="widget" data-widget="curve">
+          <div class="widget-head"><p class="widget-title">Fight the forgetting curve</p><span class="widget-tag">pick a review plan</span></div>
+          <div class="w-btns">
+            <button class="w-btn" type="button" data-reviews="[]">No review</button>
+            <button class="w-btn" type="button" data-reviews="[1,3,7]">Review on day 1, 3, 7</button>
+            <button class="w-btn" type="button" data-reviews="[1]">One quiz next day</button>
+          </div>
+          <div class="svg-scroll"><svg viewBox="0 0 560 230" class="curve-svg" role="img" aria-label="Forgetting curve with and without spaced reviews"></svg></div>
+          <div class="curve-legend"><span><i style="background:var(--flow-hot)"></i>no review</span><span><i style="background:var(--accent-1)"></i>with your review plan</span></div>
+          <p class="curve-out w-panel" style="margin-top:.7rem" aria-live="polite"></p>
+          <p class="hint">An idealised exponential model (each review resets memory and makes it decay more slowly), in the spirit of Ebbinghaus. That&rsquo;s why the programme kept pulling us back to earlier material with &ldquo;learning revisits&rdquo;: four short online quizzes across the week, plus reflections and a gallery walk.</p>
+        </div>
+
         <div class="blog-callout">
           <p><strong>Lecturer confession #3:</strong> A standard university lecture is 2 hours. By Bob Pike&rsquo;s rule, I should be involving students about 15 times per session. On a good day, I manage &ldquo;any questions?&rdquo; twice. On a bad day, the only interaction is the attendance sheet.</p>
+        </div>
+
+        <div class="widget" data-widget="planner">
+          <div class="widget-head"><p class="widget-title">90/20/8 planner: how long is your session?</p><span class="widget-tag">drag the slider</span></div>
+          <label for="planLen" style="font-size:.88rem;color:var(--ink-2)">Session length: <strong class="plan-len"></strong></label>
+          <input id="planLen" class="plan-range" type="range" min="20" max="240" step="10" value="120" />
+          <div class="plan-track" aria-hidden="true"></div>
+          <div class="plan-legend"><span><i style="background:color-mix(in srgb,var(--accent-1) 70%,transparent)"></i>&le;20-min teaching block</span><span><i style="background:var(--flow-hot)"></i>engagement point (every 8 min)</span><span><i style="background:var(--flow-warm)"></i>break (every 90 min)</span></div>
+          <p class="sr-only" aria-live="polite"></p>
+          <div class="plan-stats"><div><b data-s="e">0</b>engagement points</div><div><b data-s="l">0</b>teaching blocks</div><div><b data-s="b">0</b>breaks</div></div>
         </div>
 
         <h2>The 4Ps of Delivery</h2>
@@ -244,7 +193,7 @@
 
         <p>Questioning got the <strong>FOID</strong> treatment, a ladder for building questions:</p>
 
-        <div class="card-grid">
+        <div class="card-grid fx-stagger">
           <div class="mini-card"><span class="big">F</span><h4>Fact</h4><p>What do you know or recall?</p></div>
           <div class="mini-card"><span class="big">O</span><h4>Opinion</h4><p>What do you think or feel?</p></div>
           <div class="mini-card"><span class="big">I</span><h4>Importance</h4><p>Why does it matter?</p></div>
@@ -257,18 +206,13 @@
 
         <p>This section was pure entertainment, because everyone in the room had met every one of these people, and possibly been a few of them:</p>
 
-        <div class="table-scroll">
-        <table class="ttt-table">
-          <thead><tr><th>Learner</th><th>What to do</th></tr></thead>
-          <tbody>
-            <tr><td>The Talker</td><td>Acknowledge them, then: &ldquo;Let&rsquo;s hear what others have to say.&rdquo;</td></tr>
-            <tr><td>The Quiet One</td><td>Ask a directly relevant question and call them by name.</td></tr>
-            <tr><td>The Sleeper</td><td>Move closer. Ask a question. (Proximity is a powerful alarm clock.)</td></tr>
-            <tr><td>The Arguer</td><td>Acknowledge their passion, ask for evidence, find common ground, or take it offline. Keep calm.</td></tr>
-            <tr><td>The Late Comer</td><td>Remind everyone of the ground rules, and thank the punctual ones.</td></tr>
-            <tr><td>The Bored</td><td>Create relevance, engage, call by name.</td></tr>
-          </tbody>
-        </table>
+        <div class="flip-grid">
+          <button class="flip" type="button" aria-pressed="false"><span class="flip-in"><span class="flip-face flip-front"><span class="sym" aria-hidden="true">&#8230;</span><b>The Talker</b><small>tap for the fix &rarr;</small></span><span class="flip-face flip-back"><b>THE TALKER</b>Acknowledge them, then: &ldquo;Let&rsquo;s hear what others have to say.&rdquo;</span></span></button>
+          <button class="flip" type="button" aria-pressed="false"><span class="flip-in"><span class="flip-face flip-front"><span class="sym" aria-hidden="true">&#183;</span><b>The Quiet One</b><small>tap for the fix &rarr;</small></span><span class="flip-face flip-back"><b>THE QUIET ONE</b>Ask a directly relevant question and call them by name.</span></span></button>
+          <button class="flip" type="button" aria-pressed="false"><span class="flip-in"><span class="flip-face flip-front"><span class="sym" aria-hidden="true">Zz</span><b>The Sleeper</b><small>tap for the fix &rarr;</small></span><span class="flip-face flip-back"><b>THE SLEEPER</b>Move closer. Ask a question. Proximity is a powerful alarm clock.</span></span></button>
+          <button class="flip" type="button" aria-pressed="false"><span class="flip-in"><span class="flip-face flip-front"><span class="sym" aria-hidden="true">!?</span><b>The Arguer</b><small>tap for the fix &rarr;</small></span><span class="flip-face flip-back"><b>THE ARGUER</b>Acknowledge their passion, ask for evidence, find common ground, or take it offline. Keep calm.</span></span></button>
+          <button class="flip" type="button" aria-pressed="false"><span class="flip-in"><span class="flip-face flip-front"><span class="sym" aria-hidden="true">&#8987;</span><b>The Late Comer</b><small>tap for the fix &rarr;</small></span><span class="flip-face flip-back"><b>THE LATE COMER</b>Remind everyone of the ground rules, and thank the punctual ones.</span></span></button>
+          <button class="flip" type="button" aria-pressed="false"><span class="flip-in"><span class="flip-face flip-front"><span class="sym" aria-hidden="true">&#8211;_&#8211;</span><b>The Bored</b><small>tap for the fix &rarr;</small></span><span class="flip-face flip-back"><b>THE BORED</b>Create relevance, engage them, call them by name.</span></span></button>
         </div>
 
         <p>And the don&rsquo;ts: never argue, insult, ignore, get defensive, show anger, or let one participant hijack the session. We also went through eight seating layouts (cabaret, cluster, classroom, chevron, boardroom, U-shape, theatre, auditorium), and the &ldquo;good training room&rdquo; award went to <strong>cluster tables</strong>. That was exactly how MIM had set up our room. Point taken.</p>
@@ -278,11 +222,11 @@
         <p>The last module was the one my engineer brain enjoyed most, because it has numbers. Training effectiveness evaluation uses <strong>Kirkpatrick&rsquo;s four levels plus Jack Phillips&rsquo; ROI</strong>:</p>
 
         <div class="bars" role="img" aria-label="Recommended evaluation targets: Level 1 100 percent, Level 2 60 percent, Level 3 30 percent, Level 4 10 percent, Level 5 5 percent of programmes">
-          <div class="bar-row"><span class="lbl">L1 Reaction</span><span class="bar" style="width:100%"></span><span class="val">100%</span></div>
-          <div class="bar-row"><span class="lbl">L2 Learning</span><span class="bar" style="width:60%"></span><span class="val">60%</span></div>
-          <div class="bar-row"><span class="lbl">L3 Behaviour</span><span class="bar" style="width:30%"></span><span class="val">30%</span></div>
-          <div class="bar-row"><span class="lbl">L4 Results</span><span class="bar" style="width:10%"></span><span class="val">10%</span></div>
-          <div class="bar-row"><span class="lbl">L5 ROI</span><span class="bar" style="width:5%"></span><span class="val">5%</span></div>
+          <div class="bar-row"><span class="lbl">L1 Reaction</span><span class="bar" style="--w:100%"></span><span class="val">100%</span></div>
+          <div class="bar-row"><span class="lbl">L2 Learning</span><span class="bar" style="--w:60%"></span><span class="val">60%</span></div>
+          <div class="bar-row"><span class="lbl">L3 Behaviour</span><span class="bar" style="--w:30%"></span><span class="val">30%</span></div>
+          <div class="bar-row"><span class="lbl">L4 Results</span><span class="bar" style="--w:10%"></span><span class="val">10%</span></div>
+          <div class="bar-row"><span class="lbl">L5 ROI</span><span class="bar" style="--w:5%"></span><span class="val">5%</span></div>
           <p class="cap">Recommended share of programmes to evaluate at each level (from the TTT manual, citing AIHR). Levels 1&ndash;2 happen in the classroom; levels 3&ndash;5 happen back at the workplace.</p>
         </div>
 
@@ -295,11 +239,38 @@
 
         <p>Then <strong>Level 5, ROI</strong>: convert the benefits to money, add up the full cost of the programme (analysis, development, delivery, evaluation, including people&rsquo;s salaries), and compute <em>(benefit &minus; cost) / cost</em>. The worked example in the manual produced RM183,000 in benefits against RM37,373 in costs, an <strong>ROI of 389%</strong>. If you ever need to convince a CFO that training is not just a cost centre, that slide is your friend.</p>
 
+        <div class="widget" data-widget="roi">
+          <div class="widget-head"><p class="widget-title">Play with the Phillips ROI maths</p><span class="widget-tag">calculator</span></div>
+          <div class="roi-grid">
+            <div class="roi-field"><label for="r1">Performance improvement <output for="r1"></output></label><input id="r1" name="units" type="range" min="100" max="3000" step="50" value="1000"></div>
+            <div class="roi-field"><label for="r2">Value of one unit <output for="r2"></output></label><input id="r2" name="value" data-fmt="rm" type="range" min="10" max="1000" step="10" value="300"></div>
+            <div class="roi-field"><label for="r3">Contribution of training <output for="r3"></output></label><input id="r3" name="contrib" data-fmt="pct" type="range" min="0" max="100" step="5" value="40"></div>
+            <div class="roi-field"><label for="r4">Confidence in that estimate <output for="r4"></output></label><input id="r4" name="conf" data-fmt="pct" type="range" min="0" max="100" step="5" value="90"></div>
+            <div class="roi-field" style="grid-column:1/-1"><label for="r5">Total programme cost <output for="r5"></output></label><input id="r5" name="cost" data-fmt="rm" type="range" min="5000" max="150000" step="500" value="37500"></div>
+          </div>
+          <p class="sr-only" aria-live="polite"></p>
+          <div class="roi-out">
+            <div>Credited to training<b data-o="units"></b></div>
+            <div>Monetary benefit<b data-o="benefit"></b></div>
+            <div class="roi">ROI<b data-o="roi"></b></div>
+          </div>
+          <p class="hint">Defaults reproduce one line of the manual&rsquo;s example: 1,000 &times; 40% &times; 90% = 360 units, worth RM108,000. The manual&rsquo;s full case adds other benefits to reach RM183,000 (389%); here a single benefit line is set against the whole cost.</p>
+        </div>
+
         <h2>Closing the Loop</h2>
 
         <p>The programme wrapped up the way every module had: key takeaways, a reflection on the objectives, the five-module roadmap ticked off, and an <strong>action plan</strong>. For us, the action plan is real. After the TTT certificate of completion comes the HRD Corp <strong>accreditation</strong> step, with documents and videos to submit and up to six months of support from MIM.</p>
 
         <p>But first there was a small matter of two days of assessed presentations, in front of a room full of experts from every industry imaginable. My heart rate went up just typing that sentence.</p>
+
+        <div class="blog-callout use-tomorrow">
+          <p><strong>Use this tomorrow</strong></p>
+          <ol class="flow-steps" style="margin:.6rem 0 0">
+            <li><div><strong>Plan an interaction every 8 minutes</strong>Put the question or activity in your notes, not in your hopes.</div></li>
+            <li><div><strong>Rehearse out loud, once more</strong>Rule #1, #2 and #3.</div></li>
+            <li><div><strong>Run a two-minute quiz next class</strong>A quick retrieval resets the forgetting curve.</div></li>
+          </ol>
+        </div>
 
         <blockquote class="takeaway">Design gets them in the room. Delivery keeps them there. Evaluation proves it was worth it.</blockquote>
 
@@ -325,5 +296,6 @@
 
   <script src="assets/js/script.js"></script>
   <script src="assets/js/tuftfield.js" defer></script>
+  <script src="assets/js/ttt-series.js?v=1" defer></script>
 </body>
 </html>

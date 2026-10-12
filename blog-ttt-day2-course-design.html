@@ -27,100 +27,10 @@
       const p = new URLSearchParams(window.location.search).get('theme');
       const t = p || localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
       document.documentElement.setAttribute('data-theme', t);
+      document.documentElement.classList.add('js');
     })();
   </script>
-  <style>
-    /* ── TTT series extras ── */
-    .blog-article-content figure { margin: 2rem 0; }
-    .blog-article-content figure img {
-      width: 100%; height: auto; display: block;
-      border-radius: var(--radius-md); border: 1px solid var(--hairline);
-    }
-    .blog-article-content figcaption {
-      font-size: 0.88rem; color: var(--ink-3); margin-top: 0.7rem;
-      text-align: center; line-height: 1.5;
-    }
-    .blog-article-content figcaption strong { color: var(--ink); }
-    .photo-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin: 2rem 0; }
-    .photo-pair figure { margin: 0; }
-    @media (max-width: 600px) { .photo-pair { grid-template-columns: 1fr; } }
-
-    .blog-callout {
-      border-left: 3px solid var(--accent-1);
-      padding: 1rem 1.25rem; margin: 1.75rem 0;
-      background: var(--accent-1-soft);
-      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    }
-    .blog-callout p { margin: 0; color: var(--ink-2); }
-    .blog-callout p + p { margin-top: 0.6rem; }
-
-    .series-nav {
-      margin: 0 0 2rem; padding: 1rem 1.25rem;
-      background: var(--bg-sunk); border: 1px solid var(--hairline);
-      border-radius: var(--radius-md); font-size: 0.92rem;
-    }
-    .series-nav p { margin: 0 0 0.5rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-3); }
-    .series-nav ol { margin: 0; padding-left: 1.25rem; }
-    .series-nav li { margin: 0.2rem 0; }
-    .series-nav li.current { font-weight: 600; color: var(--ink); }
-    .series-nav a { color: var(--accent-1); text-decoration: none; }
-    .series-nav a:hover { text-decoration: underline; }
-
-    .card-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 0.9rem; margin: 1.75rem 0;
-    }
-    .mini-card {
-      padding: 1rem 1.1rem; border-radius: var(--radius-md);
-      border: 1px solid var(--hairline); background: var(--bg-sunk);
-    }
-    .mini-card h4 {
-      margin: 0 0 0.4rem; font-size: 0.95rem; font-weight: 600;
-      color: var(--accent-1); font-family: var(--font-display);
-      text-transform: none; letter-spacing: normal;
-    }
-    .mini-card p { margin: 0; text-align: left; font-size: 0.9rem; color: var(--ink-2); line-height: 1.55; }
-    .mini-card .big {
-      display: block; font-family: var(--font-mono); font-size: 1.6rem;
-      font-weight: 600; color: var(--ink); margin-bottom: 0.2rem;
-    }
-
-    .flow-steps { counter-reset: step; list-style: none; padding: 0; margin: 1.75rem 0; }
-    .flow-steps li { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start; }
-    .flow-steps li::before {
-      counter-increment: step; content: counter(step);
-      flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 50%;
-      background: var(--accent-1); color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 600; font-size: 0.88rem; font-family: var(--font-mono);
-    }
-    .flow-steps li div strong { display: block; margin-bottom: 0.15rem; color: var(--ink); }
-
-    .ttt-table { width: 100%; border-collapse: collapse; margin: 1.75rem 0; font-size: 0.92rem; }
-    .ttt-table th, .ttt-table td {
-      padding: 0.65rem 0.9rem; border: 1px solid var(--hairline);
-      text-align: left; vertical-align: top;
-    }
-    .ttt-table th { background: var(--bg-sunk); color: var(--ink); font-weight: 600; font-size: 0.88rem; }
-    .ttt-table td:first-child { font-weight: 600; color: var(--accent-1); white-space: nowrap; }
-    .table-scroll { overflow-x: auto; }
-
-    .bar-row { display: flex; align-items: center; gap: 0.75rem; margin: 0.45rem 0; font-size: 0.9rem; }
-    .bar-row .lbl { width: 9.5rem; flex-shrink: 0; color: var(--ink-2); }
-    .bar-row .bar { height: 1.1rem; border-radius: 4px; background: var(--accent-1); opacity: 0.85; }
-    .bar-row .bar.dim { opacity: 0.4; }
-    .bar-row .val { font-family: var(--font-mono); font-size: 0.85rem; color: var(--ink); }
-    .bars { margin: 1.5rem 0; padding: 1rem 1.25rem; border: 1px solid var(--hairline); border-radius: var(--radius-md); }
-    .bars p.cap { margin: 0.75rem 0 0; font-size: 0.85rem; color: var(--ink-3); }
-    @media (max-width: 600px) { .bar-row .lbl { width: 7rem; } }
-
-    blockquote.takeaway {
-      margin: 2.25rem 0 1.5rem; padding: 1.3rem 1.6rem;
-      background: var(--bg-sunk); color: var(--ink);
-      border: 1px solid var(--hairline); border-radius: var(--radius-md);
-      font-size: 1.08rem; font-style: italic; text-align: center;
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/ttt-series.css?v=1" />
 </head>
 <body class="has-tokens">
 
@@ -210,6 +120,20 @@
         </table>
         </div>
 
+        <div class="widget" data-widget="ropes">
+          <div class="widget-head"><p class="widget-title">ROPES across an example 20-minute session</p><span class="widget-tag">tap a block</span></div>
+          <div class="ropes-bar" role="group" aria-label="ROPES stages">
+            <button class="ropes-seg" type="button" style="flex:3"><span>R</span><small>3 min</small></button>
+            <button class="ropes-seg" type="button" style="flex:2"><span>O</span><small>2 min</small></button>
+            <button class="ropes-seg" type="button" style="flex:7"><span>P</span><small>7 min</small></button>
+            <button class="ropes-seg" type="button" style="flex:6"><span>E</span><small>6 min</small></button>
+            <button class="ropes-seg" type="button" style="flex:2"><span>S</span><small>2 min</small></button>
+          </div>
+          <div class="w-panel" aria-live="polite"></div>
+          <p class="hint">Block widths are an illustrative split of a 20-minute mock session, not an HRD Corp rule. Notice how much of the time is <em>not</em> the trainer talking.</p>
+          <script type="application/json">[{"t":"Review","m":"grab attention, warm up","d":"Wow factor (fact → provoking question → motivating question), then an icebreaker. The audience decides in the first two minutes whether to care."},{"t":"Overview","m":"set direction","d":"“Upon completion of this training, you will be able to:” ABCD objectives, then the roadmap of modules."},{"t":"Presentation","m":"teach clearly","d":"Content in roadmap order, chunked, visual. Examples, analogies, and an engagement point every 8 minutes."},{"t":"Exercise","m":"practise and assess","d":"The practical activity is “A MUST”. Learners do the thing, then you check they can."},{"t":"Summary","m":"consolidate","d":"Key takeaways, reflect on the objectives, put the roadmap back together, and leave with an action plan."}]</script>
+        </div>
+
         <h2>R: The Wow Factor (Where Everyone Got Competitive)</h2>
 
         <p>Every presentation should open with a <strong>wow factor</strong>, a lesson hook that makes the audience care in the first two minutes. The four basic ingredients are <em>statistics, story, question, video</em>, in any combination. What I didn&rsquo;t know was that there is a structure underneath, built on a <strong>Think &rarr; Feel &rarr; Do</strong> model:</p>
@@ -219,6 +143,21 @@
           <li><div><strong>The provoking question (Feel)</strong>Something that stirs emotion. <em>&ldquo;Can we afford to let this go on?&rdquo;</em> or <em>&ldquo;What would it cost you if this goes wrong?&rdquo;</em></div></li>
           <li><div><strong>The motivating question (Do)</strong>Get their commitment. <em>&ldquo;Are you ready to learn how to prevent that?&rdquo;</em></div></li>
         </ol>
+
+        <div class="widget" data-widget="wow">
+          <div class="widget-head"><p class="widget-title">Build a wow factor in three moves</p><span class="widget-tag">step through it</span></div>
+          <div class="seg" role="group" aria-label="Wow framing">
+            <button type="button" data-mode="threat" aria-pressed="true">Threat</button>
+            <button type="button" data-mode="opp" aria-pressed="false">Opportunity</button>
+          </div>
+          <div class="wow-steps" aria-live="polite">
+            <div class="wow-step"><span class="n">1</span><div><b>THINK &middot; the fact</b><span class="wtxt"></span></div></div>
+            <div class="wow-step"><span class="n">2</span><div><b>FEEL &middot; provoking question</b><span class="wtxt"></span></div></div>
+            <div class="wow-step"><span class="n">3</span><div><b>DO &middot; motivating question</b><span class="wtxt"></span></div></div>
+          </div>
+          <div class="w-btns" style="margin-top:.8rem"><button class="w-btn primary" type="button" data-next>Reveal step 1 &rarr;</button></div>
+          <script type="application/json">{"threat":["“Did you know? Customer complaints rose 50% last year, and sales fell 60%.”","“Can we afford to let this go on for one more year?”","“Are you ready to learn how to turn it around today?”"],"opp":["“Property prices here have risen about 15% a year.”","“I am sure you do not want to miss this opportunity.”","“Are you excited to begin?”"]}</script>
+        </div>
 
         <p>A wow can be framed as a <strong>threat</strong> (&ldquo;this is costing us&rdquo;) or an <strong>opportunity</strong> (&ldquo;property prices rose 15% a year &mdash; are you excited to begin?&rdquo;). In our subgroup exercise we wrote a hook for a Sales Techniques course from a chart where costs went up 50% and sales went down 50%. The slide added, in red: <em>&ldquo;create the provoking and motivating questions (very important)!&rdquo;</em> Ten minutes, and the room got loud.</p>
 
@@ -233,7 +172,7 @@
 
         <p>A learning objective is a specific, measurable action participants can perform after the training. TTT uses the <strong>ABCD</strong> format:</p>
 
-        <div class="card-grid">
+        <div class="card-grid fx-stagger">
           <div class="mini-card"><span class="big">A</span><h4>Audience</h4><p>Who?</p></div>
           <div class="mini-card"><span class="big">B</span><h4>Behaviour</h4><p>Will do what?</p></div>
           <div class="mini-card"><span class="big">C</span><h4>Condition</h4><p>Given what?</p></div>
@@ -241,6 +180,24 @@
         </div>
 
         <p>And then there was the blacklist. Banned verbs: <strong>aware, know, understand, learn, ensure</strong>. The slide&rsquo;s verdict was <em>&ldquo;Too general!&rdquo;</em> I went quiet, because &ldquo;Students will understand&hellip;&rdquo; appears in more of my course outlines than I would like to admit. TTT prefers verbs you can observe. Knowledge: <em>define, state, explain</em>. Skills: <em>adjust, operate, assemble</em>. Attitude: <em>listen, accept, choose</em>.</p>
+
+        <div class="widget" data-widget="objective">
+          <div class="widget-head"><p class="widget-title">ABCD objective checker</p><span class="widget-tag">type your own</span></div>
+          <label for="objIn" class="hint" style="display:block;margin:0 0 .4rem">Write a learning objective (or load an example):</label>
+          <textarea id="objIn" class="obj-input" spellcheck="false">Students will understand the basics of IoT.</textarea>
+          <div class="abcd-row">
+            <div class="abcd" data-k="A"><b>A</b>Audience</div>
+            <div class="abcd" data-k="B"><b>B</b>Behaviour</div>
+            <div class="abcd" data-k="C"><b>C</b>Condition</div>
+            <div class="abcd" data-k="D"><b>D</b>Degree</div>
+          </div>
+          <div class="obj-flags" aria-live="polite"></div>
+          <div class="w-btns" style="margin-top:.7rem">
+            <button class="w-btn" type="button" data-example="Students will understand the basics of IoT.">My old lecture habit</button>
+            <button class="w-btn" type="button" data-example="Participants will be able to create a simple IoT solution, given a scenario and an IoT idea map, with all four building blocks correct.">The TTT version</button>
+          </div>
+          <p class="hint">A rough keyword check for fun, not an assessor. Real objectives still need human judgement.</p>
+        </div>
 
         <p>Every objective slide also has to open with the same phrase: <em>&ldquo;Upon completion of this course, you will be able to:&rdquo;</em> You will see that exact sentence on the screen in several photos in part 4.</p>
 
@@ -252,15 +209,33 @@
 
         <h2>The Content Design Checklist (a.k.a. The Commandments)</h2>
 
-        <p>This is where TTT feels very different from academic teaching. HRD Corp has a <strong>content design checklist</strong>, and assessors really do tick it. Some items carry an asterisk and the warning <em>&ldquo;Please pay attention to this. Do not make a mistake!!!&rdquo;</em> A sample:</p>
+        <p>This is where TTT feels very different from academic teaching. HRD Corp has a <strong>content design checklist</strong>, and assessors really do tick it. Some items carry an asterisk and the warning <em>&ldquo;Please pay attention to this. Do not make a mistake!!!&rdquo;</em> Try it on your own slides:</p>
 
-        <div class="card-grid">
-          <div class="mini-card"><h4>Title slide</h4><p>Programme title in <strong>Arial 60, bold</strong>. Not 54. Not Calibri.</p></div>
-          <div class="mini-card"><h4>Slide titles*</h4><p>Arial 32&ndash;36, consistent on every slide.</p></div>
-          <div class="mini-card"><h4>Body text</h4><p>Arial 20. Your audience at the back row thanks you.</p></div>
-          <div class="mini-card"><h4>Modules*</h4><p>First Letter Of Every Word Capitalised.</p></div>
-          <div class="mini-card"><h4>Rollout*</h4><p>Modules appear in exactly the roadmap order.</p></div>
-          <div class="mini-card"><h4>Practical activity*</h4><p>&ldquo;A MUST&rdquo;. Not optional.</p></div>
+        <div class="widget" data-widget="checklist">
+          <div class="widget-head"><p class="widget-title">Audit your own deck</p><span class="widget-tag">tick what you have</span></div>
+          <div class="chk-wrap">
+            <div class="chk-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="50"/><circle class="prog" cx="60" cy="60" r="50"/></svg><span class="pct" aria-live="polite">0%</span></div>
+            <ul class="chk-list">
+              <li><label><input type="checkbox"> <span>Programme title in Arial 60, bold</span></label></li>
+              <li><label><input type="checkbox"> <span>Wow factor: statistics, video or story</span></label></li>
+              <li><label><input type="checkbox"> <span>Self-introduction</span></label></li>
+              <li><label><input type="checkbox"> <span>Learning comfort rules + timekeeping</span></label></li>
+              <li><label><input type="checkbox"> <span>Icebreaker</span></label></li>
+              <li><label><input type="checkbox"> <span>Learning methods</span></label></li>
+              <li><label><input type="checkbox"> <span>“Upon completion of this course, you will be able to:”</span></label></li>
+              <li><label><input type="checkbox"> <span>Roadmap in the correct sequence</span></label></li>
+              <li><label><input type="checkbox" data-star="1"> <span>Modules: First Letter Of Every Word Capitalised <span class="star">*</span></span></label></li>
+              <li><label><input type="checkbox" data-star="1"> <span>Module rollout follows the roadmap <span class="star">*</span></span></label></li>
+              <li><label><input type="checkbox" data-star="1"> <span>Slide titles Arial 32–36, consistent <span class="star">*</span></span></label></li>
+              <li><label><input type="checkbox"> <span>Body text Arial 20</span></label></li>
+              <li><label><input type="checkbox" data-star="1"> <span>Text/background colour contrast <span class="star">*</span></span></label></li>
+              <li><label><input type="checkbox"> <span>More visuals, fewer bullets</span></label></li>
+              <li><label><input type="checkbox" data-star="1"> <span>Practical activity: “A MUST” <span class="star">*</span></span></label></li>
+              <li><label><input type="checkbox"> <span>Conclusion + session plan after Thank You</span></label></li>
+            </ul>
+          </div>
+          <p class="chk-verdict" aria-live="polite"></p>
+          <p class="hint"><span class="star">*</span> = starred on the official checklist: &ldquo;Please pay attention to this. Do not make a mistake!!!&rdquo;</p>
         </div>
 
         <p>The full list also covers the wow factor, self-introduction, &ldquo;learning comfort&rdquo; rules, timekeeping, the icebreaker, learning methods, objectives, colour contrast, a conclusion, and a <strong>session plan</strong> placed after the Thank You slide. That night I reopened my own deck with the checklist beside it, and the red pen came out more often than I expected. The checklist doesn&rsquo;t care that you have a PhD.</p>
@@ -274,6 +249,15 @@
         <h2>The Gallery Walk</h2>
 
         <p>Module 3 ended with a <strong>gallery walk</strong>. Each team picked a lead and took one topic: training methods, training activities, the principles of animation, ABCD objectives, or the ROPES framework. For each one we had to answer three questions: <em>What is it about? Why is it important? How can it be applied in training?</em> Then the leads presented and everyone else wandered between the outputs to critique and steal ideas. Because it was our own course topics on the line, it turned into a free design review. My team's slides ended up full of IoT examples, which tells you exactly what I was rehearsing in my head all week.</p>
+
+        <div class="blog-callout use-tomorrow">
+          <p><strong>Use this tomorrow</strong></p>
+          <ol class="flow-steps" style="margin:.6rem 0 0">
+            <li><div><strong>Rewrite one objective in ABCD</strong>Delete &ldquo;understand&rdquo; and replace it with something you can observe.</div></li>
+            <li><div><strong>Draw the roadmap first</strong>Modules in order, then build the slides to follow it.</div></li>
+            <li><div><strong>Add one practical activity</strong>The checklist calls it &ldquo;A MUST&rdquo; for a reason.</div></li>
+          </ol>
+        </div>
 
         <blockquote class="takeaway">A great course is designed backwards, from what people must be able to do, and opened forwards, with a hook they can&rsquo;t ignore.</blockquote>
 
@@ -299,5 +283,6 @@
 
   <script src="assets/js/script.js"></script>
   <script src="assets/js/tuftfield.js" defer></script>
+  <script src="assets/js/ttt-series.js?v=1" defer></script>
 </body>
 </html>

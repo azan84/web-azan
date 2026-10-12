@@ -27,100 +27,10 @@
       const p = new URLSearchParams(window.location.search).get('theme');
       const t = p || localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
       document.documentElement.setAttribute('data-theme', t);
+      document.documentElement.classList.add('js');
     })();
   </script>
-  <style>
-    /* ── TTT series extras ── */
-    .blog-article-content figure { margin: 2rem 0; }
-    .blog-article-content figure img {
-      width: 100%; height: auto; display: block;
-      border-radius: var(--radius-md); border: 1px solid var(--hairline);
-    }
-    .blog-article-content figcaption {
-      font-size: 0.88rem; color: var(--ink-3); margin-top: 0.7rem;
-      text-align: center; line-height: 1.5;
-    }
-    .blog-article-content figcaption strong { color: var(--ink); }
-    .photo-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin: 2rem 0; }
-    .photo-pair figure { margin: 0; }
-    @media (max-width: 600px) { .photo-pair { grid-template-columns: 1fr; } }
-
-    .blog-callout {
-      border-left: 3px solid var(--accent-1);
-      padding: 1rem 1.25rem; margin: 1.75rem 0;
-      background: var(--accent-1-soft);
-      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    }
-    .blog-callout p { margin: 0; color: var(--ink-2); }
-    .blog-callout p + p { margin-top: 0.6rem; }
-
-    .series-nav {
-      margin: 0 0 2rem; padding: 1rem 1.25rem;
-      background: var(--bg-sunk); border: 1px solid var(--hairline);
-      border-radius: var(--radius-md); font-size: 0.92rem;
-    }
-    .series-nav p { margin: 0 0 0.5rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-3); }
-    .series-nav ol { margin: 0; padding-left: 1.25rem; }
-    .series-nav li { margin: 0.2rem 0; }
-    .series-nav li.current { font-weight: 600; color: var(--ink); }
-    .series-nav a { color: var(--accent-1); text-decoration: none; }
-    .series-nav a:hover { text-decoration: underline; }
-
-    .card-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 0.9rem; margin: 1.75rem 0;
-    }
-    .mini-card {
-      padding: 1rem 1.1rem; border-radius: var(--radius-md);
-      border: 1px solid var(--hairline); background: var(--bg-sunk);
-    }
-    .mini-card h4 {
-      margin: 0 0 0.4rem; font-size: 0.95rem; font-weight: 600;
-      color: var(--accent-1); font-family: var(--font-display);
-      text-transform: none; letter-spacing: normal;
-    }
-    .mini-card p { margin: 0; text-align: left; font-size: 0.9rem; color: var(--ink-2); line-height: 1.55; }
-    .mini-card .big {
-      display: block; font-family: var(--font-mono); font-size: 1.6rem;
-      font-weight: 600; color: var(--ink); margin-bottom: 0.2rem;
-    }
-
-    .flow-steps { counter-reset: step; list-style: none; padding: 0; margin: 1.75rem 0; }
-    .flow-steps li { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start; }
-    .flow-steps li::before {
-      counter-increment: step; content: counter(step);
-      flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 50%;
-      background: var(--accent-1); color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 600; font-size: 0.88rem; font-family: var(--font-mono);
-    }
-    .flow-steps li div strong { display: block; margin-bottom: 0.15rem; color: var(--ink); }
-
-    .ttt-table { width: 100%; border-collapse: collapse; margin: 1.75rem 0; font-size: 0.92rem; }
-    .ttt-table th, .ttt-table td {
-      padding: 0.65rem 0.9rem; border: 1px solid var(--hairline);
-      text-align: left; vertical-align: top;
-    }
-    .ttt-table th { background: var(--bg-sunk); color: var(--ink); font-weight: 600; font-size: 0.88rem; }
-    .ttt-table td:first-child { font-weight: 600; color: var(--accent-1); white-space: nowrap; }
-    .table-scroll { overflow-x: auto; }
-
-    .bar-row { display: flex; align-items: center; gap: 0.75rem; margin: 0.45rem 0; font-size: 0.9rem; }
-    .bar-row .lbl { width: 9.5rem; flex-shrink: 0; color: var(--ink-2); }
-    .bar-row .bar { height: 1.1rem; border-radius: 4px; background: var(--accent-1); opacity: 0.85; }
-    .bar-row .bar.dim { opacity: 0.4; }
-    .bar-row .val { font-family: var(--font-mono); font-size: 0.85rem; color: var(--ink); }
-    .bars { margin: 1.5rem 0; padding: 1rem 1.25rem; border: 1px solid var(--hairline); border-radius: var(--radius-md); }
-    .bars p.cap { margin: 0.75rem 0 0; font-size: 0.85rem; color: var(--ink-3); }
-    @media (max-width: 600px) { .bar-row .lbl { width: 7rem; } }
-
-    blockquote.takeaway {
-      margin: 2.25rem 0 1.5rem; padding: 1.3rem 1.6rem;
-      background: var(--bg-sunk); color: var(--ink);
-      border: 1px solid var(--hairline); border-radius: var(--radius-md);
-      font-size: 1.08rem; font-style: italic; text-align: center;
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/ttt-series.css?v=1" />
 </head>
 <body class="has-tokens">
 
@@ -173,7 +83,7 @@
           </ol>
         </nav>
 
-        <p>Three days of theory. Five modules. Dozens of Kahoots. Then the last two days of the HRDC Train-the-Trainer programme, <strong>24 and 25 September 2026</strong>, were all about one thing: <strong>the mock presentation</strong>. Each of the 18 participants had to design a short training session using everything from the week (ROPES, the wow factor, ABCD objectives, the roadmap, the 17-item checklist, engagement every 8 minutes) and deliver it in front of Dr Raymond Lai and the rest of the class. This is where the 60% &ldquo;skills&rdquo; weighting lives. No pressure.</p>
+        <p>Three days of theory. Five modules. Four online quizzes. Then the last two days of the HRDC Train-the-Trainer programme, <strong>24 and 25 September 2026</strong>, were all about one thing: <strong>the mock presentation</strong>. Each of the 18 participants had to design a short training session using everything from the week (ROPES, the wow factor, ABCD objectives, the roadmap, the 17-item checklist, engagement every 8 minutes) and deliver it in front of Dr Raymond Lai and the rest of the class. This is where the 60% &ldquo;skills&rdquo; weighting lives. No pressure.</p>
 
         <figure>
           <img src="assets/images/ttt-group.jpg" alt="The 18 TTT participants and Dr Raymond Lai posing together in front of the MIM logo wall" loading="lazy" />
@@ -188,7 +98,7 @@
 
         <p>The rest of the class were <strong>industry experts</strong>, people who train others on safety, hygiene, process improvement, tourism, cybersecurity, mental health and, yes, 4&times;4 driving. These are people who train adults in the real world, where nobody is forced to attend for a grade and a bored audience simply walks out. A lecture and a training session turn out to be very different animals:</p>
 
-        <div class="card-grid">
+        <div class="card-grid fx-stagger">
           <div class="mini-card"><h4>A university lecture</h4><p>Cover the syllabus. Students are graded, so they stay. Two hours, mostly talking. Success = they pass the final exam.</p></div>
           <div class="mini-card"><h4>A TTT training session</h4><p>Close a competency gap. Engage every 8 minutes. Hook in the first two minutes. Success = they can <em>do</em> something on Monday.</p></div>
         </div>
@@ -199,45 +109,49 @@
 
         <p>The best surprise of these two days was how much I <strong>learned</strong>. Every presenter was teaching their own speciality, so in two days I picked up mini-lessons on things I would never otherwise have studied. Here are some of the sessions I managed to photograph.</p>
 
+        <div class="chips" aria-label="Jump to a session">
+          <a class="chip" href="#t-safety">Safety</a><a class="chip" href="#t-hygiene">Hygiene</a><a class="chip" href="#t-mental">Mental health</a><a class="chip" href="#t-process">Process engineering</a><a class="chip" href="#t-tourism">Tourism</a><a class="chip" href="#t-4x4">4&times;4 off-road</a><a class="chip" href="#t-5whys">Problem identification</a><a class="chip" href="#t-wow">&ldquo;Did you know?&rdquo;</a><a class="chip" href="#t-iot">IoT (me!)</a>
+        </div>
+
         <div class="photo-pair">
-          <figure>
+          <figure id="t-safety">
             <img src="assets/images/ttt-hazards.jpg" alt="A presenter in front of a slide titled How to Identify Hazards Before Starting a Workshop Task" loading="lazy" />
             <figcaption><strong>Safety:</strong> how to identify hazards <em>before</em> starting a workshop task.</figcaption>
           </figure>
-          <figure>
+          <figure id="t-hygiene">
             <img src="assets/images/ttt-hygiene.jpg" alt="A presenter beside an icebreaker slide introducing herself as a hygiene manager" loading="lazy" />
             <figcaption><strong>Hygiene:</strong> an icebreaker straight out of the Day 2 playbook, from a hygiene manager.</figcaption>
           </figure>
         </div>
 
         <div class="photo-pair">
-          <figure>
+          <figure id="t-mental">
             <img src="assets/images/ttt-burnout.jpg" alt="A presenter in front of a slide titled Preventing Burnout: Practical Stress Management" loading="lazy" />
             <figcaption><strong>Mental health:</strong> &ldquo;Preventing Burnout: Practical Stress Management&rdquo;. Very relevant to a room of stressed presenters.</figcaption>
           </figure>
-          <figure>
+          <figure id="t-process">
             <img src="assets/images/ttt-process-mapping.jpg" alt="A presenter beside a slide titled Process Mapping" loading="lazy" />
             <figcaption><strong>Process engineering:</strong> process mapping, which makes a workflow visible so you can improve it.</figcaption>
           </figure>
         </div>
 
         <div class="photo-pair">
-          <figure>
+          <figure id="t-tourism">
             <img src="assets/images/ttt-tourism.jpg" alt="A smiling presenter in front of a slide about designing integrated 3-day 2-night itinerary packages for homestay operators" loading="lazy" />
             <figcaption><strong>Tourism:</strong> designing a 3-days-2-nights itinerary package for homestay operators. I now want to go on a homestay holiday.</figcaption>
           </figure>
-          <figure>
+          <figure id="t-4x4">
             <img src="assets/images/ttt-offroad.jpg" alt="A presenter in a cap standing beside a slide showing a vehicle on a sandy beach" loading="lazy" />
             <figcaption><strong>4&times;4 and off-road:</strong> where the classroom suddenly smelled of sand and diesel.</figcaption>
           </figure>
         </div>
 
         <div class="photo-pair">
-          <figure>
+          <figure id="t-5whys">
             <img src="assets/images/ttt-five-whys.jpg" alt="A presenter in front of a slide titled Problem Identification: 5 Whys Technique" loading="lazy" />
             <figcaption><strong>Problem identification:</strong> the 5 Whys technique, a topic close to my heart (see <a href="blog-problem-identification.html">this post</a>).</figcaption>
           </figure>
-          <figure>
+          <figure id="t-wow">
             <img src="assets/images/ttt-did-you-know.jpg" alt="A presenter beside a slide opening with a Did You Know statistic" loading="lazy" />
             <figcaption><strong>The wow factor in action:</strong> a &ldquo;Did you know?&rdquo; statistic to grab the room in the first minute.</figcaption>
           </figure>
@@ -247,7 +161,7 @@
 
         <h2>My Turn: &ldquo;Did You Always?&rdquo;</h2>
 
-        <figure>
+        <figure id="t-iot">
           <img src="assets/images/ttt-azan-presenting.jpg" alt="Dr Azan presenting in front of a slide titled Did You Always?" loading="lazy" />
           <figcaption><strong>Me, opening with the wow factor.</strong> Slide two of &ldquo;Create Your First IoT Idea&rdquo;: <em>Did you always&hellip;?</em></figcaption>
         </figure>
@@ -258,13 +172,36 @@
 
         <p>From there it was ROPES all the way. A &ldquo;smart or not?&rdquo; icebreaker where everyone had to physically point at which gadget was IoT. One analogy used throughout: an IoT system is a <strong>body</strong>, where sensors are the eyes and ears, the controller is the brain, connectivity is the nerves, and actuators are the muscles. Then Tell-Show-Do-Feedback, with pairs designing their own IoT idea on an idea map. I also built in a few running jokes, because &ldquo;appropriate humour&rdquo; was on the checklist and I take checklists seriously. One example: the neighbour&rsquo;s cat, <em>Oyen</em>, who sets off every motion sensor in the neighbourhood and teaches you why your system needs a threshold.</p>
 
+        <div class="widget" data-widget="body">
+          <div class="widget-head"><p class="widget-title">My one analogy: an IoT system is a body</p><span class="widget-tag">tap a part</span></div>
+          <div class="body-wrap">
+            <svg class="body-svg" viewBox="0 0 200 260" role="img" aria-label="Stick figure with sense, think, connect and act hotspots">
+              <circle class="fig" cx="100" cy="46" r="26"/>
+              <path class="fig" d="M100 72 L100 160 M100 92 L62 132 M100 92 L138 132 M100 160 L72 230 M100 160 L128 230"/>
+              <path class="nerve" d="M100 58 C100 90 100 110 100 130 M100 100 C120 110 132 118 138 132"/>
+              <g class="w-hit"><circle class="pulse" cx="56" cy="40" r="14"/><circle cx="56" cy="40" r="14"/><text x="56" y="44">S</text></g>
+              <g class="w-hit"><circle class="pulse" cx="144" cy="40" r="14"/><circle cx="144" cy="40" r="14"/><text x="144" y="44">T</text></g>
+              <g class="w-hit"><circle class="pulse" cx="100" cy="118" r="14"/><circle cx="100" cy="118" r="14"/><text x="100" y="122">C</text></g>
+              <g class="w-hit"><circle class="pulse" cx="146" cy="138" r="14"/><circle cx="146" cy="138" r="14"/><text x="146" y="142">A</text></g>
+            </svg>
+            <div class="w-panel" aria-live="polite"></div>
+          </div>
+          <script type="application/json">[{"key":"sense","t":"Sense: the eyes and ears","d":"Sensors notice the world: temperature, motion, a door opening. In the parked-car story, a sensor notices that the car is locked, getting hot, and something is still moving inside."},{"key":"think","t":"Think: the brain","d":"A microcontroller applies a rule: <em>if</em> the car is locked <em>and</em> it is above 35&nbsp;°C <em>and</em> there is motion, <em>then</em> raise the alarm. (Without a threshold, Oyen the cat triggers it every night.)"},{"key":"connect","t":"Connect: the nerves","d":"Wi-Fi or mobile data carries the message to the cloud and on to your phone, like nerves carrying a signal, or a phone call home."},{"key":"act","t":"Act: the muscles","d":"Something actually happens: the phone rings, the horn sounds, a window lowers. A system that senses and thinks but never acts is just a meeting."}]</script>
+        </div>
+
         <p>Was I nervous? Very. The room had 17 people who train for a living. But once the pair activity started and the room filled with people sketching their own IoT ideas, I forgot to be nervous and started having fun. Which, according to item 15 on the checklist, was exactly the point.</p>
+
+        <div class="widget lite" data-widget="ecg">
+          <div class="widget-head"><p class="widget-title">The nervous-o-meter</p><span class="widget-tag">illustrative, not measured</span></div>
+          <div class="svg-scroll"><svg class="ecg-svg" viewBox="0 0 640 170" role="img" aria-label="Illustrative heartbeat trace: fast while waiting, calmer during the activity, a spike at the award"></svg></div>
+          <script type="application/json">[{"label":"waiting my turn","bpmBeats":7,"amp":70},{"label":"the wow slide","bpmBeats":6,"amp":62},{"label":"pair activity","bpmBeats":3,"amp":42},{"label":"the award","bpmBeats":8,"amp":80}]</script>
+        </div>
 
         <h2>Alhamdulillah: Best Presenter</h2>
 
         <p>At the end of Day 5, Dr Raymond announced the best presenters of the cohort. I honestly didn&rsquo;t expect to hear my name, considering the calibre of the people around me. <strong>Alhamdulillah</strong>, I was one of them.</p>
 
-        <figure>
+        <figure data-confetti>
           <img src="assets/images/ttt-award.jpg" alt="Dr Azan receiving a copy of the book Ready for Takeoff from Dr Raymond Lai in the MIM training room" loading="lazy" />
           <figcaption><strong>Receiving <em>Ready for Takeoff</em> from Dr Raymond Lai.</strong> A book he co-authored with his daughter, and now one of my favourite things on my shelf.</figcaption>
         </figure>
@@ -320,5 +257,6 @@
 
   <script src="assets/js/script.js"></script>
   <script src="assets/js/tuftfield.js" defer></script>
+  <script src="assets/js/ttt-series.js?v=1" defer></script>
 </body>
 </html>

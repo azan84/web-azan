@@ -27,100 +27,10 @@
       const p = new URLSearchParams(window.location.search).get('theme');
       const t = p || localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
       document.documentElement.setAttribute('data-theme', t);
+      document.documentElement.classList.add('js');
     })();
   </script>
-  <style>
-    /* ── TTT series extras ── */
-    .blog-article-content figure { margin: 2rem 0; }
-    .blog-article-content figure img {
-      width: 100%; height: auto; display: block;
-      border-radius: var(--radius-md); border: 1px solid var(--hairline);
-    }
-    .blog-article-content figcaption {
-      font-size: 0.88rem; color: var(--ink-3); margin-top: 0.7rem;
-      text-align: center; line-height: 1.5;
-    }
-    .blog-article-content figcaption strong { color: var(--ink); }
-    .photo-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin: 2rem 0; }
-    .photo-pair figure { margin: 0; }
-    @media (max-width: 600px) { .photo-pair { grid-template-columns: 1fr; } }
-
-    .blog-callout {
-      border-left: 3px solid var(--accent-1);
-      padding: 1rem 1.25rem; margin: 1.75rem 0;
-      background: var(--accent-1-soft);
-      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    }
-    .blog-callout p { margin: 0; color: var(--ink-2); }
-    .blog-callout p + p { margin-top: 0.6rem; }
-
-    .series-nav {
-      margin: 0 0 2rem; padding: 1rem 1.25rem;
-      background: var(--bg-sunk); border: 1px solid var(--hairline);
-      border-radius: var(--radius-md); font-size: 0.92rem;
-    }
-    .series-nav p { margin: 0 0 0.5rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-3); }
-    .series-nav ol { margin: 0; padding-left: 1.25rem; }
-    .series-nav li { margin: 0.2rem 0; }
-    .series-nav li.current { font-weight: 600; color: var(--ink); }
-    .series-nav a { color: var(--accent-1); text-decoration: none; }
-    .series-nav a:hover { text-decoration: underline; }
-
-    .card-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 0.9rem; margin: 1.75rem 0;
-    }
-    .mini-card {
-      padding: 1rem 1.1rem; border-radius: var(--radius-md);
-      border: 1px solid var(--hairline); background: var(--bg-sunk);
-    }
-    .mini-card h4 {
-      margin: 0 0 0.4rem; font-size: 0.95rem; font-weight: 600;
-      color: var(--accent-1); font-family: var(--font-display);
-      text-transform: none; letter-spacing: normal;
-    }
-    .mini-card p { margin: 0; text-align: left; font-size: 0.9rem; color: var(--ink-2); line-height: 1.55; }
-    .mini-card .big {
-      display: block; font-family: var(--font-mono); font-size: 1.6rem;
-      font-weight: 600; color: var(--ink); margin-bottom: 0.2rem;
-    }
-
-    .flow-steps { counter-reset: step; list-style: none; padding: 0; margin: 1.75rem 0; }
-    .flow-steps li { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start; }
-    .flow-steps li::before {
-      counter-increment: step; content: counter(step);
-      flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 50%;
-      background: var(--accent-1); color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 600; font-size: 0.88rem; font-family: var(--font-mono);
-    }
-    .flow-steps li div strong { display: block; margin-bottom: 0.15rem; color: var(--ink); }
-
-    .ttt-table { width: 100%; border-collapse: collapse; margin: 1.75rem 0; font-size: 0.92rem; }
-    .ttt-table th, .ttt-table td {
-      padding: 0.65rem 0.9rem; border: 1px solid var(--hairline);
-      text-align: left; vertical-align: top;
-    }
-    .ttt-table th { background: var(--bg-sunk); color: var(--ink); font-weight: 600; font-size: 0.88rem; }
-    .ttt-table td:first-child { font-weight: 600; color: var(--accent-1); white-space: nowrap; }
-    .table-scroll { overflow-x: auto; }
-
-    .bar-row { display: flex; align-items: center; gap: 0.75rem; margin: 0.45rem 0; font-size: 0.9rem; }
-    .bar-row .lbl { width: 9.5rem; flex-shrink: 0; color: var(--ink-2); }
-    .bar-row .bar { height: 1.1rem; border-radius: 4px; background: var(--accent-1); opacity: 0.85; }
-    .bar-row .bar.dim { opacity: 0.4; }
-    .bar-row .val { font-family: var(--font-mono); font-size: 0.85rem; color: var(--ink); }
-    .bars { margin: 1.5rem 0; padding: 1rem 1.25rem; border: 1px solid var(--hairline); border-radius: var(--radius-md); }
-    .bars p.cap { margin: 0.75rem 0 0; font-size: 0.85rem; color: var(--ink-3); }
-    @media (max-width: 600px) { .bar-row .lbl { width: 7rem; } }
-
-    blockquote.takeaway {
-      margin: 2.25rem 0 1.5rem; padding: 1.3rem 1.6rem;
-      background: var(--bg-sunk); color: var(--ink);
-      border: 1px solid var(--hairline); border-radius: var(--radius-md);
-      font-size: 1.08rem; font-style: italic; text-align: center;
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/ttt-series.css?v=1" />
 </head>
 <body class="has-tokens">
 
@@ -185,22 +95,22 @@
 
         <p>The point, we soon learned, was deliberate. Before any learning happens, a trainer has to get the room <strong>ready</strong>. The programme&rsquo;s first summary slide put it in three neat pairs:</p>
 
-        <div class="card-grid">
+        <div class="card-grid fx-stagger">
           <div class="mini-card"><h4>Lesson hook &rarr; Attention</h4><p>Grab the brain before it wanders off to check WhatsApp.</p></div>
           <div class="mini-card"><h4>Icebreaker &rarr; Warm-up</h4><p>Get strangers talking, laughing, and moving.</p></div>
           <div class="mini-card"><h4>Environment &rarr; Safety</h4><p>Nobody learns when they are afraid to look silly.</p></div>
         </div>
 
-        <p>The icebreaker was a round of <strong>brain teasers on Kahoot</strong>, played in subgroups. Nothing reveals someone&rsquo;s true personality like a countdown timer and a leaderboard. The debrief question afterwards was simple: <em>&ldquo;How does this activity help in training?&rdquo;</em> I realised I had never once asked my students that question about anything I made them do.</p>
+        <p>The icebreaker was a round of <strong>brain teasers</strong> as an online quiz, played in subgroups. Nothing reveals someone&rsquo;s true personality like a countdown timer and a leaderboard. The debrief question afterwards was simple: <em>&ldquo;How does this activity help in training?&rdquo;</em> I realised I had never once asked my students that question about anything I made them do.</p>
 
         <h2>The Scoreboard: How You Pass TTT</h2>
 
         <p>Early on, Dr Raymond laid out exactly how we would be judged. It was a refreshing dose of transparency, and a quiet warning about where the real weight sat:</p>
 
         <div class="bars" role="img" aria-label="TTT score weights: Attitude 10 percent, Knowledge 30 percent, Skills 60 percent; passing score 75 percent">
-          <div class="bar-row"><span class="lbl">Attitude</span><span class="bar dim" style="width:10%"></span><span class="val">10%</span></div>
-          <div class="bar-row"><span class="lbl">Knowledge (MCQ)</span><span class="bar dim" style="width:30%"></span><span class="val">30%</span></div>
-          <div class="bar-row"><span class="lbl">Skills: design + delivery</span><span class="bar" style="width:60%"></span><span class="val">60%</span></div>
+          <div class="bar-row"><span class="lbl">Attitude</span><span class="bar dim" style="--w:10%"></span><span class="val">10%</span></div>
+          <div class="bar-row"><span class="lbl">Knowledge (MCQ)</span><span class="bar dim" style="--w:30%"></span><span class="val">30%</span></div>
+          <div class="bar-row"><span class="lbl">Skills: design + delivery</span><span class="bar" style="--w:60%"></span><span class="val">60%</span></div>
           <p class="cap">Passing score: 75%. Knowledge is a 45-question MCQ drawn from a 300-question bank. Skills means designing a course <em>and</em> delivering it in front of everyone.</p>
         </div>
 
@@ -220,10 +130,25 @@
 
         <p>The section I enjoyed most on Day 1 was called <strong>Valuable Insights</strong>, and it began with the brain. Information goes through a pipeline (the classic Atkinson&ndash;Shiffrin multi-store model):</p>
 
-        <div class="card-grid">
+        <div class="card-grid fx-stagger">
           <div class="mini-card"><span class="big">~3 s</span><h4>Sensory memory</h4><p>A quick scan: is this important? If not, gone.</p></div>
           <div class="mini-card"><span class="big">7 items</span><h4>Short-term memory</h4><p>Holds about seven things for 15&ndash;30 seconds. Then it leaks.</p></div>
           <div class="mini-card"><span class="big">&infin;</span><h4>Long-term memory</h4><p>Store, recall, apply, possibly for a lifetime, <em>if</em> it gets there.</p></div>
+        </div>
+
+        <div class="widget" data-widget="memory">
+          <div class="widget-head"><p class="widget-title">Try it: what survives a lecture slide?</p><span class="widget-tag">interactive</span></div>
+          <div class="w-btns">
+            <button class="w-btn" type="button" data-run="bullets" aria-pressed="false">14 bullet points</button>
+            <button class="w-btn" type="button" data-run="chunks" aria-pressed="false">3 chunks + hook + quiz</button>
+          </div>
+          <div class="mem-stage">
+            <div class="mem-box sensory"><h5>Sensory memory</h5><small>attention filter</small><div class="mem-slots"></div></div>
+            <div class="mem-box working"><h5>Working memory</h5><small>7 slots, 15&ndash;30 s</small><div class="mem-slots"></div></div>
+            <div class="mem-box ltm"><h5>Long-term memory</h5><small>needs rehearsal</small><div class="mem-slots"></div></div>
+          </div>
+          <div class="mem-score" aria-live="polite"></div>
+          <p class="hint">A cartoon of the multi-store model, not a lab result. The point: overflow the 7-slot buffer and skip rehearsal, and most of what you sent is gone.</p>
         </div>
 
         <p>As an engineer, I found this oddly satisfying. It is a filter cascade with a very small buffer in the middle. A typical lecture slide with 14 bullet points is basically a buffer-overflow attack on the audience. The manual turned this into a seven-step recipe for managing information processing:</p>
@@ -250,9 +175,20 @@
 
         <p>The key idea of Module 1 is the difference between <strong>pedagogy</strong> and <strong>andragogy</strong>:</p>
 
-        <div class="card-grid">
-          <div class="mini-card"><h4>Pedagogy</h4><p>Traditional and teacher-centred, with limited interaction. The teacher decides; the learner receives.</p></div>
-          <div class="mini-card"><h4>Andragogy</h4><p>Interactive and learner-centred, with active participation. The learner brings experience, and the trainer facilitates.</p></div>
+        <div class="widget" data-widget="compare">
+          <div class="widget-head"><p class="widget-title">Flip the switch: same room, two philosophies</p><span class="widget-tag">toggle</span></div>
+          <div class="seg" role="group" aria-label="Teaching approach">
+            <button type="button" data-mode="ped" aria-pressed="true">Pedagogy</button>
+            <button type="button" data-mode="andra" aria-pressed="false">Andragogy</button>
+          </div>
+          <ul class="compare-list" aria-live="polite">
+            <li><span>Centre</span><span></span></li>
+            <li><span>Who decides</span><span></span></li>
+            <li><span>Experience</span><span></span></li>
+            <li><span>Motivation</span><span></span></li>
+            <li><span>Interaction</span><span></span></li>
+          </ul>
+          <script type="application/json">{"ped":["The teacher","The teacher decides what and how","The learner is a blank slate","External: grades, exams, the syllabus","Limited: listen, take notes, receive"],"andra":["The learner","Shared: learners are self-directed and goal-oriented","The learner's experience is the richest resource","Internal: relevance, practicality, respect","Active participation: discuss, practise, reflect"]}</script>
         </div>
 
         <p>The six <strong>adult learning principles</strong> made it concrete. Adults are <em>self-directed</em>, <em>goal-oriented</em>, need <em>relevance</em>, want things to be <em>practical</em>, bring <em>experience</em> to the room, and expect <em>respect</em>. If you have ever watched a senior engineer with 20 years of plant experience sit through a lecture that ignores all of that, you know exactly what disengagement looks like. Arms folded, phone out, eyes glazed.</p>
@@ -272,9 +208,29 @@
         </table>
         </div>
 
+        <div class="widget" data-widget="cycle">
+          <div class="widget-head"><p class="widget-title">Kolb&rsquo;s cycle, applied to a fluids lab</p><span class="widget-tag">tap a stage</span></div>
+          <div class="cycle-wrap">
+            <svg class="cycle-svg" viewBox="0 0 300 300" role="img" aria-label="Kolb experiential learning cycle with four stages">
+              <g class="spin"><circle class="ring" cx="150" cy="150" r="104"/></g>
+              <path class="arrow" d="M196 60 A104 104 0 0 1 240 104"/>
+              <path class="arrow" d="M240 196 A104 104 0 0 1 196 240"/>
+              <path class="arrow" d="M104 240 A104 104 0 0 1 60 196"/>
+              <path class="arrow" d="M60 104 A104 104 0 0 1 104 60"/>
+              <text class="centre" x="150" y="146">learning</text><text class="centre" x="150" y="162">is a loop</text>
+              <g class="node"><circle cx="150" cy="46" r="38"/><text x="150" y="43">Concrete</text><text x="150" y="56">experience</text></g>
+              <g class="node"><circle cx="254" cy="150" r="38"/><text x="254" y="147">Reflective</text><text x="254" y="160">observation</text></g>
+              <g class="node"><circle cx="150" cy="254" r="38"/><text x="150" y="251">Abstract</text><text x="150" y="264">concepts</text></g>
+              <g class="node"><circle cx="46" cy="150" r="38"/><text x="46" y="147">Active</text><text x="46" y="160">experiment</text></g>
+            </svg>
+            <div class="w-panel" aria-live="polite"></div>
+          </div>
+          <script type="application/json">[{"t":"1 · Concrete experience","d":"Students open the valve and watch the pressure gauge drop along the pipe. They feel it before they name it."},{"t":"2 · Reflective observation","d":"Why did the pressure fall faster in the narrow section? Pairs compare readings and argue a little."},{"t":"3 · Abstract conceptualisation","d":"Now the theory lands: friction factor, Bernoulli, head loss. The equation explains what they already saw."},{"t":"4 · Active experimentation","d":"Predict the drop for a new flow rate, then test it. The prediction fails or succeeds, and the loop starts again."}]</script>
+        </div>
+
         <p>I laughed at the Carl Rogers line, because every lecturer has been asked a question in class they cannot answer. The two classic responses are to bluff confidently, or to say &ldquo;good question, we&rsquo;ll cover that later&rdquo; and pray. Rogers suggests a third option, which is to just be honest. Apparently, adults respect that more than bluffing. Who knew.</p>
 
-        <p>Module 1 closed with the <strong>traits of a competent trainer</strong>: passion, energy, enthusiasm, adaptability, empathy and caring. It also covered the trainer&rsquo;s skill styles (Instructor, Explorer, Thinker, Guide) and a code of ethics built on integrity, confidentiality, diversity, competence, accountability, fairness and professionalism. Then, naturally, there was another Kahoot. By this point the room was properly competitive.</p>
+        <p>Module 1 closed with the <strong>traits of a competent trainer</strong>: passion, energy, enthusiasm, adaptability, empathy and caring. It also covered the trainer&rsquo;s skill styles (Instructor, Explorer, Thinker, Guide) and a code of ethics built on integrity, confidentiality, diversity, competence, accountability, fairness and professionalism. Then came a short online quiz to revisit the module, and the leaderboard made the room properly competitive.</p>
 
         <h2>Module 2: Training Needs Analysis, or &ldquo;Measure Twice, Train Once&rdquo;</h2>
 
@@ -282,22 +238,43 @@
 
         <p>That question matters because sometimes the honest answer is <em>no</em>. The manual lists <strong>non-training solutions</strong> that I wish more organisations knew about:</p>
 
-        <div class="card-grid">
+        <div class="card-grid fx-stagger">
           <div class="mini-card"><h4>Process</h4><p>Inefficient workflow? Redesign the process, don&rsquo;t send people on a course.</p></div>
           <div class="mini-card"><h4>Structure</h4><p>Role confusion? Fix reporting lines or build cross-functional teams.</p></div>
           <div class="mini-card"><h4>System</h4><p>Bad technology? Upgrade or automate.</p></div>
           <div class="mini-card"><h4>Environment</h4><p>Poor lighting, heat or a cramped workspace? Fix the room.</p></div>
         </div>
 
+        <div class="widget" data-widget="quiz">
+          <div class="widget-head"><p class="widget-title">Quick game: training, or not?</p><span class="quiz-progress"></span></div>
+          <p class="quiz-q" aria-live="polite"></p>
+          <div class="w-btns">
+            <button class="w-btn" type="button" data-a="t">Send them on training</button>
+            <button class="w-btn" type="button" data-a="n">Non-training fix</button>
+          </div>
+          <div class="quiz-result" hidden aria-live="polite"></div>
+          <div class="w-btns" style="margin-top:.7rem"><button class="w-btn primary" type="button" data-next hidden>Next scenario &rarr;</button></div>
+          <script type="application/json">[{"q":"New technicians keep wiring the control panel wrongly. They have never been shown the wiring standard.","a":"t","why":"A genuine skills and knowledge gap. Training (with hands-on practice) closes it."},{"q":"Invoices are late because each one needs four signatures from managers who are rarely in the office.","a":"n","why":"That's a process problem. Redesign the approval workflow; no course will fix it."},{"q":"Staff make data-entry errors because the old system crashes and loses half-typed forms.","a":"n","why":"A system problem. Upgrade or automate; the people are not the gap."},{"q":"Supervisors avoid giving feedback because they don't know how to start a difficult conversation.","a":"t","why":"A skills and attitude gap. Coaching or a feedback workshop is the right tool."},{"q":"The night shift makes more mistakes, and the workshop lighting after 10 pm is dim and flickering.","a":"n","why":"An environment problem. Fix the lights before you blame the people."}]</script>
+        </div>
+
         <p>That is root-cause thinking, the same idea I wrote about in <a href="blog-problem-identification.html">Stop Solving the Wrong Problem</a>. Training is a solution, but it is not the solution to everything.</p>
 
         <p>The TNA process itself runs in four steps: <strong>select an approach</strong> (survey, observation, interview, focus group, document review), <strong>gather data</strong> (from self, peers, superiors, subordinates), <strong>analyse</strong>, and <strong>design the solution</strong>. Data comes from three levels: the organisation (competency model), the department, and the individual (job description and task analysis). We worked with proficiency scales from 1 (Fundamental) to 5 (Expert), compared self-ratings against supervisor ratings, and read radar charts showing which staff level had the biggest gap.</p>
 
-        <p>The outputs are tangible: TNA findings, training and non-training solutions, a short-term and long-term <strong>training plan</strong> (a Gantt chart, the engineer&rsquo;s comfort blanket), and a TNA report. The day closed with a Mentimeter quiz on our phones, a five-minute reflection, and the question that ended every module: <em>&ldquo;What actions will you take in your own training?&rdquo;</em></p>
+        <p>The outputs are tangible: TNA findings, training and non-training solutions, a short-term and long-term <strong>training plan</strong> (a Gantt chart, the engineer&rsquo;s comfort blanket), and a TNA report. The day closed with a quick quiz on our phones, a five-minute reflection, and the question that ended every module: <em>&ldquo;What actions will you take in your own training?&rdquo;</em></p>
 
         <h2>What Day 1 Did to My Lecturer Brain</h2>
 
         <p>Walking out of Crystal Crown that evening, I kept thinking about my own classes. A university lecture is, mostly, <strong>pedagogy wearing andragogy&rsquo;s clothes</strong>. We teach young adults, but we design for &ldquo;cover the syllabus by Week 14&rdquo;, not for &ldquo;change what they can do on Monday morning&rdquo;. My friends from the university, Dr Firdaus, Dr Dayana, Dr Wan and Dr Adibah, and I kept coming back to the same realisation: that the industry trainers around us were playing a completely different game.</p>
+
+        <div class="blog-callout use-tomorrow">
+          <p><strong>Use this tomorrow</strong></p>
+          <ol class="flow-steps" style="margin:.6rem 0 0">
+            <li><div><strong>Open with a hook, not a recap</strong>Spend the first two minutes making it relevant before teaching anything.</div></li>
+            <li><div><strong>Chunk to seven or fewer</strong>If a slide has more than seven ideas, split it.</div></li>
+            <li><div><strong>Ask &ldquo;is it really a training problem?&rdquo;</strong>Before designing a course, check the process, system and environment first.</div></li>
+          </ol>
+        </div>
 
         <blockquote class="takeaway">Content is what you know. Training is what <em>they</em> can do afterwards. Day 1 was about learning the difference.</blockquote>
 
@@ -323,5 +300,6 @@
 
   <script src="assets/js/script.js"></script>
   <script src="assets/js/tuftfield.js" defer></script>
+  <script src="assets/js/ttt-series.js?v=1" defer></script>
 </body>
 </html>
