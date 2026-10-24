@@ -25,3 +25,7 @@ namespace_id = "4202"
 
 [observability]
 enabled = true
+
+# Run next to the Anthropic API: some Cloudflare edge egress IPs get 403 "Request not allowed".
+[placement]
+region = "aws:us-east-1"
