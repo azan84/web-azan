@@ -15,5 +15,13 @@ namespace_id = "4201"
   limit = 8
   period = 60
 
+# Site-wide ceiling, whatever the IP (applied per Cloudflare location).
+[[ratelimits]]
+name = "GLOBAL_LIMITER"
+namespace_id = "4202"
+  [ratelimits.simple]
+  limit = 40
+  period = 60
+
 [observability]
 enabled = true

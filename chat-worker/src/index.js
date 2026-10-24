@@ -4,15 +4,17 @@
 import Anthropic from "@anthropic-ai/sdk";
 import KNOWLEDGE from "./knowledge.js";
 
-const MODEL = "claude-opus-5-5";
+const MODEL = "claude-haiku-5-5";
 const MAX_TURNS = 12; // most recent messages sent to the model
 const MAX_MESSAGE_CHARS = 1500;
-const MAX_OUTPUT_TOKENS = 1500;
+const MAX_OUTPUT_TOKENS = 2000; // includes any thinking
 
 const INSTRUCTIONS = `You are the assistant on the personal academic website of Dr. Mohd Azan Bin Mohammed Sapardi (azan.biomechemical.com), an Assistant Professor at the Kulliyyah of Engineering, International Islamic University Malaysia (IIUM). Visitors are students, prospective postgraduate students, collaborators, industry contacts and the general public. You help them find out about his research, publications, grants, supervision, courses and teaching materials, web apps, blog posts, background and how to contact him.
 
 How to answer:
-- Base every factual statement about Dr. Azan on the WEBSITE CONTENT below. It is the only source you have about him. If something is not covered there (e.g. office hours, fees, admission decisions, opinions he hasn't posted, newer papers), say the website doesn't mention it and suggest contacting him via the Personal page (personal.html) or azan@iium.edu.my. Never guess or invent titles, numbers, dates, co-authors, DOIs or links.
+- Base every factual statement about Dr. Azan on the WEBSITE CONTENT below. It is the only source you have about him. If something is not covered there (e.g. office hours, fees, admission decisions, opinions he hasn't posted, newer papers), say the website doesn't mention it and suggest emailing him at azan@iium.edu.my. Never guess or invent titles, numbers, dates, co-authors, DOIs or links.
+- To contact him, recommend email (azan@iium.edu.my). Don't suggest the message form on the Personal page.
+- Items marked "(link not available yet)" have no file or link online yet; say so instead of telling people to click them.
 - Figures like citation counts and h-index are as listed on the site; say so if precision matters, and point to his Google Scholar profile for current numbers.
 - You may briefly explain a general engineering concept (e.g. what schlieren imaging or MHD is) when it helps a visitor understand his work or one of his posts. Make clear that part is general background, not something from the site. Don't solve homework, write assignments or code, or take on unrelated tasks; politely steer back to what the site covers.
 - Talk about Dr. Azan in the third person. You are an assistant, not Dr. Azan. Don't make offers or commitments on his behalf (supervision places, collaborations, grades, meetings); point people to the contact details instead.
@@ -46,12 +48,13 @@ export default {
       return json({ error: "Origin not allowed" }, 403);
     }
 
+    // Origin can be spoofed by non-browser clients, so cap volume per IP and site-wide.
     const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-    if (env.CHAT_LIMITER) {
-      const { success } = await env.CHAT_LIMITER.limit({ key: ip });
-      if (!success) {
-        return json({ error: "You're sending messages quickly — please wait a minute and try again." }, 429, cors);
-      }
+    if (env.CHAT_LIMITER && !(await env.CHAT_LIMITER.limit({ key: ip })).success) {
+      return json({ error: "You're sending messages quickly — please wait a minute and try again." }, 429, cors);
+    }
+    if (env.GLOBAL_LIMITER && !(await env.GLOBAL_LIMITER.limit({ key: "all" })).success) {
+      return json({ error: "The assistant is very busy right now — please try again in a minute." }, 429, cors);
     }
 
     let messages;
@@ -69,20 +72,15 @@ export default {
 
     const run = async () => {
       try {
-        const stream = client.beta.messages.stream({
+        const stream = client.messages.stream({
           model: MODEL,
           max_tokens: MAX_OUTPUT_TOKENS,
           output_config: { effort: "low" },
-          betas: ["server-side-fallback-2026-07-01"],
-          fallbacks: "default",
           system: [{ type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } }],
           messages,
         });
         for await (const event of stream) {
-          if (event.type === "content_block_start" && event.content_block.type === "fallback") {
-            // A fallback model is taking over; discard any partial text shown so far.
-            await send({ reset: true });
-          } else if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
             await send({ t: event.delta.text });
           }
         }

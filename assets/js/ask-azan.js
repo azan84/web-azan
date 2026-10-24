@@ -7,6 +7,7 @@
     ? 'http://localhost:8787/chat' // `npm run dev` in chat-worker/
     : 'https://azan-site-chat.azan-sapardi.workers.dev/chat';
   var STORE_KEY = 'ask-azan-chat-v1';
+  var OPEN_KEY = 'ask-azan-open';
   var MAX_HISTORY = 12;
   var MAX_CHARS = 1500;
 
@@ -28,11 +29,14 @@
   // Stylesheet lives next to this script's site root, so it works from any page.
   var css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = new URL('assets/css/ask-azan.css?v=1', siteRoot).href;
+  css.href = new URL('assets/css/ask-azan.css?v=2', siteRoot).href;
   document.head.appendChild(css);
 
   var root = document.createElement('div');
+  root.id = 'ask-azan';
   root.className = 'aa-root';
+  // Pages without the site's token stylesheet have no dark theme; keep the widget light there.
+  if (!document.body.classList.contains('has-tokens')) root.classList.add('aa-light');
   root.innerHTML =
     '<button type="button" class="aa-launcher" aria-haspopup="dialog" aria-controls="aa-panel" aria-expanded="false">' +
       ICON_CHAT + '<span class="aa-launcher-label">Ask about my work</span>' +
@@ -62,6 +66,8 @@
   var form = root.querySelector('.aa-form');
   var input = root.querySelector('.aa-input');
   var send = root.querySelector('.aa-send');
+  var resetBtn = root.querySelector('.aa-reset');
+  var mobile = window.matchMedia('(max-width: 520px)');
 
   var history = load();
   var busy = false;
@@ -69,13 +75,23 @@
   function load() {
     try {
       var data = JSON.parse(sessionStorage.getItem(STORE_KEY) || '[]');
-      return Array.isArray(data) ? data.filter(function (m) {
+      if (!Array.isArray(data)) return [];
+      data = data.filter(function (m) {
         return m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string';
-      }) : [];
+      });
+      // Only complete exchanges are stored, but guard against an older/corrupt entry.
+      while (data.length && data[data.length - 1].role !== 'assistant') data.pop();
+      return data;
     } catch (e) { return []; }
   }
   function save() {
     try { sessionStorage.setItem(STORE_KEY, JSON.stringify(history.slice(-MAX_HISTORY * 2))); } catch (e) { /* storage unavailable */ }
+  }
+  function remember(key, value) {
+    try { sessionStorage.setItem(key, value); } catch (e) { /* storage unavailable */ }
+  }
+  function recall(key) {
+    try { return sessionStorage.getItem(key); } catch (e) { return null; }
   }
 
   // --- Minimal, safe Markdown: escape everything, then allow links, bold, bullets.
@@ -93,49 +109,56 @@
       return url;
     } catch (e) { return null; }
   }
-  function inline(text) {
+  // noLinks: inside a link label, so don't nest another <a>.
+  function inline(text, noLinks) {
     var out = '';
     var re = /\[([^\]\n]+)\]\(([^)\s]+)\)|\*\*([^*\n]+)\*\*|(https?:\/\/[^\s<)]+[^\s<).,;:!?'"])|(?:^|(?<=[\s(]))[*_]([^*_\n]+)[*_](?=[\s).,;:!?]|$)/g;
     var last = 0, m;
     while ((m = re.exec(text))) {
       out += esc(text.slice(last, m.index));
       if (m[1]) {
-        var url = safeHref(m[2]);
-        out += url ? link(url, esc(m[1])) : esc(m[1]);
+        var url = noLinks ? null : safeHref(m[2]);
+        out += url ? link(url, inline(m[1], true)) : inline(m[1], noLinks);
       } else if (m[3]) {
-        out += '<strong>' + esc(m[3]) + '</strong>';
+        out += '<strong>' + inline(m[3], noLinks) + '</strong>';
       } else if (m[5]) {
-        out += '<em>' + esc(m[5]) + '</em>';
+        out += '<em>' + inline(m[5], noLinks) + '</em>';
       } else {
-        var bare = safeHref(m[4]);
+        var bare = noLinks ? null : safeHref(m[4]);
         out += bare ? link(bare, esc(m[4])) : esc(m[4]);
       }
       last = re.lastIndex;
     }
     return out + esc(text.slice(last));
   }
+  // Web apps (caturmatik/, lift-escalator-sim/), downloads and other sites open in a new
+  // tab so the visitor keeps the chat; site pages open in place (the panel reopens there).
   function link(url, label) {
-    var external = url.origin !== location.origin && url.protocol !== 'mailto:';
-    return '<a href="' + esc(url.href) + '"' + (external ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' + label + '</a>';
+    var sameSite = url.origin === siteRoot.origin;
+    var isPage = sameSite && (/\.html$/.test(url.pathname) || url.pathname === siteRoot.pathname);
+    var newTab = url.protocol !== 'mailto:' && !isPage;
+    return '<a href="' + esc(url.href) + '"' + (newTab ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' + label + '</a>';
   }
   function render(md) {
-    var html = '', list = false, para = [];
+    var html = '', list = null, para = [];
     function flush() {
-      if (para.length) { html += '<p>' + para.map(inline).join('<br>') + '</p>'; para = []; }
+      if (para.length) { html += '<p>' + para.map(function (l) { return inline(l); }).join('<br>') + '</p>'; para = []; }
     }
+    function closeList() { if (list) { html += '</' + list + '>'; list = null; } }
     md.split('\n').forEach(function (line) {
-      var item = line.match(/^\s*(?:[-*•]|\d+[.)])\s+(.*)$/);
+      var item = line.match(/^\s*([-*•]|\d+[.)])\s+(.*)$/);
       if (item) {
         flush();
-        if (!list) { html += '<ul>'; list = true; }
-        html += '<li>' + inline(item[1]) + '</li>';
+        var type = /\d/.test(item[1]) ? 'ol' : 'ul';
+        if (list !== type) { closeList(); html += '<' + type + '>'; list = type; }
+        html += '<li>' + inline(item[2]) + '</li>';
       } else {
-        if (list) { html += '</ul>'; list = false; }
+        closeList();
         if (line.trim()) para.push(line.replace(/^#+\s*/, '').trim()); else flush();
       }
     });
     flush();
-    if (list) html += '</ul>';
+    closeList();
     return html;
   }
 
@@ -143,12 +166,19 @@
   function addMessage(role, content) {
     var el = document.createElement('div');
     el.className = 'aa-msg ' + (role === 'user' ? 'aa-msg-user' : 'aa-msg-bot');
-    if (role === 'user') el.textContent = content; else el.innerHTML = render(content);
+    var who = '<span class="aa-sr">' + (role === 'user' ? 'You said: ' : 'Assistant: ') + '</span>';
+    el.innerHTML = who + (role === 'user' ? esc(content) : render(content));
     log.appendChild(el);
-    scrollDown();
+    scrollDown(true);
     return el;
   }
-  function scrollDown() { log.scrollTop = log.scrollHeight; }
+  function setBotContent(el, html) {
+    el.innerHTML = '<span class="aa-sr">Assistant: </span>' + html;
+  }
+  // Follow the stream only if the visitor hasn't scrolled up to read.
+  function scrollDown(force) {
+    if (force || log.scrollHeight - log.scrollTop - log.clientHeight < 80) log.scrollTop = log.scrollHeight;
+  }
 
   function renderAll() {
     log.innerHTML = '';
@@ -163,7 +193,7 @@
         b.type = 'button';
         b.className = 'aa-chip';
         b.textContent = q;
-        b.addEventListener('click', function () { ask(q); });
+        b.addEventListener('click', function () { input.focus(); ask(q); });
         chips.appendChild(b);
       });
       log.appendChild(intro);
@@ -173,21 +203,26 @@
     history.forEach(function (m) { addMessage(m.role, m.content); });
   }
 
-  function setOpen(open) {
+  function setOpen(open, restoring) {
     root.classList.toggle('aa-open', open);
     launcher.setAttribute('aria-expanded', String(open));
+    panel.setAttribute('aria-modal', String(open && mobile.matches));
+    remember(OPEN_KEY, open ? '1' : '0');
     if (open) {
       if (!log.childElementCount) renderAll();
-      setTimeout(function () { input.focus(); scrollDown(); }, 60);
-    } else {
+      scrollDown(true);
+      // Don't grab focus (or pop the mobile keyboard) when reopening after navigation.
+      if (!restoring) setTimeout(function () { input.focus(); }, 60);
+    } else if (!restoring) {
       launcher.focus();
     }
   }
 
-  function autosize() {
+  function syncControls() {
     input.style.height = 'auto';
     input.style.height = Math.min(input.scrollHeight, 120) + 'px';
     send.disabled = busy || !input.value.trim();
+    resetBtn.disabled = busy;
   }
 
   // --- Network
@@ -196,22 +231,24 @@
     if (!question || busy) return;
     busy = true;
     input.value = '';
-    autosize();
+    syncControls();
     if (!history.length) log.innerHTML = '';
 
-    history.push({ role: 'user', content: question });
-    save();
+    var turn = history.concat({ role: 'user', content: question });
     addMessage('user', question);
 
     var bubble = addMessage('assistant', '');
-    bubble.innerHTML = '<span class="aa-typing" aria-label="Thinking"><span></span><span></span><span></span></span>';
+    bubble.innerHTML = '<span class="aa-typing" role="status"><span class="aa-sr">Assistant is typing…</span><span></span><span></span><span></span></span>';
+    // Screen readers announce the finished reply once, not every streamed chunk.
+    log.setAttribute('aria-busy', 'true');
     var answer = '';
+    var streamError = null;
 
     try {
       var res = await fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: history.slice(-MAX_HISTORY) })
+        body: JSON.stringify({ messages: turn.slice(-MAX_HISTORY) })
       });
       if (!res.ok || !res.body) {
         var info = await res.json().catch(function () { return {}; });
@@ -220,7 +257,6 @@
       var reader = res.body.getReader();
       var decoder = new TextDecoder();
       var buffer = '';
-      var streamError = null;
       for (;;) {
         var chunk = await reader.read();
         if (chunk.done) break;
@@ -236,31 +272,36 @@
           if (data.t) answer += data.t;
           if (data.error) streamError = data.error;
         });
-        if (answer) { bubble.innerHTML = render(answer); scrollDown(); }
+        if (answer) { setBotContent(bubble, render(answer)); scrollDown(); }
       }
-      if (streamError && !answer) throw new Error(streamError);
+      if (streamError) throw new Error(streamError);
       if (!answer) throw new Error('No answer came back. Please try again.');
-      history.push({ role: 'assistant', content: answer });
+      // Store only complete exchanges so the history always alternates.
+      history = turn.concat({ role: 'assistant', content: answer });
       save();
     } catch (err) {
-      // Drop the unanswered question so the next request still alternates turns.
-      history.pop();
-      save();
-      bubble.classList.add('aa-error');
-      bubble.textContent = (err && err.message && !/fetch|network/i.test(err.message))
+      var msg = (err && err.message && !/fetch|network/i.test(err.message))
         ? err.message
         : 'Couldn’t reach the assistant. Check your connection and try again.';
+      if (answer) {
+        // Keep what arrived visible, but flag it as cut short and leave it out of history.
+        setBotContent(bubble, render(answer) + '<span class="aa-note">' + esc('The answer was cut short. ' + msg) + '</span>');
+      } else {
+        bubble.classList.add('aa-error');
+        setBotContent(bubble, esc(msg));
+      }
     } finally {
       busy = false;
-      autosize();
-      input.focus();
+      log.setAttribute('aria-busy', 'false');
+      syncControls();
+      if (root.classList.contains('aa-open')) input.focus();
     }
   }
 
   // --- Events
   launcher.addEventListener('click', function () { setOpen(true); });
   root.querySelector('.aa-close').addEventListener('click', function () { setOpen(false); });
-  root.querySelector('.aa-reset').addEventListener('click', function () {
+  resetBtn.addEventListener('click', function () {
     if (busy) return;
     history = [];
     save();
@@ -268,11 +309,29 @@
     input.focus();
   });
   form.addEventListener('submit', function (e) { e.preventDefault(); ask(input.value); });
-  input.addEventListener('input', autosize);
+  input.addEventListener('input', syncControls);
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); ask(input.value); }
   });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && root.classList.contains('aa-open')) setOpen(false);
+  mobile.addEventListener('change', function () {
+    panel.setAttribute('aria-modal', String(root.classList.contains('aa-open') && mobile.matches));
   });
+  document.addEventListener('keydown', function (e) {
+    if (!root.classList.contains('aa-open')) return;
+    if (e.key === 'Escape') { setOpen(false); return; }
+    // Full-screen on phones: keep Tab inside the chat.
+    if (e.key === 'Tab' && mobile.matches) {
+      var items = [].slice.call(panel.querySelectorAll('button:not([disabled]), textarea, a[href]'));
+      if (!items.length) return;
+      var first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && (document.activeElement === last || !panel.contains(document.activeElement))) {
+        e.preventDefault(); first.focus();
+      }
+    }
+  });
+
+  // Reopen after moving to another page if the chat was open.
+  if (recall(OPEN_KEY) === '1') setOpen(true, true);
 })();
