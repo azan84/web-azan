@@ -13,7 +13,7 @@
   --aa-warm: #c26a12;
   --aa-error: #a8321e;
   --aa-shadow: 0 24px 48px -16px rgba(15, 20, 25, 0.28), 0 2px 6px rgba(15, 20, 25, 0.06);
-  font-family: 'Inter Tight', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: 'IBM Plex Sans', 'Inter Tight', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--aa-ink);
   -webkit-font-smoothing: antialiased;
 }
@@ -90,8 +90,8 @@
 }
 #ask-azan .aa-head-text { flex: 1; min-width: 0; }
 #ask-azan .aa-title {
-  margin: 0; font-family: 'Instrument Serif', 'Playfair Display', Georgia, serif;
-  font-size: 22px; font-weight: 400; line-height: 1.15; letter-spacing: -0.01em; color: var(--aa-ink);
+  margin: 0; font-family: inherit;
+  font-size: 17px; font-weight: 600; line-height: 1.25; letter-spacing: -0.01em; color: var(--aa-ink);
 }
 #ask-azan .aa-sub { margin: 4px 0 0; font-size: 12.5px; line-height: 1.4; color: var(--aa-ink-3); }
 #ask-azan .aa-icon-btn {

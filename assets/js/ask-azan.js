@@ -29,14 +29,16 @@
   // Stylesheet lives next to this script's site root, so it works from any page.
   var css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = new URL('assets/css/ask-azan.css?v=2', siteRoot).href;
+  css.href = new URL('assets/css/ask-azan.css?v=3', siteRoot).href;
   document.head.appendChild(css);
 
   var root = document.createElement('div');
   root.id = 'ask-azan';
   root.className = 'aa-root';
-  // Pages without the site's token stylesheet have no dark theme; keep the widget light there.
-  if (!document.body.classList.contains('has-tokens')) root.classList.add('aa-light');
+  // Pages with no theme system of their own stay light, so keep the widget light there too.
+  if (!document.body.classList.contains('has-tokens') && !document.documentElement.hasAttribute('data-theme')) {
+    root.classList.add('aa-light');
+  }
   root.innerHTML =
     '<button type="button" class="aa-launcher" aria-haspopup="dialog" aria-controls="aa-panel" aria-expanded="false">' +
       ICON_CHAT + '<span class="aa-launcher-label">Ask about my work</span>' +
@@ -131,7 +133,7 @@
     }
     return out + esc(text.slice(last));
   }
-  // Web apps (caturmatik/, lift-escalator-sim/), downloads and other sites open in a new
+  // Web apps (e.g. lift-escalator-sim/), downloads and other sites open in a new
   // tab so the visitor keeps the chat; site pages open in place (the panel reopens there).
   function link(url, label) {
     var sameSite = url.origin === siteRoot.origin;
