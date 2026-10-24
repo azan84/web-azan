@@ -1,0 +1,19 @@
+name = "azan-site-chat"
+main = "src/index.js"
+compatibility_date = "2026-05-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ALLOWED_ORIGINS = "https://azan.biomechemical.com"
+ALLOW_LOCALHOST = "false"
+
+# 8 questions per minute per visitor IP.
+[[ratelimits]]
+name = "CHAT_LIMITER"
+namespace_id = "4201"
+  [ratelimits.simple]
+  limit = 8
+  period = 60
+
+[observability]
+enabled = true
