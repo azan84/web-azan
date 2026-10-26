@@ -123,7 +123,19 @@ function handleContactSubmit(e) {
     toggle.addEventListener('click', () => {
       const next = (root.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
       if (!prefersReduced && 'startViewTransition' in document) {
-        document.startViewTransition(() => applyTheme(next));
+        // The new palette floods outward from the toggle, like a pressure front
+        const b = toggle.getBoundingClientRect();
+        const x = b.left + b.width / 2, y = b.top + b.height / 2;
+        const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+        root.classList.add('vt-theme');
+        const vt = document.startViewTransition(() => applyTheme(next));
+        vt.ready.then(() => {
+          root.animate(
+            { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
+            { duration: 700, easing: 'cubic-bezier(.65,0,.35,1)', pseudoElement: '::view-transition-new(root)' }
+          );
+        }).catch(() => {});
+        vt.finished.finally(() => root.classList.remove('vt-theme'));
       } else {
         applyTheme(next);
       }
