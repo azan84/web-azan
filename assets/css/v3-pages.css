@@ -178,6 +178,11 @@ body.has-tokens .clay-coral:hover,
   border: 1px solid var(--hairline);
 }
 
+/* Let the 16:9 clip set the height (legacy styles.css forced 16:10, leaving a strip) */
+.sim-showcase .sim-media {
+  aspect-ratio: auto;
+}
+
 .sim-gif,
 .sim-media video,
 .sim-media img,

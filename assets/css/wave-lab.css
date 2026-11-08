@@ -1,0 +1,236 @@
+/* ==========================================================================
+   Academics — featured submerged-breakwater card ("wave lab")
+   Stage with switchable views + freeboard explorer. Uses v3 tokens only.
+   ========================================================================== */
+
+.wave-lab {
+  --wl-t: var(--flow-mid);
+  --wl-r: var(--flow-warm);
+  --wl-d: var(--flow-hot);
+  --wl-water: color-mix(in srgb, var(--flow-mid) 22%, transparent);
+  border-color: color-mix(in srgb, var(--accent-1) 35%, var(--hairline)) !important;
+}
+
+.wave-lab .sim-caption h3 { margin-bottom: 0.75rem; }
+
+/* ---------- Stage ---------- */
+.wl-stage .wl-view[hidden] { display: none !important; }
+
+.wl-stage .wl-plot {
+  background: #fff;            /* the TKE plot is drawn on white */
+}
+
+/* ---------- View tabs ---------- */
+.wl-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 1rem;
+}
+
+.wl-tab {
+  font: 500 0.8rem/1 var(--font-mono);
+  color: var(--ink-2);
+  background: transparent;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 999px;
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.wl-tab:hover { border-color: var(--accent-1); color: var(--ink); }
+
+.wl-tab[aria-pressed="true"] {
+  background: var(--accent-1);
+  border-color: var(--accent-1);
+  color: var(--bg-elev);
+}
+
+.wl-tab:focus-visible,
+.wl-explorer input[type="range"]:focus-visible {
+  outline: 2px solid var(--accent-1);
+  outline-offset: 2px;
+}
+
+/* ---------- Explorer ---------- */
+.wl-explorer {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  grid-template-areas:
+    "head head"
+    "svg  ctrl"
+    "svg  energy";
+  gap: 1rem 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--hairline);
+}
+
+.wl-explorer-head { grid-area: head; }
+
+.wl-explorer-head h4 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 0.25rem;
+}
+
+.wl-explorer-head p {
+  font-size: 0.88rem;
+  color: var(--ink-3);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.wl-schematic {
+  grid-area: svg;
+  width: 100%;
+  height: auto;
+  align-self: center;
+  background: var(--bg-sunk);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+}
+
+.wl-water   { fill: var(--wl-water); }
+.wl-surface { fill: none; stroke: var(--flow-mid); stroke-width: 1.6; }
+.wl-bw      { fill: var(--ink-4); }
+.wl-bed     { stroke: var(--ink-3); stroke-width: 1.5; }
+.wl-swl     { stroke: var(--ink-4); stroke-width: 1; stroke-dasharray: 3 4; }
+.wl-dim     { stroke: var(--accent-2); stroke-width: 1.4; }
+
+.wl-lbl {
+  font: 500 9.5px var(--font-mono);
+  fill: var(--ink-3);
+}
+
+.wl-dim-lbl { fill: var(--accent-2); font-weight: 600; }
+
+/* controls */
+.wl-controls { grid-area: ctrl; }
+
+.wl-slider-label {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  font-size: 0.9rem;
+  color: var(--ink-2);
+  margin-bottom: 0.5rem;
+}
+
+.wl-slider-label output {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.wl-tag {
+  font: 500 0.72rem/1 var(--font-mono);
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  background: var(--accent-1-soft);
+  color: var(--accent-1);
+}
+
+.wl-tag:empty { display: none; }
+.wl-tag.is-breaking { background: var(--accent-2-soft); color: var(--accent-2); }
+
+.wl-controls input[type="range"] {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--accent-1);
+  cursor: pointer;
+}
+
+.wl-ticks {
+  display: flex;
+  justify-content: space-between;
+  font: 0.72rem var(--font-mono);
+  color: var(--ink-4);
+  margin-top: 0.2rem;
+}
+
+/* energy bar */
+.wl-energy { grid-area: energy; }
+
+.wl-bar {
+  display: flex;
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--bg-sunk);
+  gap: 2px;
+}
+
+.wl-seg { height: 100%; transition: flex-basis 0.35s ease; flex: 0 0 0; }
+.wl-seg.t, .wl-readout i.t { background: var(--wl-t); }
+.wl-seg.r, .wl-readout i.r { background: var(--wl-r); }
+.wl-seg.d, .wl-readout i.d { background: var(--wl-d); }
+
+.wl-readout {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem 0.75rem;
+  margin: 0.75rem 0 0;
+}
+
+.wl-readout dt {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+.wl-readout i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex: none;
+}
+
+.wl-readout dd {
+  margin: 0.1rem 0 0;
+  font: 500 0.95rem var(--font-mono);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.wl-note {
+  font-size: 0.85rem;
+  color: var(--ink-2);
+  margin: 0.75rem 0 0;
+  line-height: 1.5;
+}
+
+.wl-note button {
+  font: inherit;
+  color: var(--accent-1);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+  .wl-explorer {
+    grid-template-columns: 1fr;
+    grid-template-areas: "head" "svg" "ctrl" "energy";
+  }
+}
+
+@media (max-width: 480px) {
+  .wl-readout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wl-seg { transition: none; }
+}
+
+/* The TKE plot carries its own title and colour bar; keep the badge off it */
+.wl-stage:has(.wl-plot:not([hidden])) .sim-badge { display: none; }

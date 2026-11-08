@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/styles.css?v=10" />
   <link rel="stylesheet" href="assets/css/v3.css?v=1" />
-  <link rel="stylesheet" href="assets/css/v3-pages.css?v=1" />
+  <link rel="stylesheet" href="assets/css/v3-pages.css?v=2" />
   <script>
     (function(){
       const p = new URLSearchParams(window.location.search).get('theme');
@@ -29,6 +29,7 @@
     })();
   </script>
   <link rel="stylesheet" href="assets/css/motion.css?v=1" />
+  <link rel="stylesheet" href="assets/css/wave-lab.css?v=1" />
 </head>
 <body class="has-tokens">
 
@@ -71,6 +72,108 @@
       <div class="section-header reveal">
         <h2 class="section-title">Computational research in action</h2>
       </div>
+
+      <!-- Featured: submerged breakwater (OpenFOAM VOF + Blender) with freeboard explorer -->
+      <figure class="sim-figure clay reveal wave-lab" id="breakwater" data-wave-lab>
+        <div class="sim-media wl-stage">
+          <video
+            class="wl-view is-active"
+            data-view="render"
+            controls
+            muted
+            loop
+            preload="metadata"
+            playsinline
+            poster="assets/images/breakwater-poster.jpg"
+            aria-label="Blender render of a solitary wave crossing a submerged trapezoidal breakwater, with log-scale turbulent kinetic energy on the cut face"
+          >
+            <source src="assets/video/breakwater_render.mp4" type="video/mp4" />
+            Your browser does not support HTML5 video.
+          </video>
+          <video
+            class="wl-view wl-plot"
+            data-view="tke"
+            controls
+            muted
+            loop
+            preload="none"
+            playsinline
+            poster="assets/images/breakwater-tke-poster.jpg"
+            aria-label="Cross-section of the flume: log-scale turbulent kinetic energy as the solitary wave passes over the breakwater"
+            hidden
+          >
+            <source src="assets/video/breakwater_tke_log.mp4" type="video/mp4" />
+          </video>
+          <img
+            class="wl-view"
+            data-view="breaking"
+            src="assets/images/breakwater-breaking-f010.jpg"
+            alt="Shallow-crest case, freeboard 0.10 m: the wave plunges in the lee of the breakwater and turbulence spikes behind the crest"
+            loading="lazy"
+            decoding="async"
+            hidden
+          />
+          <span class="sim-badge"><span class="sim-dot"></span>Submerged Breakwater</span>
+        </div>
+
+        <figcaption class="sim-caption">
+          <h3>Submerged Breakwater — Solitary Wave Attenuation</h3>
+          <div class="wl-tabs" role="group" aria-label="Choose a view">
+            <button type="button" class="wl-tab" data-show="render" aria-pressed="true">3D render</button>
+            <button type="button" class="wl-tab" data-show="tke" aria-pressed="false">TKE cross-section</button>
+            <button type="button" class="wl-tab" data-show="breaking" aria-pressed="false">Breaking crest</button>
+          </div>
+          <p class="sim-desc">
+            An <b>OpenFOAM interFoam</b> (VOF + RNG k&ndash;&epsilon;) replication of a published FLOW-3D study: a 0.30&nbsp;m <b>solitary wave</b> crossing a trapezoidal breakwater in 1.15&nbsp;m of water. The flow replicates, including shoaling over the crest, <em>vortex shedding at the crest corners</em> and the turbulent lee wake. The attenuation is a different story. With 0.5&nbsp;m of water over the crest the wave does not break, and about 96&nbsp;% of its energy gets through. The paper's K<sub>t</sub>&nbsp;=&nbsp;0.87 appears only with a much shallower crest. The render extrudes the CFD free surface in <b>Blender Cycles</b>, with log-scale TKE on the cut face.
+          </p>
+          <ul class="sim-meta">
+            <li><span class="k">Solver</span><span class="v">OpenFOAM · VOF</span></li>
+            <li><span class="k">Turbulence</span><span class="v">RNG k–ε</span></li>
+            <li><span class="k">Wave</span><span class="v">Solitary · 0.30 m</span></li>
+            <li><span class="k">Mesh</span><span class="v">113k cells</span></li>
+            <li><span class="k">GCI (fine)</span><span class="v">0.9 %</span></li>
+            <li><span class="k">Post</span><span class="v">Python + Blender</span></li>
+          </ul>
+        </figcaption>
+
+        <div class="wl-explorer">
+          <div class="wl-explorer-head">
+            <h4>Freeboard explorer</h4>
+            <p>Drag to change the depth of water over the crest. The bar shows where the incoming wave energy goes in each of five OpenFOAM runs.</p>
+          </div>
+          <svg class="wl-schematic" viewBox="0 0 400 150" role="img" aria-labelledby="wlSchemTitle">
+            <title id="wlSchemTitle">Flume cross-section with the breakwater crest at the selected freeboard</title>
+            <path class="wl-water" data-wl-water d="" />
+            <path class="wl-surface" data-wl-surface d="" />
+            <path class="wl-bw" data-wl-bw d="" />
+            <line class="wl-bed" x1="0" y1="140" x2="400" y2="140" />
+            <line class="wl-swl" x1="0" y1="48" x2="400" y2="48" />
+            <text class="wl-lbl" x="6" y="43">SWL</text>
+            <g data-wl-dim>
+              <line class="wl-dim" x1="0" y1="0" x2="0" y2="0" />
+              <text class="wl-lbl wl-dim-lbl" x="0" y="0">F</text>
+            </g>
+            <text class="wl-lbl" x="132" y="27">← H = 0.30 m</text>
+          </svg>
+          <div class="wl-controls">
+            <label class="wl-slider-label" for="wlFreeboard">Freeboard F = <output data-wl-f>0.50</output>&nbsp;m <span class="wl-tag" data-wl-tag>paper geometry</span></label>
+            <input type="range" id="wlFreeboard" min="0" max="4" step="1" value="1" data-wl-range aria-valuetext="0.50 metres" />
+            <div class="wl-ticks" aria-hidden="true"><span>0.65</span><span>0.50</span><span>0.35</span><span>0.20</span><span>0.10</span></div>
+          </div>
+          <div class="wl-energy">
+            <div class="wl-bar" aria-hidden="true">
+              <span class="wl-seg t" data-wl-seg="t"></span><span class="wl-seg r" data-wl-seg="r"></span><span class="wl-seg d" data-wl-seg="d"></span>
+            </div>
+            <dl class="wl-readout" aria-live="polite">
+              <div><dt><i class="t"></i>Transmitted</dt><dd data-wl-out="t">92.4 %</dd></div>
+              <div><dt><i class="r"></i>Reflected</dt><dd data-wl-out="r">4.7 %</dd></div>
+              <div><dt><i class="d"></i>Dissipated</dt><dd data-wl-out="d">2.9 %</dd></div>
+              <div><dt><span>K<sub>t</sub> (energy)</span></dt><dd data-wl-out="kt">0.961</dd></div>
+            </dl>
+            <p class="wl-note" data-wl-note>The wave rides over the crest intact.</p>
+          </div>
+        </div>
+      </figure>
 
       <!-- Simulation 1: CFD-DEM Fluidized Bed -->
       <figure class="sim-figure clay reveal">
@@ -351,5 +454,6 @@
   </script>
   <script src="assets/js/ask-azan.js" defer></script>
   <script src="assets/js/motion.js?v=1" defer></script>
+  <script src="assets/js/wave-lab.js?v=1" defer></script>
 </body>
 </html>
