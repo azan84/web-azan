@@ -1,0 +1,17 @@
+{
+  "name": "Caturmatik",
+  "short_name": "Caturmatik",
+  "description": "Bijak Catur, Cerdas Matematik! Chess + mental arithmetic for kids.",
+  "start_url": "/caturmatik/",
+  "scope": "/caturmatik/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF4E6",
+  "theme_color": "#FFF4E6",
+  "lang": "ms",
+  "icons": [
+    { "src": "/caturmatik/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/caturmatik/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/caturmatik/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
