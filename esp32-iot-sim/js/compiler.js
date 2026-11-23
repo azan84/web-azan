@@ -13,7 +13,7 @@
     'int8_t', 'int16_t', 'int32_t', 'int64_t', 'CloudCounter'];
   const FLOAT_TYPES = ['float', 'double'];
   const STR_TYPES = ['String', 'char'];
-  const OBJ_TYPES = ['DHT', 'Servo', 'WiFiConnectionHandler'];
+  const OBJ_TYPES = ['DHT', 'Servo', 'WiFiConnectionHandler', 'LiquidCrystal_I2C'];
   const VOID_TYPES = ['void', 'auto'];
   const UNSUPPORTED_CLOUD = ['CloudColor', 'CloudLocation', 'CloudSchedule', 'CloudColoredLight', 'CloudDimmedLight', 'CloudTelevision', 'CloudTime'];
 
@@ -56,7 +56,7 @@
     function walk(name, seen) {
       if (seen.has(name)) return [];
       seen.add(name);
-      const lines = files[name].split('\n');
+      const lines = String(files[name]).replace(/\r\n?/g, '\n').split('\n');
       const out = [];
       lines.forEach((line, idx) => {
         const m = /^\s*#\s*include\s*"([^"]+)"/.exec(line);
@@ -185,34 +185,117 @@
   }
 
   /* ---------- 3. preprocessor directives ---------- */
+  // Symbols the ESP32 Arduino core defines for every sketch (used by #ifdef ESP32 …)
+  const PREDEFINED = { ESP32: '1', ARDUINO_ARCH_ESP32: '1', ARDUINO: '10819', ESP_PLATFORM: '1', ARDUINO_ESP32_DEV: '1' };
+
+  function evalCondition(expr, known) {
+    let e = expr.replace(/defined\s*\(\s*([A-Za-z_]\w*)\s*\)|defined\s+([A-Za-z_]\w*)/g, (_, a, b) => (Object.prototype.hasOwnProperty.call(known, a || b) ? '1' : '0'));
+    e = e.replace(/[A-Za-z_]\w*/g, (w) => {
+      if (!Object.prototype.hasOwnProperty.call(known, w)) return '0';
+      const v = String(known[w]).trim();
+      return /^[-+]?(0x[0-9a-fA-F]+|\d+)$/.test(v) ? v : v === '' ? '1' : '1';
+    });
+    if (!/^[\s\d()+\-*\/%<>=!&|^~?:xXa-fA-F]*$/.test(e)) return true;
+    try { return !!Function('return (' + e + ');')(); } catch (x) { return true; }
+  }
+
   function preprocess(code, warnings, err) {
     const defines = {};
+    const known = Object.assign({}, PREDEFINED);
     const lines = code.split('\n');
+    const stack = [];                 // { active, taken, parentActive }
+    const active = () => stack.every((s) => s.active);
     for (let li = 0; li < lines.length; li++) {
       const line = lines[li];
       const m = /^\s*#\s*(\w+)\s*(.*)$/.exec(line);
-      if (!m) continue;
+      if (!m) {
+        if (!active()) lines[li] = '';
+        continue;
+      }
       const dir = m[1];
       const rest = m[2].trim();
+      lines[li] = '';
+      if (dir === 'ifdef' || dir === 'ifndef' || dir === 'if') {
+        const parent = active();
+        let cond;
+        if (dir === 'if') cond = evalCondition(rest, known);
+        else {
+          const has = Object.prototype.hasOwnProperty.call(known, rest.split(/\s+/)[0]);
+          cond = dir === 'ifdef' ? has : !has;
+        }
+        stack.push({ active: parent && cond, taken: cond, parentActive: parent });
+        continue;
+      }
+      if (dir === 'elif' || dir === 'else') {
+        const top = stack[stack.length - 1];
+        if (!top) { err('#' + dir + ' without #if', li + 1); continue; }
+        const cond = dir === 'else' ? true : evalCondition(rest, known);
+        top.active = top.parentActive && !top.taken && cond;
+        if (cond && !top.taken) top.taken = true;
+        continue;
+      }
+      if (dir === 'endif') {
+        if (!stack.length) err('#endif without #if', li + 1);
+        stack.pop();
+        continue;
+      }
+      if (!active()) continue;
       if (dir === 'define') {
         const dm = /^([A-Za-z_]\w*)(\([^)]*\))?\s*(.*)$/.exec(rest);
-        if (!dm) { lines[li] = ''; continue; }
+        if (!dm) continue;
+        if (Object.prototype.hasOwnProperty.call(known, dm[1]) && !Object.prototype.hasOwnProperty.call(PREDEFINED, dm[1])) {
+          warnings.push('"' + dm[1] + '" redefined (line ' + (li + 1) + ') — the first #define is kept.');
+          continue;
+        }
+        known[dm[1]] = dm[2] ? '1' : dm[3];
         if (dm[2]) {
           // function-like macro → arrow function
           const params = dm[2].slice(1, -1).split(',').map((p) => p.trim()).filter(Boolean).join(', ');
           lines[li] = 'const ' + dm[1] + ' = (' + params + ') => (' + (dm[3] || 'undefined') + ');';
+        } else if (Object.prototype.hasOwnProperty.call(PREDEFINED, dm[1])) {
+          // e.g. #define ESP32 — already a predefined symbol, nothing to emit
         } else {
           defines[dm[1]] = dm[3];
           lines[li] = 'const ' + dm[1] + ' = ' + (dm[3] === '' ? 'true' : dm[3]) + ';';
         }
-      } else {
-        lines[li] = '';
-        if (!['include', 'ifdef', 'ifndef', 'endif', 'if', 'else', 'elif', 'pragma', 'undef', 'error', 'warning'].includes(dir)) {
-          err('unknown directive #' + dir, li + 1);
-        }
+      } else if (dir === 'undef') {
+        delete known[rest.split(/\s+/)[0]];
+      } else if (dir === 'error') {
+        err('#error ' + rest, li + 1);
+      } else if (!['include', 'pragma', 'warning', 'line'].includes(dir)) {
+        err('unknown directive #' + dir, li + 1);
       }
     }
+    if (stack.length) warnings.push('#if / #ifdef without a matching #endif.');
     return { code: lines.join('\n'), defines };
+  }
+
+  /* enum Name { A, B = 5, C };  →  const A = 0, B = 5, C = (5) + 1;  and Name becomes int */
+  function rewriteEnums(code, err) {
+    const names = [];
+    const re = /(?<![\w$])(typedef\s+)?enum(\s+class|\s+struct)?\s*([A-Za-z_]\w*)?\s*(?::\s*[\w\s]+?)?\s*\{([^{}]*)\}\s*([A-Za-z_]\w*)?\s*;/g;
+    code = code.replace(re, (all, td, cls, name, body, alias) => {
+      const items = body.split(',').map((x) => x.trim()).filter(Boolean);
+      let next = '0';
+      const decls = items.map((it) => {
+        const mm = /^([A-Za-z_]\w*)\s*(?:=\s*([\s\S]+))?$/.exec(it);
+        if (!mm) { err('could not understand enum value \'' + it + '\'', lineAt(code, code.indexOf(all))); return ''; }
+        const val = mm[2] !== undefined ? '(' + mm[2].trim() + ')' : next;
+        next = '(' + mm[1] + ') + 1';
+        return mm[1] + ' = ' + val;
+      }).filter(Boolean);
+      if (name) names.push({ name, cls: !!cls });
+      if (td && alias) names.push({ name: alias, cls: false });
+      const nl = (all.match(/\n/g) || []).join('');
+      return 'const ' + decls.join(', ') + ';' + nl;
+    });
+    names.forEach(({ name, cls }) => {
+      if (cls) code = code.replace(new RegExp('(?<![\\w$.])' + name + '\\s*::\\s*', 'g'), '');
+      // the enum type name becomes int wherever it starts a declaration / parameter
+      code = code.replace(new RegExp('(?<![\\w$.])' + name + '(?=\\s*[&*]?\\s*[A-Za-z_])', 'g'), 'int');
+      code = code.replace(new RegExp('\\(\\s*' + name + '\\s*\\)', 'g'), '(int)');
+    });
+    return code;
   }
 
   /* ---------- 4. casts and literals ---------- */
@@ -421,6 +504,112 @@
     return name + ' = ' + init;
   }
 
+  /* ---------- C++ integer arithmetic ---------- */
+  // int / int truncates in C++ (7 / 2 == 3). Rewrite a / b to __idiv(a, b) when
+  // both sides are built only from int variables, integer literals and int-returning calls.
+  const INT_FNS = ['millis', 'micros', 'analogRead', 'digitalRead', 'analogReadMilliVolts', 'map', 'random', 'pulseIn', 'pulseInLong', '__int', '__idiv'];
+  function isIntExpr(text, intVars, intFns, intDefines) {
+    let t = text.trim();
+    if (!t || /[.\u0001?:<>=!&|^~'"\[\]]/.test(t)) return false;
+    let guard = 0;
+    const callRe = /([A-Za-z_]\w*)\s*\(([^()]*)\)/g;
+    while (callRe.test(t) && guard++ < 50) {
+      callRe.lastIndex = 0;
+      let bad = false;
+      t = t.replace(callRe, (all, name) => { if (!intFns.has(name)) bad = true; return '0'; });
+      if (bad) return false;
+      callRe.lastIndex = 0;
+    }
+    const words = t.match(/[A-Za-z_]\w*/g) || [];
+    if (!words.every((w) => intVars.has(w) || intDefines.has(w))) return false;
+    return /^[\w\s+\-*%()]*$/.test(t);
+  }
+  function readPrimaryBack(s, i) {
+    // s[i] is the last char of an operand; return its start index
+    while (i >= 0 && /\s/.test(s[i])) i--;
+    if (i < 0) return -1;
+    if (s[i] === ')' || s[i] === ']') {
+      let o = matchOpenBackward(s, i);
+      if (o < 0) return -1;
+      let k = o - 1;
+      while (k >= 0 && /[\w$]/.test(s[k])) k--;
+      if (k + 1 < o && s[o] === '(' && /^(if|while|for|switch|return)$/.test(s.slice(k + 1, o))) return o;
+      if (s[o] === '[' || k + 1 < o) return readPrimaryBack(s, k) >= 0 && /[\w)\]]/.test(s[k] || '') ? k + 1 : k + 1;
+      return o;
+    }
+    let k = i;
+    while (k >= 0 && /[\w.\u0001]/.test(s[k])) k--;
+    return k + 1;
+  }
+  function rewriteIntDivision(code, intVars, intFns, intDefines) {
+    let out = code;
+    let i = 0;
+    let guard = 0;
+    while ((i = out.indexOf('/', i)) >= 0 && guard++ < 5000) {
+      if (out[i + 1] === '=' || out[i + 1] === '/' || out[i + 1] === '*' || out[i - 1] === '*' || out[i - 1] === '/') { i++; continue; }
+      // left operand: a chain of * / % primaries (C++ is left-associative)
+      let start = readPrimaryBack(out, i - 1);
+      if (start < 0) { i++; continue; }
+      for (;;) {
+        let k = start - 1;
+        while (k >= 0 && /\s/.test(out[k])) k--;
+        if (k >= 0 && (out[k] === '*' || out[k] === '%') && out[k - 1] !== '*' && out[k - 1] !== '/') {
+          const s2 = readPrimaryBack(out, k - 1);
+          if (s2 < 0) break;
+          start = s2;
+        } else break;
+      }
+      const end = readPrimaryEnd(out, i + 1);
+      const L = out.slice(start, i);
+      const R = out.slice(i + 1, end);
+      if (end > i + 1 && isIntExpr(L, intVars, intFns, intDefines) && isIntExpr(R, intVars, intFns, intDefines)) {
+        const rep = '__idiv(' + L.trim() + ', ' + R.trim() + ')';
+        out = out.slice(0, start) + rep + out.slice(end);
+        i = start + rep.length;
+      } else i++;
+    }
+    return out;
+  }
+  // return values of int functions are truncated, like a C++ conversion
+  function wrapIntReturns(code, funcKinds) {
+    const names = Object.keys(funcKinds).filter((f) => funcKinds[f] === 'int');
+    for (const f of names) {
+      const m = new RegExp('async function ' + f + '\\s*\\([^)]*\\)\\s*\\{').exec(code);
+      if (!m) continue;
+      const open = m.index + m[0].length - 1;
+      const close = matchClose(code, open);
+      if (close < 0) continue;
+      const body = code.slice(open, close + 1).replace(/(?<![\w$])return\s+([^;{}]+);/g, (all, e) => (/^-?\d+$/.test(e.trim()) ? all : 'return __int(' + e + ');'));
+      code = code.slice(0, open) + body + code.slice(close + 1);
+    }
+    return code;
+  }
+
+  /* sprintf / snprintf / dtostrf write into a char buffer: turn them into assignments */
+  function rewriteBufferFormat(code) {
+    const names = ['sprintf', 'snprintf', 'dtostrf'];
+    let out = code;
+    for (const fn of names) {
+      const re = new RegExp('(?<![\\w$.])' + fn + '\\s*\\(', 'g');
+      let m;
+      let guard = 0;
+      while ((m = re.exec(out)) && guard++ < 500) {
+        const open = out.indexOf('(', m.index);
+        const close = matchClose(out, open);
+        if (close < 0) break;
+        const args = splitTop(out.slice(open + 1, close), ',').map((a) => a.trim());
+        let rep = null;
+        if (fn === 'sprintf' && args.length >= 2) rep = '(' + args[0] + ' = __sprintf(' + args.slice(1).join(', ') + '))';
+        if (fn === 'snprintf' && args.length >= 3) rep = '(' + args[0] + ' = __sprintf(' + args.slice(2).join(', ') + ').slice(0, Math.max(0, (' + args[1] + ') - 1)))';
+        if (fn === 'dtostrf' && args.length === 4) rep = '(' + args[3] + ' = __dtostrf(' + args.slice(0, 3).join(', ') + '))';
+        if (!rep) continue;
+        out = out.slice(0, m.index) + rep + out.slice(close + 1);
+        re.lastIndex = m.index + rep.length;
+      }
+    }
+    return out;
+  }
+
   /* ---------- 6. post passes ---------- */
   function rewriteAddProperty(code) {
     return code.replace(/ArduinoCloud\s*\.\s*addProperty\s*\(\s*([A-Za-z_]\w*)\s*,/g,
@@ -445,12 +634,17 @@
     if (!intVars.size) return code;
     const names = Array.from(intVars).map((n) => n.replace(/\$/g, '\\$')).join('|');
     const plain = new RegExp('(?<![\\w.$])(' + names + ')(\\s*\\[[^\\]]*\\])?\\s*=(?!=)\\s*([^;{}]*?)\\s*;', 'g');
-    const div = new RegExp('(?<![\\w.$])(' + names + ')(\\s*\\[[^\\]]*\\])?\\s*\\/=\\s*([^;{}]*?)\\s*;', 'g');
+    const div = new RegExp('(?<![\\w.$])(' + names + ')(\\s*\\[[^\\]]*\\])?\\s*([-+*\\/])=\\s*([^;{}]*?)\\s*;', 'g');
     const balanced = (e) => { let d = 0; for (const ch of e) { if (ch === '(' || ch === '[') d++; else if (ch === ')' || ch === ']') { d--; if (d < 0) return false; } } return d === 0; };
     return code
-      .replace(div, (all, n, idx, e) => !balanced(e) ? all : n + (idx || '') + ' = __int(' + n + (idx || '') + ' / (' + e + '));')
+      .replace(div, (all, n, idx, op, e) => {
+        if (!balanced(e)) return all;
+        if (op !== '/' && /^\d+$/.test(e)) return all;   // i += 1 stays an integer already
+        return n + (idx || '') + ' = __int(' + n + (idx || '') + ' ' + op + ' (' + e + '));';
+      })
       .replace(plain, (all, n, idx, e) => {
         if (!balanced(e)) return all;
+        if (splitTop(e, ',').length > 1) return all;   // declaration list: int a = 7, b = 2;
         if (/^__int\(/.test(e) || /^-?\d+$/.test(e)) return n + (idx || '') + ' = ' + e + ';';
         return n + (idx || '') + ' = __int(' + e + ');';
       });
@@ -459,13 +653,14 @@
   // Arduino prints floats with 2 decimals (68.00); tag float variables
   // passed straight to print()/String() so the runtime can do the same.
   function tagFloats(code, floatVars, floatFns) {
+    code = code.replace(/((?<![\w$])[A-Za-z_]\w*\s*\.\s*print(?:ln)?\s*\(\s*)([A-Za-z_]\w*\s*\.\s*(?:readTemperature|readHumidity|computeHeatIndex|convertCtoF|convertFtoC)\s*\([^()]*\))(\s*[,)])/g, '$1__F($2)$3');
     if (floatVars.size) {
       const names = Array.from(floatVars).join('|');
-      const re = new RegExp('(Serial\\s*\\.\\s*print(?:ln)?\\s*\\(|__String\\()\\s*(' + names + ')\\s*(?=[,)])', 'g');
+      const re = new RegExp('((?<![\\w$])[A-Za-z_]\\w*\\s*\\.\\s*print(?:ln)?\\s*\\(|__String\\()\\s*(' + names + ')\\s*(?=[,)])', 'g');
       code = code.replace(re, '$1__F($2)');
     }
     if (floatFns.length) {
-      const re = new RegExp('(Serial\\s*\\.\\s*print(?:ln)?\\s*\\(|__String\\()\\s*(' + floatFns.join('|') + ')\\s*\\(', 'g');
+      const re = new RegExp('((?<![\\w$])[A-Za-z_]\\w*\\s*\\.\\s*print(?:ln)?\\s*\\(|__String\\()\\s*(' + floatFns.join('|') + ')\\s*\\(', 'g');
       let m;
       while ((m = re.exec(code))) {
         const callStart = m.index + m[1].length;
@@ -608,6 +803,22 @@
     }
   }
 
+  // Names that exist on an Arduino UNO but not in the ESP32 core.
+  function checkBoardNames(code, defines, err) {
+    const re = /(?<![\w$.])(A1|A2|A8|A9|D\d{1,2})(?![\w$])/g;
+    let m;
+    while ((m = re.exec(code))) {
+      const name = m[1];
+      if (Object.prototype.hasOwnProperty.call(defines, name)) continue;
+      if (new RegExp('(?:const\\s+|(?<![\\w$])(?!return\\b|case\\b)[A-Za-z_][\\w<>]*[*&]?\\s+)' + name + '\\s*(?:=|;|,|\\[|\\))').test(code)) continue; // declared by the sketch
+      const line = lineAt(code, m.index);
+      if (/^D/.test(name)) {
+        err('\'' + name + '\' was not declared in this scope — the ESP32 core has no D-pin names. The label ' + name + ' on the DevKit means GPIO ' + name.slice(1) + ', so write ' + name.slice(1) + ' in your code', line);
+      }
+      err('\'' + name + '\' was not declared in this scope — the ESP32 core defines A0, A3–A7 and A10–A19 only. Use the GPIO number of an ADC1 pin instead (32, 33, 34, 35, 36 or 39)', line);
+    }
+  }
+
   function staticCloudScan(code, globals) {
     const props = [];
     const re = /ArduinoCloud\s*\.\s*addProperty\s*\(\s*([A-Za-z_]\w*)\s*,\s*([A-Za-z_][\w:.]*)\s*(?:,\s*([^,)]+))?/g;
@@ -638,6 +849,15 @@
     checkSemicolons(code, err);
     const pre = preprocess(code, warnings, err);
     code = pre.code;
+    checkBoardNames(code, pre.defines, err);
+    {
+      const sm = /(?<![\w$])(struct|class|union|template)\b/.exec(code);
+      if (sm) err('\'' + sm[1] + '\' is not supported by the simulator. Use separate variables or arrays (and const int or enum for named states)', lineAt(code, sm.index));
+    }
+    if (/#\s*include\s*<Servo\.h>/.test(built.text)) {
+      warnings.push('#include <Servo.h>: older versions of the Arduino Servo library stop with "This library only supports boards with an AVR…" on the ESP32. Update Servo to 1.2 or later, or use the ESP32Servo library (#include <ESP32Servo.h>) as this course does. The simulator runs either.');
+    }
+    code = rewriteEnums(code, err);
     code = rewriteNumbers(code);
     code = rewriteCasts(code);
 
@@ -654,9 +874,16 @@
     // names reused with different types in different scopes are left alone
     ctx.notInt.forEach((v) => ctx.intVars.delete(v));
     ctx.notFloat.forEach((v) => ctx.floatVars.delete(v));
+    {
+      const intDefines = new Set(Object.keys(pre.defines).filter((k) => /^\s*-?(0[xX][0-9a-fA-F]+|\d+)\s*$/.test(pre.defines[k])));
+      const intFns = new Set(INT_FNS.concat(Object.keys(ctx.funcKinds).filter((f) => ctx.funcKinds[f] === 'int')));
+      code = rewriteIntDivision(code, ctx.intVars, intFns, intDefines);
+    }
+    code = wrapIntReturns(code, ctx.funcKinds);
+    code = rewriteBufferFormat(code);
     code = rewriteIntAssign(code, ctx.intVars);
     code = tagFloats(code, ctx.floatVars, Object.keys(ctx.funcKinds).filter((f) => ctx.funcKinds[f] === 'float'));
-    const asyncNames = new Set(['delay', 'delayMicroseconds', 'yield', 'pulseIn']);
+    const asyncNames = new Set(['delay', 'delayMicroseconds', 'yield', 'pulseIn', 'pulseInLong']);
     ctx.functions.forEach((f) => asyncNames.add(f));
     code = wrapAwaits(code, asyncNames);
     code = addLoopTicks(code);

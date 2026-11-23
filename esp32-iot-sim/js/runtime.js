@@ -19,6 +19,7 @@
     36: { adc: 'ADC1', inputOnly: true, note: 'VP' }, 39: { adc: 'ADC1', inputOnly: true, note: 'VN' },
   };
   const FLASH_PINS = [6, 7, 8, 9, 10, 11];
+  const ANALOG_TYPES = ['pot', 'ldr', 'rain', 'soil'];
 
   const C = {
     HIGH: 1, LOW: 0, INPUT: 1, OUTPUT: 3, INPUT_PULLUP: 5, INPUT_PULLDOWN: 9,
@@ -28,9 +29,17 @@
     DEC: 10, HEX: 16, OCT: 8, BIN: 2,
     WL_IDLE_STATUS: 0, WL_NO_SSID_AVAIL: 1, WL_SCAN_COMPLETED: 2, WL_CONNECTED: 3, WL_CONNECT_FAILED: 4, WL_CONNECTION_LOST: 5, WL_DISCONNECTED: 6,
     WIFI_STA: 1, WIFI_AP: 2, WIFI_AP_STA: 3, WIFI_OFF: 0,
+    // ESP32 core analog aliases (there is no A1, A2, A8 or A9 on the ESP32)
+    A0: 36, A3: 39, A4: 32, A5: 33, A6: 34, A7: 35, A10: 4, A11: 0, A12: 2, A13: 15, A14: 13, A15: 12, A16: 14, A17: 27, A18: 25, A19: 26,
+    SDA: 21, SCL: 22,
     PI: Math.PI, HALF_PI: Math.PI / 2, TWO_PI: Math.PI * 2, DEG_TO_RAD: Math.PI / 180, RAD_TO_DEG: 180 / Math.PI,
     DBG_NONE: -1, DBG_ERROR: 0, DBG_WARNING: 1, DBG_INFO: 2, DBG_DEBUG: 3, DBG_VERBOSE: 4,
   };
+
+  // a part may use several pins: pin (first role), pin2, pin3
+  function pinsOf(part) {
+    return [part.pin, part.pin2, part.pin3].filter((x) => x !== undefined && x !== null && x !== '' && !Number.isNaN(+x)).map(Number);
+  }
 
   function fmtNum(v, digits) {
     if (v && typeof v === 'object' && '__f' in v) {
@@ -105,16 +114,19 @@
       this.pins = {};
       this.ledc = { channels: {}, pinChannel: {} };
       this.servos = [];
+      this.lcds = [];
+      this.wire = { begun: false, sda: 21, scl: 22, addr: null };
       this.tones = {};
       this.interrupts = {};
       this.serialBaud = 0;
       this.serialRx = '';
       this.pendingSleeps = new Set();
       this.t0 = performance.now();
+      this.vus = 0;            // virtual microsecond clock, advanced by delay()/delayMicroseconds()
       this.ops = 0;
       this.lastYield = performance.now();
       this.warned = new Set();
-      this.wifi = { status: 0, ssid: '', pass: '', since: 0, mode: 1, attempting: false };
+      this.wifi = { status: 0, ssid: '', pass: '', since: 0, mode: 1, attempting: false, radioOn: false };
       this.cloud = null;
       for (const p of this.parts) {
         p.state = {};
@@ -134,7 +146,7 @@
 
     millis() { return Math.floor(performance.now() - this.t0); }
 
-    partsOn(pin) { return this.parts.filter((p) => +p.pin === +pin); }
+    partsOn(pin) { return this.parts.filter((p) => pinsOf(p).includes(+pin)); }
 
     /* ---------- electrical model ---------- */
     inputLevel(n) {
@@ -150,8 +162,11 @@
           return Math.random() < 0.5 ? 1 : 0;
         }
         if (part.type === 'pir') return part.value ? 1 : 0;
+        if (part.type === 'ir') return part.value ? 0 : 1;          // FC-51 style: OUT goes LOW when an object is seen
         if (part.type === 'dht22') return 1;
-        if (part.type === 'pot' || part.type === 'ldr') return this.analogValue(part) > 2048 ? 1 : 0;
+        if (part.type === 'hcsr04') return 0;                        // ECHO idles LOW
+        if (part.type === 'lcd') return 1;                           // I2C lines have pull-ups
+        if (ANALOG_TYPES.includes(part.type)) return this.analogValue(part) > 2048 ? 1 : 0;
       }
       if (p.mode === C.INPUT_PULLUP) return 1;
       if (p.mode === C.INPUT_PULLDOWN) return 0;
@@ -167,6 +182,9 @@
         const v = 3.3 * 10000 / (10000 + rLdr);
         return Math.max(0, Math.min(4095, Math.round(v / 3.3 * 4095)));
       }
+      // resistive rain / soil probes on a module: dry ≈ 4095, soaked ≈ 900 (rain) / 1300 (soil)
+      if (part.type === 'rain') return Math.round(4095 - (Math.max(0, Math.min(100, +part.value || 0)) / 100) * (4095 - 900));
+      if (part.type === 'soil') return Math.round(4095 - (Math.max(0, Math.min(100, +part.value || 0)) / 100) * (4095 - 1300));
       return 0;
     }
 
@@ -199,6 +217,18 @@
       return null;
     }
     toneOn(n) { return this.tones[n] || null; }
+    lcdFor(part) {
+      if (+part.pin !== +this.wire.sda || +part.pin2 !== +this.wire.scl) return null;
+      const addr = parseInt(part.addr || '0x27', 16);
+      return this.lcds.find((l) => l.addr === addr && l.ready) || null;
+    }
+    motorState(part) {
+      const lvl = (n) => { const o = this.pinOutput(n); return o === null ? 0 : o; };
+      const a = lvl(part.pin), b = lvl(part.pin2);
+      const en = part.pin3 === undefined || part.pin3 === null || part.pin3 === '' ? 1 : lvl(part.pin3);
+      const dir = a > 0.5 && b <= 0.5 ? 1 : b > 0.5 && a <= 0.5 ? -1 : 0;
+      return { dir, speed: dir ? en : 0, brake: a > 0.5 && b > 0.5 };
+    }
     servoAngle(n) {
       const s = this.servos.find((x) => x.pin === +n && x._on);
       return s ? s.angle : null;
@@ -211,9 +241,22 @@
       this.stopped = false;
       this.running = true;
       const api = this.buildApi();
+      // Unknown names raise "was not declared" instead of silently creating page globals
+      const ALLOWED = new Set(['Math', 'Promise', 'undefined', 'NaN', 'Infinity', 'Object', 'String', 'Number', 'Boolean', 'Array', 'JSON', 'Symbol', 'Error', 'parseInt', 'parseFloat', 'isNaN', 'isFinite', 'Date']);
+      const undeclared = (k) => new ReferenceError('\'' + String(k) + '\' was not declared in this scope');
+      const scope = new Proxy(api, {
+        has: (t, k) => typeof k === 'string',
+        get: (t, k) => {
+          if (k in t) return t[k];
+          if (typeof k !== 'string') return undefined;
+          if (ALLOWED.has(k)) return globalThis[k];
+          throw undeclared(k);
+        },
+        set: (t, k, v) => { if (k in t) { t[k] = v; return true; } throw undeclared(k); },
+      });
       let prog;
       try {
-        prog = await compiled.factory(api);
+        prog = await compiled.factory(scope);
       } catch (e) {
         if (e !== STOP) this.fail(e);
         return;
@@ -306,6 +349,7 @@
       this.wifi.ssid = String(ssid || '');
       this.wifi.pass = String(pass || '');
       this.wifi.attempting = true;
+      this.wifi.radioOn = true;           // the Wi-Fi driver is running: ADC2 is now unavailable
       this.wifi.status = C.WL_DISCONNECTED;
       this.wifi.since = this.millis();
     }
@@ -347,6 +391,8 @@
 
     // dashboard → device
     dashboardWrite(name, value) {
+      const known = this.cloud && this.cloud.props.find((p) => p.name === name);
+      if (known && !(known.perm & C.WRITE)) return false;   // READ-only variables cannot be set from the dashboard
       const rec = this.cloudStore[name] || (this.cloudStore[name] = { value: null, t: 0, history: [] });
       rec.value = value;
       rec.t = Date.now();
@@ -485,6 +531,13 @@
         const n = Math.trunc(+v);
         return Number.isFinite(n) ? n : 0;
       };
+      api.__idiv = (a, b) => {
+        a = api.__int(a); b = api.__int(b);
+        if (b === 0) throw new Error('integer division by zero. A real ESP32 crashes here with "Guru Meditation Error: Core 1 panic\'ed (IntegerDivideByZero)" and reboots.');
+        return Math.trunc(a / b);
+      };
+      api.__sprintf = (fmt, ...args) => printf(fmt, args.map((a) => (a && typeof a === 'object' && '__f' in a ? a.__f : a)));
+      api.__dtostrf = (v, w, p) => Number(v).toFixed(Math.max(0, +p || 0)).padStart(Math.abs(+w || 0));
       api.__float = (v) => (typeof v === 'boolean' ? (v ? 1 : 0) : +v);
       api.__char = (v) => (typeof v === 'number' ? String.fromCharCode(v) : String(v));
       api.__F = (v) => ({ __f: v });
@@ -510,8 +563,8 @@
       /* time */
       api.millis = () => sim.millis();
       api.micros = () => Math.floor((performance.now() - sim.t0) * 1000);
-      api.delay = (ms) => sim.sleep(+ms || 0);
-      api.delayMicroseconds = (us) => (us >= 2000 ? sim.sleep(us / 1000) : api.__tick());
+      api.delay = (ms) => { sim.vus += Math.max(0, +ms || 0) * 1000; return sim.sleep(+ms || 0); };
+      api.delayMicroseconds = (us) => { sim.vus += Math.max(0, +us || 0); return us >= 2000 ? sim.sleep(us / 1000) : api.__tick(); };
       api.yield = () => sim.yieldNow();
 
       /* math */
@@ -553,6 +606,11 @@
           return;
         }
         if ((GPIO[n] || {}).inputOnly) return;
+        if (!p.out && v) p.roseUs = sim.vus;
+        if (p.out && !v) {                                // falling edge: HC-SR04 needs a >= 10 us HIGH pulse
+          p.fellAt = performance.now();
+          p.pulseUs = sim.vus - (p.roseUs === undefined ? sim.vus : p.roseUs);
+        }
         p.out = v ? 1 : 0;
         p.pwm = null;
         if (sim.ledc.pinChannel[n] !== undefined) delete sim.ledc.pinChannel[n];
@@ -568,11 +626,11 @@
           sim.warnOnce('noadc' + n, 'analogRead(' + n + '): GPIO ' + n + ' is not an ADC pin. Use GPIO 32–39 (ADC1).');
           return 0;
         }
-        if (info.adc === 'ADC2' && sim.wifi.status === C.WL_CONNECTED) {
+        if (info.adc === 'ADC2' && sim.wifi.radioOn) {
           sim.warnOnce('adc2' + n, 'analogRead(' + n + '): GPIO ' + n + ' is on ADC2, which cannot be used while WiFi is on. Move the sensor to an ADC1 pin (GPIO 32–39).');
           return 0;
         }
-        const part = sim.partsOn(n).find((x) => x.type === 'pot' || x.type === 'ldr');
+        const part = sim.partsOn(n).find((x) => ANALOG_TYPES.includes(x.type));
         if (part) {
           const noise = Math.round((Math.random() - 0.5) * 12);
           return Math.max(0, Math.min(4095, sim.analogValue(part) + noise));
@@ -679,11 +737,11 @@
       /* WiFi */
       const ip = { toString: () => (sim.wifi.status === C.WL_CONNECTED ? '192.168.4.' + (20 + (sim.network.ssid.length % 50)) : '0.0.0.0') };
       api.WiFi = {
-        mode(m) { sim.wifi.mode = m; return true; },
+        mode(m) { sim.wifi.mode = m; sim.wifi.radioOn = m !== C.WIFI_OFF; return true; },
         begin(ssid, pass) { sim.wifiBegin(ssid, pass); return sim.wifi.status; },
         status() { return sim.wifiStep(); },
         isConnected() { return sim.wifiStep() === C.WL_CONNECTED; },
-        disconnect() { sim.wifi.status = C.WL_DISCONNECTED; sim.wifi.attempting = false; return true; },
+        disconnect(wifiOff) { sim.wifi.status = C.WL_DISCONNECTED; sim.wifi.attempting = false; if (wifiOff) sim.wifi.radioOn = false; return true; },
         reconnect() { sim.wifiBegin(sim.wifi.ssid, sim.wifi.pass); return true; },
         localIP() { return ip; },
         RSSI() { return sim.wifi.status === C.WL_CONNECTED ? -48 - Math.floor(Math.random() * 8) : 0; },
@@ -768,22 +826,157 @@
       api.DHT.prototype.readTemperature = function (f) {
         const p = dhtPart(this);
         if (!p) return NaN;
-        const t = +p.value.t + (Math.random() - 0.5) * 0.2;
+        let t = +p.value.t + (Math.random() - 0.5) * 0.2;
+        if (this.type === C.DHT11) t = Math.round(Math.max(0, Math.min(50, t)));   // DHT11: 0–50 °C, 1 °C steps
         const v = f ? t * 9 / 5 + 32 : t;
         return Math.round(v * 10) / 10;
       };
       api.DHT.prototype.readHumidity = function () {
         const p = dhtPart(this);
         if (!p) return NaN;
-        return Math.round((+p.value.h + (Math.random() - 0.5) * 0.6) * 10) / 10;
+        const hum = +p.value.h + (Math.random() - 0.5) * 0.6;
+        if (this.type === C.DHT11) return Math.round(Math.max(20, Math.min(90, hum)));  // DHT11: 20–90 %RH, 1 % steps
+        return Math.round(hum * 10) / 10;
       };
       api.DHT.prototype.computeHeatIndex = function (t, h) { return t + 0.05 * h; };
+
+      /* shift registers (bit-banged; data appears on the pins) */
+      api.MSBFIRST = 1; api.LSBFIRST = 0;
+      api.shiftOut = (dataPin, clockPin, order, val) => {
+        for (let i = 0; i < 8; i++) {
+          const bitv = order === 0 ? (val >> i) & 1 : (val >> (7 - i)) & 1;
+          api.digitalWrite(dataPin, bitv);
+          api.digitalWrite(clockPin, 1);
+          api.digitalWrite(clockPin, 0);
+        }
+      };
+      api.shiftIn = (dataPin, clockPin, order) => {
+        let v = 0;
+        for (let i = 0; i < 8; i++) {
+          api.digitalWrite(clockPin, 1);
+          const b = api.digitalRead(dataPin);
+          v |= order === 0 ? b << i : b << (7 - i);
+          api.digitalWrite(clockPin, 0);
+        }
+        return v;
+      };
+
+      /* pulseIn — used with the HC-SR04 ultrasonic sensor */
+      api.pulseIn = async (n, level, timeout) => {
+        n = checkPin(n, 'pulseIn');
+        const tmo = timeout === undefined ? 1000000 : Math.max(1, +timeout);
+        const us = sim.partsOn(n).find((x) => x.type === 'hcsr04' && +x.pin2 === n);
+        const giveUp = async (msg) => {
+          if (msg) sim.warnOnce('pulse' + n, msg);
+          await sim.sleep(Math.min(tmo / 1000, 1000));
+          return 0;
+        };
+        if (!us) {
+          const wrong = sim.partsOn(n).find((x) => x.type === 'hcsr04');
+          if (wrong) return giveUp('pulseIn(' + n + ', …): GPIO ' + n + ' is the TRIG pin of ' + wrong.label + '. Read the ECHO pin (GPIO ' + wrong.pin2 + ') instead.');
+          return giveUp('pulseIn(' + n + ', …): nothing on GPIO ' + n + ' produces pulses, so it times out and returns 0. Wire the ECHO pin of an ultrasonic sensor here.');
+        }
+        if (sim.pin(n).mode === C.OUTPUT) return giveUp('pulseIn(' + n + ', …): GPIO ' + n + ' is set as OUTPUT. The ECHO pin must be pinMode(' + n + ', INPUT).');
+        if (level === C.LOW || level === 0) return giveUp('pulseIn(' + n + ', LOW): the HC-SR04 echo is a HIGH pulse — use pulseIn(' + n + ', HIGH).');
+        const trig = sim.pins[+us.pin];
+        const fresh = trig && trig.fellAt && trig.fellAt !== us._usedPulse && performance.now() - trig.fellAt < 80;
+        if (!fresh) {
+          return giveUp('pulseIn(' + n + ', HIGH) returned 0: no trigger pulse on TRIG (GPIO ' + us.pin + ') just before it. Send digitalWrite(trig, HIGH); delayMicroseconds(10); digitalWrite(trig, LOW); first, with pinMode(trig, OUTPUT) in setup().');
+        }
+        us._usedPulse = trig.fellAt;
+        if (!(trig.pulseUs >= 10)) {
+          return giveUp('pulseIn(' + n + ', HIGH) returned 0: the TRIG pulse on GPIO ' + us.pin + ' was too short (' + (trig.pulseUs || 0) + ' us). The HC-SR04 needs HIGH for at least 10 us: digitalWrite(trig, HIGH); delayMicroseconds(10); digitalWrite(trig, LOW);');
+        }
+        const cm = Math.max(0, +us.value || 0);
+        if (cm < 2 || cm > 400) return giveUp(null);            // out of range: no echo before the timeout
+        const dur = Math.round(cm * 2 / 0.0343 * (1 + (Math.random() - 0.5) * 0.004));
+        if (dur > tmo) return giveUp(null);
+        await sim.sleep(dur / 1000);
+        return dur;
+      };
+      api.pulseInLong = api.pulseIn;
+
+      /* I2C bus (Wire) */
+      const i2cDevices = () => sim.parts.filter((x) => x.type === 'lcd' && +x.pin === +sim.wire.sda && +x.pin2 === +sim.wire.scl).map((x) => parseInt(x.addr || '0x27', 16));
+      const wireBegin = (sda, scl) => {
+        sim.wire.begun = true;
+        if (sda !== undefined && sda !== null && +sda >= 0) sim.wire.sda = +sda;
+        if (scl !== undefined && scl !== null && +scl >= 0) sim.wire.scl = +scl;
+      };
+      api.Wire = {
+        begin(sda, scl) { wireBegin(sda, scl); return true; },
+        setClock() {},
+        setPins(sda, scl) { sim.wire.sda = +sda; sim.wire.scl = +scl; return true; },
+        beginTransmission(a) { sim.wire.addr = +a; },
+        write() { return 1; },
+        endTransmission() {
+          if (!sim.wire.begun) { sim.warnOnce('wirebegin', 'Wire.endTransmission() before Wire.begin() — the I2C bus is not started.'); return 4; }
+          return i2cDevices().includes(sim.wire.addr) ? 0 : 2;   // 0 = ACK, 2 = NACK on address
+        },
+        requestFrom() { return 0; },
+        available() { return 0; },
+        read() { return -1; },
+      };
+
+      /* LiquidCrystal_I2C (16×2 / 20×4 character LCD with a PCF8574 backpack) */
+      api.LiquidCrystal_I2C = function LiquidCrystal_I2C(addr, cols, rows) {
+        this.addr = +addr || 0x27;
+        this.cols = +cols || 16;
+        this.rows = +rows || 2;
+        this.buf = Array.from({ length: this.rows }, () => ' '.repeat(40));
+        this.cx = 0; this.cy = 0;
+        this.light = false; this.on = true; this.ready = false;
+        sim.lcds.push(this);
+      };
+      const LCD = api.LiquidCrystal_I2C.prototype;
+      LCD._present = function () { return i2cDevices().includes(this.addr); };
+      LCD.init = function () {
+        wireBegin();
+        this.ready = true;
+        this.clear();
+        if (!this._present()) {
+          const found = i2cDevices();
+          sim.warnOnce('lcdaddr' + this.addr, 'LCD: no I2C device answers at 0x' + this.addr.toString(16).toUpperCase() + (found.length ? ' (the bus has a device at ' + found.map((a) => '0x' + a.toString(16).toUpperCase()).join(', ') + ' — change the address in LiquidCrystal_I2C lcd(…))' : ' — check SDA → GPIO ' + sim.wire.sda + ' and SCL → GPIO ' + sim.wire.scl + ', or run an I2C scanner') + '.');
+        }
+      };
+      LCD.begin = function (c, r) { if (c) this.cols = +c; if (r) this.rows = +r; this.init(); };
+      LCD.backlight = function () { this.light = true; };
+      LCD.noBacklight = function () { this.light = false; };
+      LCD.setBacklight = function (v) { this.light = !!v; };
+      LCD.display = function () { this.on = true; };
+      LCD.noDisplay = function () { this.on = false; };
+      LCD.clear = function () { this.buf = this.buf.map(() => ' '.repeat(40)); this.cx = 0; this.cy = 0; };
+      LCD.home = function () { this.cx = 0; this.cy = 0; };
+      LCD.setCursor = function (c, r) { this.cx = Math.max(0, Math.min(39, +c || 0)); this.cy = Math.max(0, Math.min(this.rows - 1, +r || 0)); };
+      LCD._put = function (text) {
+        if (!this.ready) { sim.warnOnce('lcdinit', 'lcd.print() before lcd.init() (or lcd.begin()) — a real LCD stays blank.'); return; }
+        for (const ch of String(text)) {
+          if (ch === '\r' || ch === '\n') continue;
+          if (this.cx < 40) {
+            const row = this.buf[this.cy];
+            this.buf[this.cy] = row.slice(0, this.cx) + (ch.charCodeAt(0) > 126 ? '\u2592' : ch) + row.slice(this.cx + 1);
+          }
+          this.cx++;
+        }
+      };
+      LCD.print = function (v, d) { this._put(fmtNum(v, d)); return String(v).length; };
+      LCD.println = function (v, d) { this._put(v === undefined ? '' : fmtNum(v, d)); sim.warnOnce('lcdln', 'lcd.println() prints two junk characters on a real LCD — use lcd.print() and lcd.setCursor().'); };
+      LCD.write = function (v) { this._put(typeof v === 'number' ? (v < 8 ? '\u2588' : String.fromCharCode(v)) : String(v)); return 1; };
+      LCD.printf = function (fmt, ...args) { this._put(printf(fmt, args)); };
+      LCD.createChar = function () {};
+      LCD.cursor = LCD.noCursor = LCD.blink = LCD.noBlink = LCD.leftToRight = LCD.rightToLeft = LCD.autoscroll = LCD.noAutoscroll = function () {};
+      LCD.scrollDisplayLeft = function () { this.buf = this.buf.map((r) => r.slice(1) + ' '); };
+      LCD.scrollDisplayRight = function () { this.buf = this.buf.map((r) => ' ' + r.slice(0, 39)); };
 
       /* Servo (ESP32Servo) */
       api.Servo = function Servo() { this.pin = -1; this.angle = 90; this._on = false; sim.servos.push(this); };
       api.Servo.prototype.attach = function (pin) { this.pin = +checkPin(pin, 'servo.attach'); this._on = true; return 1; };
       api.Servo.prototype.detach = function () { this._on = false; };
-      api.Servo.prototype.write = function (a) { this.angle = Math.max(0, Math.min(180, +a || 0)); };
+      api.Servo.prototype.write = function (a) {
+        a = +a || 0;
+        if (a >= 544) { this.writeMicroseconds(a); return; }   // like the real library: large values are pulse widths in µs
+        this.angle = Math.max(0, Math.min(180, a));
+      };
       api.Servo.prototype.writeMicroseconds = function (us) { this.angle = Math.max(0, Math.min(180, (us - 544) / (2400 - 544) * 180)); };
       api.Servo.prototype.read = function () { return Math.round(this.angle); };
       api.Servo.prototype.attached = function () { return this._on; };
@@ -795,5 +988,5 @@
     }
   }
 
-  root.ESP32Sim = { Sim, GPIO, FLASH_PINS, STOP, C };
+  root.ESP32Sim = { Sim, GPIO, FLASH_PINS, STOP, C, pinsOf, ANALOG_TYPES };
 })(window);

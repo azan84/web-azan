@@ -261,5 +261,86 @@
     container.append(list);
   }
 
-  root.CloudUI = { renderDashboard, renderThing, defaultWidgets };
+  /* ---------- Triggers (simulated email / push alerts) ---------- */
+  function condText(t) {
+    if (t.when === 'true') return 'becomes true';
+    if (t.when === 'false') return 'becomes false';
+    if (t.when === 'contains') return 'contains "' + (t.text || '') + '"';
+    return 'receives a new value';
+  }
+  function renderTriggers(container, props, triggers, alerts, api) {
+    container.innerHTML = '';
+    const usable = props.filter((p) => kindOf(p) === 'bool' || kindOf(p) === 'str');
+    container.append(h('p', { class: 'net-note' }, 'A trigger watches one cloud variable and sends an alert when the condition is met, with no extra code on the board. On Arduino Cloud only bool and String variables can fire a trigger (Maker plan or higher). Here the email and push messages are simulated and appear below.'));
+
+    if (!usable.length) {
+      container.append(h('p', { class: 'net-note' }, 'This sketch has no bool or String cloud variable. Add one, for example bool motion; in thingProperties.h, to create a trigger.'));
+    } else {
+      const varSel = h('select', { 'aria-label': 'Variable to watch' }, ...usable.map((p) => h('option', { value: p.name }, p.name + ' (' + (kindOf(p) === 'bool' ? 'bool' : 'String') + ')')));
+      const whenSel = h('select', { 'aria-label': 'Condition' });
+      const text = h('input', { type: 'text', placeholder: 'text to look for', 'aria-label': 'Text the message must contain', hidden: true });
+      const fillWhen = () => {
+        const p = usable.find((x) => x.name === varSel.value);
+        whenSel.innerHTML = '';
+        const opts = kindOf(p) === 'bool' ? [['true', 'becomes true'], ['false', 'becomes false'], ['any', 'changes']] : [['any', 'receives a new value'], ['contains', 'contains text']];
+        opts.forEach(([v, l]) => whenSel.append(h('option', { value: v }, l)));
+        text.hidden = whenSel.value !== 'contains';
+      };
+      varSel.addEventListener('change', fillWhen);
+      whenSel.addEventListener('change', () => { text.hidden = whenSel.value !== 'contains'; });
+      fillWhen();
+      const email = h('input', { type: 'checkbox' }); email.checked = true;
+      const push = h('input', { type: 'checkbox' }); push.checked = true;
+      const msg = h('input', { type: 'text', value: 'Alert: {variable.name} is {variable.value}', 'aria-label': 'Message' });
+      const form = h('form', { class: 'trig-form' },
+        h('div', { class: 'row' }, h('span', { class: 'muted' }, 'When'), varSel, whenSel, text),
+        h('div', { class: 'row' }, h('span', { class: 'muted' }, 'Send'), h('label', { class: 'mini-check' }, email, ' Email'), h('label', { class: 'mini-check' }, push, ' Push (IoT Remote app)')),
+        h('div', { class: 'row' }, msg),
+        h('div', { class: 'row' }, h('span', { class: 'muted' }, 'Use {variable.value} and {variable.name} in the message.'), h('button', { class: 'btn small primary', type: 'submit' }, 'Create trigger')));
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!email.checked && !push.checked) return;
+        api.add({ id: Math.random().toString(36).slice(2, 8), name: varSel.value, when: whenSel.value, text: text.value, email: email.checked, push: push.checked, msg: msg.value });
+      });
+      container.append(form);
+    }
+
+    if (triggers.length) {
+      const list = h('div', { class: 'trig-list' });
+      triggers.forEach((t) => {
+        const ok = props.some((p) => p.name === t.name);
+        const del = h('button', { class: 'part-x', type: 'button', 'aria-label': 'Delete trigger', title: 'Delete' }, '×');
+        del.addEventListener('click', () => api.remove(t));
+        list.append(h('div', { class: 'trig' },
+          h('div', null, 'When ', h('b', null, t.name), ' ' + condText(t) + ' → ' + [t.email && 'email', t.push && 'push'].filter(Boolean).join(' + '),
+            h('div', { class: 'muted' }, ok ? '“' + t.msg + '”' : 'Variable not found in this sketch, so the trigger is idle.')),
+          del));
+      });
+      container.append(h('h3', { class: 'net-title' }, 'Active triggers'), list);
+    }
+    container.append(h('h3', { class: 'net-title' }, 'Sent alerts'));
+    const box = h('div', { class: 'alert-list', role: 'log', 'aria-label': 'Sent alerts' });
+    if (!alerts.length) box.append(h('span', { class: 'muted' }, 'None yet.'));
+    alerts.slice().reverse().slice(0, 40).forEach((a) => {
+      box.append(h('div', { class: 'alert-item' },
+        h('span', { class: 'ch' }, a.channels.join(' + ')), a.text,
+        h('div', { class: 'muted' }, new Date(a.t).toLocaleTimeString())));
+    });
+    container.append(box);
+  }
+
+  function triggerFires(t, prev, value) {
+    // a bool the cloud has never seen counts as false, so "becomes false" does not fire on the first sync
+    if (prev === undefined && typeof value === 'boolean') prev = false;
+    if (t.when === 'true') return value === true && prev !== true;
+    if (t.when === 'false') return value === false && prev !== false;
+    if (t.when === 'contains') return typeof value === 'string' && value.includes(t.text || '');
+    return prev === undefined ? false : prev !== value || typeof value === 'string';
+  }
+  function triggerMessage(t, value) {
+    const v = typeof value === 'boolean' ? String(value) : String(value);
+    return String(t.msg || '').replace(/\{\s*(?:variable|value|[A-Za-z_]\w*)\.value\s*\}|\{\s*value\s*\}/g, v).replace(/\{\s*variable\.name\s*\}/g, t.name);
+  }
+
+  root.CloudUI = { renderDashboard, renderThing, renderTriggers, triggerFires, triggerMessage, defaultWidgets };
 })(window);

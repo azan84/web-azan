@@ -25,7 +25,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
-  <link rel="stylesheet" href="sim.css?v=1" />
+  <link rel="stylesheet" href="sim.css?v=2" />
 </head>
 <body>
   <header class="topbar">
@@ -115,15 +115,25 @@
         <h2>Circuit</h2>
         <div class="add-part">
           <select id="partType" aria-label="Part to add">
-            <option value="led">LED</option>
-            <option value="button">Push button</option>
-            <option value="pot">Potentiometer</option>
-            <option value="ldr">Light sensor (LDR)</option>
-            <option value="dht22">DHT22 temp / humidity</option>
-            <option value="pir">PIR motion sensor</option>
-            <option value="relay">Relay module</option>
-            <option value="buzzer">Buzzer</option>
-            <option value="servo">Servo (SG90)</option>
+            <optgroup label="Inputs">
+              <option value="button">Push button</option>
+              <option value="pot">Potentiometer</option>
+              <option value="ldr">Light sensor (LDR)</option>
+              <option value="dht22">DHT11 / DHT22 temp &amp; humidity</option>
+              <option value="pir">PIR motion sensor</option>
+              <option value="ir">IR obstacle sensor</option>
+              <option value="hcsr04">Ultrasonic HC-SR04</option>
+              <option value="rain">Rain sensor (YL-83)</option>
+              <option value="soil">Soil moisture sensor</option>
+            </optgroup>
+            <optgroup label="Outputs">
+              <option value="led">LED</option>
+              <option value="relay">Relay module</option>
+              <option value="buzzer">Buzzer</option>
+              <option value="servo">Servo (SG90)</option>
+              <option value="motor">DC motor + L298N</option>
+              <option value="lcd">LCD 16×2 (I2C)</option>
+            </optgroup>
           </select>
           <button id="addPart" class="btn small" type="button">+ Add</button>
         </div>
@@ -146,6 +156,7 @@
       <div class="tabs small cloud-tabs" role="tablist" aria-label="Cloud views">
         <button class="tab active" role="tab" aria-selected="true" data-cloud="dashboard" type="button">Dashboard</button>
         <button class="tab" role="tab" aria-selected="false" data-cloud="thing" type="button">Thing</button>
+        <button class="tab" role="tab" aria-selected="false" data-cloud="triggers" type="button">Triggers <span id="trigBadge" class="badge" hidden></span></button>
         <button class="tab" role="tab" aria-selected="false" data-cloud="network" type="button">Network</button>
       </div>
       <div class="cloud-body" data-cloud-body="dashboard">
@@ -153,6 +164,9 @@
       </div>
       <div class="cloud-body" data-cloud-body="thing" hidden>
         <div id="thingView"></div>
+      </div>
+      <div class="cloud-body" data-cloud-body="triggers" hidden>
+        <div id="triggerView"></div>
       </div>
       <div class="cloud-body" data-cloud-body="network" hidden>
         <div class="net">
@@ -171,6 +185,7 @@
       </div>
     </section>
   </main>
+  <div id="toasts" class="toasts" aria-live="polite"></div>
 
   <dialog id="helpDlg" class="help">
     <form method="dialog" class="help-inner">
@@ -179,9 +194,11 @@
       <h3>What is simulated</h3>
       <ul>
         <li>GPIO, <code>INPUT_PULLUP</code>, interrupts, 12-bit ADC (0–4095), PWM (<code>analogWrite</code>, <code>ledcWrite</code>), <code>tone()</code>, DAC</li>
-        <li>ESP32 quirks: input-only GPIO 34–39, ADC2 pins stop working while WiFi is on, flash pins 6–11</li>
+        <li>ESP32 quirks: input-only GPIO 34–39, ADC2 pins stop working while WiFi is on, flash pins 6–11, no <code>A1</code>/<code>A2</code> or <code>D4</code>-style pin names</li>
         <li>Wi-Fi join and retry, Arduino Cloud connection, property sync (on change, periodic, min delta), cloud-wins sync on connect</li>
-        <li>Libraries: <code>DHT</code>, <code>ESP32Servo</code>, <code>WiFi</code>, <code>ArduinoIoTCloud</code>, <code>Serial</code> (print, printf, read)</li>
+        <li>Libraries: <code>DHT</code> (DHT11 / DHT22), <code>ESP32Servo</code>, <code>Wire</code> (I2C scan), <code>LiquidCrystal_I2C</code>, <code>WiFi</code>, <code>ArduinoIoTCloud</code>, <code>Serial</code> (print, printf, read)</li>
+        <li>Parts: LED, button, potentiometer, LDR, DHT11/22, PIR, IR obstacle sensor, HC-SR04 ultrasonic (<code>pulseIn</code>), rain and soil sensors, relay, buzzer, servo, DC motor with L298N, 16×2 I2C LCD</li>
+        <li>Cloud Triggers: alert by email or push notification when a <code>bool</code> or <code>String</code> variable changes. The alerts are simulated and shown on screen.</li>
       </ul>
       <h3>Limits</h3>
       <ul>
@@ -200,11 +217,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
-  <script src="js/compiler.js?v=1"></script>
-  <script src="js/runtime.js?v=1"></script>
-  <script src="js/examples.js?v=1"></script>
-  <script src="js/ui-board.js?v=1"></script>
-  <script src="js/ui-cloud.js?v=1"></script>
-  <script src="js/app.js?v=1"></script>
+  <script src="js/compiler.js?v=2"></script>
+  <script src="js/runtime.js?v=2"></script>
+  <script src="js/examples.js?v=2"></script>
+  <script src="js/ui-board.js?v=2"></script>
+  <script src="js/ui-cloud.js?v=2"></script>
+  <script src="js/app.js?v=2"></script>
 </body>
 </html>

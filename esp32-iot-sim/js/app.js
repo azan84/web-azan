@@ -36,6 +36,7 @@
       activeFile: 'sketch.ino',
       parts,
       widgets: Object.assign({}, ex.widgets || {}),
+      triggers: (ex.triggers || []).map((t) => Object.assign({ id: Math.random().toString(36).slice(2, 8) }, t)),
       ranges,
       network: { routerOn: true, ssid: 'SimLab-WiFi', pass: 'esp32sim', latency: 250 },
       baud: ex.baud || 9600,
@@ -50,6 +51,7 @@
           s.parts = (s.parts || []).filter((p) => B.TYPES[p.type]);
           s.widgets = s.widgets || {};
           s.ranges = s.ranges || {};
+          s.triggers = Array.isArray(s.triggers) ? s.triggers : [];
           s.network = Object.assign({ routerOn: true, ssid: 'SimLab-WiFi', pass: 'esp32sim', latency: 250 }, s.network || {});
           return s;
         }
@@ -87,7 +89,7 @@
     onError(e) {
       const msg = e && e.message ? e.message : String(e);
       let hint = '';
-      if (/is not defined/.test(msg)) hint = ' — check the spelling, or that the library function is supported by the simulator.';
+      if (/is not defined|was not declared/.test(msg)) hint = ' — check the spelling, or that the library function is supported by the simulator.';
       if (/is not a function/.test(msg)) hint = ' — this function or method is not available in the simulator.';
       log('err', 'Runtime error: ' + msg + hint);
       setStatus('error', 'Crashed');
@@ -95,7 +97,7 @@
     },
     onStart() {},
     cloudStatus(s) { setDevice(s); dashDirty = true; },
-    cloudValue() { dashDirty = true; },
+    cloudValue(name, rec) { dashDirty = true; checkTriggers(name, rec.value); },
     cloudProps() { dashDirty = true; },
     propMeta(name) { return compiled && compiled.globals[name]; },
   });
@@ -328,6 +330,7 @@
     setRunning(true);
     sim.parts = state.parts;
     sim.network = state.network;
+    for (const k of Object.keys(lastSeen)) delete lastSeen[k];
     const p = sim.start(c);
     p.then(() => {
       if (token === runToken && !sim.running && $('statusPill').dataset.state === 'running') { setStatus('idle', 'Stopped'); setRunning(false); }
@@ -388,6 +391,7 @@
       setRange(name, r) { state.ranges[name] = r; save(); renderCloud(); },
     });
     $('dashboard').classList.toggle('offline', !(sim.cloud && sim.cloud.connected));
+    renderTriggerView();
     dashDirty = true;
   }
   document.querySelectorAll('[data-cloud]').forEach((t) => t.addEventListener('click', () => {
@@ -397,7 +401,44 @@
       x.setAttribute('aria-selected', String(on));
     });
     document.querySelectorAll('[data-cloud-body]').forEach((b) => { b.hidden = b.dataset.cloudBody !== t.dataset.cloud; });
+    if (t.dataset.cloud === 'triggers') { unseenAlerts = 0; $('trigBadge').hidden = true; }
   }));
+
+  /* ---------------- triggers ---------------- */
+  const alerts = [];
+  const lastSeen = {};
+  let unseenAlerts = 0;
+  function checkTriggers(name, value) {
+    const prev = lastSeen[name];
+    lastSeen[name] = value;
+    let fired = false;
+    for (const t of state.triggers) {
+      if (t.name !== name || !CloudUI.triggerFires(t, prev, value)) continue;
+      const text = CloudUI.triggerMessage(t, value);
+      const channels = [t.email && 'email', t.push && 'push'].filter(Boolean);
+      alerts.push({ t: Date.now(), text, channels });
+      if (alerts.length > 100) alerts.shift();
+      toast(channels.join(' + ') + ' sent', text);
+      fired = true;
+    }
+    if (fired) {
+      const onTab = document.querySelector('[data-cloud="triggers"]').classList.contains('active');
+      if (!onTab) { unseenAlerts++; const b = $('trigBadge'); b.hidden = false; b.textContent = String(unseenAlerts); }
+      renderTriggerView();
+    }
+  }
+  function toast(title, text) {
+    const t = h('div', { class: 'toast' }, h('b', null, title), text);
+    $('toasts').append(t);
+    while ($('toasts').childElementCount > 3) $('toasts').firstElementChild.remove();
+    setTimeout(() => t.remove(), 5000);
+  }
+  function renderTriggerView() {
+    CloudUI.renderTriggers($('triggerView'), cloudPropsNow(), state.triggers, alerts, {
+      add(t) { state.triggers.push(t); save(); renderTriggerView(); },
+      remove(t) { state.triggers = state.triggers.filter((x) => x !== t); save(); renderTriggerView(); },
+    });
+  }
 
   /* ---------------- network ---------------- */
   function bindNetwork() {
@@ -422,10 +463,13 @@
   function fillExamples() {
     const sel = $('exampleSel');
     sel.innerHTML = '';
+    const groups = {};
     EXAMPLES.forEach((ex) => {
+      const g = ex.group || 'Getting started';
+      if (!groups[g]) { groups[g] = h('optgroup', { label: g }); sel.append(groups[g]); }
       const o = h('option', { value: ex.id }, ex.title);
       if (ex.id === state.exampleId) o.selected = true;
-      sel.append(o);
+      groups[g].append(o);
     });
     sel.addEventListener('change', async () => {
       const ex = EXAMPLES.find((e) => e.id === sel.value);

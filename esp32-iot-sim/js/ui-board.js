@@ -5,7 +5,7 @@
   'use strict';
 
   const NS = 'http://www.w3.org/2000/svg';
-  const { GPIO } = root.ESP32Sim;
+  const { GPIO, pinsOf, ANALOG_TYPES } = root.ESP32Sim;
 
   const LEFT = ['EN', 36, 39, 34, 35, 32, 33, 25, 26, 27, 14, 12, 13, 'GND', 'VIN'];
   const RIGHT = [23, 22, 1, 3, 21, 19, 18, 5, 17, 16, 4, 2, 15, 'GND', '3V3'];
@@ -20,11 +20,17 @@
     button: { name: 'Push button', prefix: 'BTN', pins: [27, 14, 13, 33, 32, 23, 22, 21, 19] },
     pot: { name: 'Potentiometer', prefix: 'POT', pins: [34, 35, 32, 33, 36, 39] },
     ldr: { name: 'Light sensor (LDR)', prefix: 'LDR', pins: [35, 34, 32, 33, 36, 39] },
-    dht22: { name: 'DHT22 sensor', prefix: 'DHT', pins: [4, 15, 16, 17, 23] },
+    dht22: { name: 'DHT11 / DHT22 sensor', prefix: 'DHT', pins: [4, 23, 15, 16, 17] },
     pir: { name: 'PIR motion sensor', prefix: 'PIR', pins: [14, 13, 27, 33, 32] },
     relay: { name: 'Relay module', prefix: 'RLY', pins: [26, 25, 23, 22, 21] },
     buzzer: { name: 'Buzzer', prefix: 'BZR', pins: [13, 12, 23, 22] },
-    servo: { name: 'Servo (SG90)', prefix: 'SRV', pins: [18, 19, 5, 23] },
+    servo: { name: 'Servo (SG90)', prefix: 'SRV', pins: [18, 19, 5, 23, 13] },
+    hcsr04: { name: 'Ultrasonic HC-SR04', prefix: 'US', roles: ['TRIG', 'ECHO'], sets: [[5, 18], [4, 16], [32, 33], [17, 19], [23, 35]] },
+    ir: { name: 'IR obstacle sensor', prefix: 'IR', pins: [27, 14, 33, 32, 23, 19] },
+    lcd: { name: 'LCD 16×2 / 20×4 (I2C)', prefix: 'LCD', roles: ['SDA', 'SCL'], sets: [[21, 22]] },
+    motor: { name: 'DC motor + L298N', prefix: 'MOT', roles: ['IN1', 'IN2', 'ENA'], sets: [[27, 26, 14], [33, 32, 25], [19, 23, 18], [16, 17, 4]] },
+    rain: { name: 'Rain sensor (YL-83)', prefix: 'RAIN', pins: [36, 39, 34, 35, 32, 33] },
+    soil: { name: 'Soil moisture sensor', prefix: 'SOIL', pins: [34, 35, 39, 36, 32, 33] },
   };
 
   function el(tag, attrs, parent) {
@@ -49,13 +55,16 @@
       case 'pot': return 2048;
       case 'ldr': return 300;
       case 'dht22': return { t: 25, h: 60 };
+      case 'hcsr04': return 60;
+      case 'rain': return 0;
+      case 'soil': return 30;
       default: return 0;
     }
   }
 
   function makePart(type, parts, pin, extra) {
     const t = TYPES[type];
-    const used = new Set(parts.map((p) => +p.pin));
+    const used = new Set([].concat(...parts.map((p) => pinsOf(p))));
     let n = 1;
     while (parts.some((p) => p.label === t.prefix + n)) n++;
     const usedHues = new Set(parts.map((p) => p.hue));
@@ -64,10 +73,18 @@
       id: type + '-' + Math.random().toString(36).slice(2, 8),
       type,
       label: t.prefix + n,
-      pin: pin !== undefined ? +pin : (t.pins.find((x) => !used.has(x)) ?? t.pins[0]),
       hue,
       value: defaultValue(type),
     };
+    if (t.roles) {
+      const set = t.sets.find((st) => st.every((x) => !used.has(x))) || t.sets[0];
+      p.pin = set[0]; p.pin2 = set[1];
+      if (set[2] !== undefined) p.pin3 = set[2];
+      if (pin !== undefined) p.pin = +pin;
+    } else {
+      p.pin = pin !== undefined ? +pin : (t.pins.find((x) => !used.has(x)) ?? t.pins[0]);
+    }
+    if (type === 'lcd') p.addr = '0x27';
     if (type === 'led') p.color = 'red';
     if (type === 'buzzer') p.sound = false;
     return Object.assign(p, extra || {});
@@ -163,12 +180,18 @@
 
     // wire tags for connected parts
     const byPin = {};
-    parts.forEach((p) => { (byPin[p.pin] = byPin[p.pin] || []).push(p); });
+    const tagOf = (p, pin) => {
+      const roles = (TYPES[p.type] || {}).roles;
+      if (!roles) return p.label;
+      const i = pinsOf(p).indexOf(+pin);
+      return p.label + '·' + (roles[i] || '');
+    };
+    parts.forEach((p) => { new Set(pinsOf(p)).forEach((pin) => { (byPin[pin] = byPin[pin] || []).push(p); }); });
     Object.keys(byPin).forEach((pin) => {
       const pos = pinPos(pin);
       if (!pos) return;
       const list = byPin[pin];
-      const label = list.map((p) => p.label).join('+');
+      const label = list.map((p) => tagOf(p, pin)).join('+');
       const w = label.length * 6.6 + 12;
       const hue = list[0].hue;
       if (pos.side === 'L') {
@@ -190,7 +213,7 @@
     Object.keys(byPin).forEach((pin) => {
       const pos = pinPos(pin);
       if (!pos) return;
-      const w = byPin[pin].map((p) => p.label).join('+').length * 6.6 + 12;
+      const w = byPin[pin].map((p) => tagOf(p, pin)).join('+').length * 6.6 + 12;
       if (pos.side === 'L') minX = Math.min(minX, 72 - w - 4);
       else maxX = Math.max(maxX, 348 + w + 4);
     });
@@ -232,13 +255,27 @@
     const info = GPIO[part.pin] || {};
     const outTypes = ['led', 'relay', 'buzzer', 'servo'];
     if (outTypes.includes(part.type) && info.inputOnly) w.push('GPIO ' + part.pin + ' is input-only, so it cannot drive this ' + TYPES[part.type].name.toLowerCase() + '.');
-    if ((part.type === 'pot' || part.type === 'ldr') && !info.adc) w.push('GPIO ' + part.pin + ' has no ADC, so analogRead() returns 0.');
-    if ((part.type === 'pot' || part.type === 'ldr') && info.adc === 'ADC2') w.push('ADC2 pin: it reads 0 once WiFi is connected. Use GPIO 32–39.');
+    if (ANALOG_TYPES.includes(part.type) && !info.adc) w.push('GPIO ' + part.pin + ' has no ADC, so analogRead() returns 0.');
+    if (ANALOG_TYPES.includes(part.type) && info.adc === 'ADC2') w.push('ADC2 pin: it reads 0 as soon as WiFi is started. Use GPIO 32–39.');
+    if (part.type === 'hcsr04') {
+      if ((GPIO[part.pin] || {}).inputOnly) w.push('TRIG is on input-only GPIO ' + part.pin + ', so the sensor is never triggered.');
+      if (+part.pin === +part.pin2) w.push('TRIG and ECHO need two different pins.');
+      w.push('Tip: at 5 V the ECHO pin outputs 5 V. On a real ESP32 use a 1 kΩ / 2 kΩ divider on ECHO.');
+    }
+    if (part.type === 'motor') {
+      pinsOf(part).forEach((n) => { if ((GPIO[n] || {}).inputOnly) w.push('GPIO ' + n + ' is input-only, so it cannot drive the L298N.'); });
+      w.push('Power the motor from the L298N 12 V input, never from the ESP32. Join the grounds.');
+    }
+    if (part.type === 'dht22') w.push('Tip: with VCC on 5 V the data line is pulled up to 5 V. The DHT11/22 also runs on 3.3 V, which is safer for the ESP32.');
+    if (part.type === 'lcd' && (+part.pin !== 21 || +part.pin2 !== 22)) w.push('The default I2C pins are SDA 21 / SCL 22. With other pins call Wire.begin(' + part.pin + ', ' + part.pin2 + ') before lcd.init().');
     if (part.type === 'button' && info.inputOnly) w.push('GPIO ' + part.pin + ' has no internal pull-up, so the button will float.');
     if (part.pin === 1 || part.pin === 3) w.push('GPIO ' + part.pin + ' is the USB serial line, which clashes with the Serial Monitor.');
-    if ([0, 2, 12, 15].includes(+part.pin) && ['button', 'pir'].includes(part.type)) w.push('Strapping pin: holding it at boot can stop the ESP32 from starting.');
-    const others = parts.filter((p) => p !== part && +p.pin === +part.pin);
-    if (others.length) w.push('Shares GPIO ' + part.pin + ' with ' + others.map((o) => o.label).join(', ') + '.');
+    if ([0, 2, 5, 12, 15].includes(+part.pin) && ['button', 'pir', 'ir', 'dht22'].includes(part.type)) w.push('Strapping pin: holding it at boot can stop the ESP32 from starting or uploading.');
+    const mine = pinsOf(part);
+    mine.forEach((n) => {
+      const others = parts.filter((p) => p !== part && pinsOf(p).includes(n) && !(p.type === 'lcd' && part.type === 'lcd'));
+      if (others.length) w.push('Shares GPIO ' + n + ' with ' + others.map((o) => o.label).join(', ') + '.');
+    });
     return w;
   }
 
@@ -303,6 +340,42 @@
         el('path', { d: 'M22 35 L22 10', stroke: '#f8fafc', 'stroke-width': 6, 'stroke-linecap': 'round' }, refs.horn);
         el('circle', { cx: 22, cy: 35, r: 3, fill: '#6b7280' }, s);
         break;
+      case 'hcsr04':
+        el('rect', { x: 2, y: 16, width: 60, height: 30, rx: 3, fill: '#1d4ed8' }, s);
+        [17, 47].forEach((cx) => { el('circle', { cx, cy: 31, r: 12, fill: '#cbd5e1', stroke: '#64748b' }, s); el('circle', { cx, cy: 31, r: 7, fill: '#475569' }, s); });
+        refs.wave = el('path', { d: 'M24 8 q8 -6 16 0', fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2.5, 'stroke-linecap': 'round', opacity: 0 }, s);
+        [24, 29, 34, 39].forEach((x) => el('line', { x1: x, y1: 46, x2: x, y2: 58, stroke: '#9aa6b2', 'stroke-width': 2 }, s));
+        break;
+      case 'ir':
+        el('rect', { x: 4, y: 20, width: 56, height: 24, rx: 3, fill: '#0f172a' }, s);
+        el('circle', { cx: 12, cy: 32, r: 6, fill: '#e2e8f0' }, s);
+        el('circle', { cx: 26, cy: 32, r: 6, fill: '#1e293b', stroke: '#64748b' }, s);
+        el('rect', { x: 38, y: 26, width: 10, height: 12, rx: 2, fill: '#1d4ed8' }, s);
+        refs.led = el('circle', { cx: 54, cy: 26, r: 3, fill: '#4b5563' }, s);
+        refs.obj = el('rect', { x: 2, y: 2, width: 30, height: 10, rx: 2, fill: '#f59e0b', opacity: 0 }, s);
+        break;
+      case 'lcd':
+        el('rect', { x: 2, y: 14, width: 60, height: 36, rx: 3, fill: '#15803d' }, s);
+        refs.scr = el('rect', { x: 7, y: 20, width: 50, height: 24, rx: 2, fill: '#1e3a8a' }, s);
+        break;
+      case 'motor':
+        el('rect', { x: 4, y: 22, width: 22, height: 26, rx: 3, fill: '#b91c1c' }, s);
+        el('rect', { x: 26, y: 26, width: 8, height: 18, rx: 2, fill: '#94a3b8' }, s);
+        refs.fan = el('g', {}, s);
+        [0, 120, 240].forEach((a) => el('ellipse', { cx: 48, cy: 22, rx: 4.5, ry: 12, fill: '#f8fafc', stroke: '#64748b', transform: 'rotate(' + a + ' 48 35)' }, refs.fan));
+        el('circle', { cx: 48, cy: 35, r: 3.5, fill: '#334155' }, s);
+        break;
+      case 'rain':
+        el('rect', { x: 6, y: 8, width: 52, height: 48, rx: 3, fill: '#1e3a8a' }, s);
+        for (let y = 14; y < 52; y += 7) el('path', { d: 'M12 ' + y + ' h40', stroke: '#e2e8f0', 'stroke-width': 2 }, s);
+        refs.drops = el('g', { opacity: 0 }, s);
+        [[18, 20], [34, 30], [46, 18], [26, 42], [44, 44]].forEach(([x, y]) => el('ellipse', { cx: x, cy: y, rx: 3, ry: 4, fill: '#7dd3fc' }, refs.drops));
+        break;
+      case 'soil':
+        refs.dirt = el('rect', { x: 2, y: 34, width: 60, height: 28, rx: 3, fill: '#a16207' }, s);
+        el('path', { d: 'M22 6 v44 M42 6 v44', stroke: '#cbd5e1', 'stroke-width': 7, 'stroke-linecap': 'round' }, s);
+        el('rect', { x: 14, y: 2, width: 36, height: 12, rx: 2, fill: '#15803d' }, s);
+        break;
       default:
         break;
     }
@@ -315,8 +388,12 @@
     parts.forEach((part) => {
       const t = TYPES[part.type];
       if (!t) return;
-      const pinSel = h('select', { 'aria-label': part.label + ' pin', title: 'GPIO pin this part is wired to' }, ...pinOptions(part.pin));
-      pinSel.addEventListener('change', () => { part.pin = +pinSel.value; api.changed(true); });
+      let body2 = null;
+      let pinSel = null;
+      if (!t.roles) {
+        pinSel = h('select', { 'aria-label': part.label + ' pin', title: 'GPIO pin this part is wired to' }, ...pinOptions(part.pin));
+        pinSel.addEventListener('change', () => { part.pin = +pinSel.value; api.changed(true); });
+      }
       const head = h('div', { class: 'part-head' },
         h('span', { class: 'part-tag', style: 'background:' + part.hue }, part.label),
         h('span', { class: 'part-name' }, t.name),
@@ -326,6 +403,22 @@
       const v = vis(part.type);
       const ctrl = h('div', { class: 'part-ctrl' });
       const refs = v.refs;
+      if (t.roles) {
+        const keys = ['pin', 'pin2', 'pin3'];
+        const row = h('div', { class: 'role-pins' });
+        t.roles.forEach((role, i) => {
+          const k = keys[i];
+          const sel = h('select', { 'aria-label': part.label + ' ' + role + ' pin' }, ...pinOptions(part[k]));
+          if (part.type === 'motor' && role === 'ENA') {
+            const o = h('option', { value: '' }, 'jumper (full speed)');
+            if (part[k] === '' || part[k] === undefined || part[k] === null) o.selected = true;
+            sel.prepend(o);
+          }
+          sel.addEventListener('change', () => { part[k] = sel.value === '' ? '' : +sel.value; api.changed(true); });
+          row.append(h('label', null, h('span', null, role), sel));
+        });
+        ctrl.append(row);
+      }
 
       if (part.type === 'led') {
         const sw = h('div', { class: 'colors', role: 'group', 'aria-label': 'LED colour' });
@@ -362,7 +455,8 @@
         refs.h = h('span', { class: 'val' });
         rt.addEventListener('input', () => { part.value.t = +rt.value; api.input(); });
         rh.addEventListener('input', () => { part.value.h = +rh.value; api.input(); });
-        ctrl.append(h('div', { class: 'row' }, h('span', { class: 'muted' }, 'Temperature'), refs.t), rt, h('div', { class: 'row' }, h('span', { class: 'muted' }, 'Humidity'), refs.h), rh);
+        ctrl.append(h('div', { class: 'row' }, h('span', { class: 'muted' }, 'Temperature'), refs.t), rt, h('div', { class: 'row' }, h('span', { class: 'muted' }, 'Humidity'), refs.h), rh,
+          h('span', { class: 'muted' }, 'DHT11 reports 0–50 °C and 20–90 % in whole steps; DHT22 −40–80 °C, 0–100 %, 0.1 steps.'));
       } else if (part.type === 'pir') {
         const b = h('button', { class: 'press', type: 'button', 'aria-pressed': 'false' }, 'Wave a hand');
         let timer = null;
@@ -388,10 +482,41 @@
       } else if (part.type === 'servo') {
         refs.state = h('span', { class: 'val' }, '—');
         ctrl.append(h('div', { class: 'row' }, h('span', { class: 'muted' }, 'Angle'), refs.state), h('span', { class: 'muted' }, 'Signal → GPIO, 5 V supply'));
+      } else if (part.type === 'hcsr04') {
+        const r = h('input', { type: 'range', min: 0, max: 450, step: 1, value: part.value, 'aria-label': part.label + ' distance to object' });
+        refs.num = h('span', { class: 'val' });
+        refs.echo = h('span', { class: 'val' });
+        r.addEventListener('input', () => { part.value = +r.value; api.input(); });
+        ctrl.append(h('div', { class: 'row' }, h('span', { class: 'muted' }, 'Object at'), refs.num), r, h('div', { class: 'row' }, h('span', { class: 'muted' }, 'Echo pulse'), refs.echo));
+      } else if (part.type === 'ir') {
+        const b = h('button', { class: 'press', type: 'button', 'aria-pressed': String(!!part.value) }, 'Object in front');
+        b.addEventListener('click', () => { part.value = part.value ? 0 : 1; b.setAttribute('aria-pressed', String(!!part.value)); api.input(); });
+        refs.btn = b;
+        refs.state = h('span', { class: 'val' }, 'HIGH');
+        ctrl.append(b, h('div', { class: 'row' }, h('span', { class: 'muted' }, 'OUT (LOW = object seen)'), refs.state));
+      } else if (part.type === 'lcd') {
+        const addr = h('select', { 'aria-label': part.label + ' I2C address' }, ...['0x27', '0x3F'].map((a) => { const o = h('option', { value: a }, 'address ' + a); if ((part.addr || '0x27') === a) o.selected = true; return o; }));
+        addr.addEventListener('change', () => { part.addr = addr.value; api.changed(false); });
+        refs.screen = h('div', { class: 'lcd-screen', role: 'img', 'aria-label': 'LCD text' });
+        refs.rows = [0, 1, 2, 3].map((i) => h('div', { class: 'lcd-row', hidden: i > 1 ? '' : null }));
+        refs.screen.append(...refs.rows);
+        ctrl.append(addr, h('span', { class: 'muted' }, 'VCC 5 V · GND'));
+        body2 = refs.screen;
+      } else if (part.type === 'motor') {
+        refs.state = h('span', { class: 'val' }, 'stopped');
+        ctrl.append(h('div', { class: 'row' }, h('span', { class: 'muted' }, 'Motor'), refs.state));
+        refs.rot = 0;
+      } else if (part.type === 'rain' || part.type === 'soil') {
+        const r = h('input', { type: 'range', min: 0, max: 100, step: 1, value: part.value, 'aria-label': part.label + ' wetness' });
+        refs.num = h('span', { class: 'val' });
+        refs.adc = h('span', { class: 'val' });
+        r.addEventListener('input', () => { part.value = +r.value; api.input(); });
+        ctrl.append(h('div', { class: 'row' }, h('span', { class: 'muted' }, part.type === 'rain' ? 'Rain on plate' : 'Soil moisture'), refs.num), r, h('div', { class: 'row' }, h('span', { class: 'muted' }, 'analogRead ≈'), refs.adc));
       }
 
       const body = h('div', { class: 'part-body' }, v.svg, ctrl);
-      const card = h('div', { class: 'part', 'data-id': part.id }, head, body);
+      const card = h('div', { class: 'part' + (body2 ? ' wide' : ''), 'data-id': part.id }, head, body);
+      if (body2) card.append(body2);
       const warns = staticWarnings(part, parts);
       if (warns.length) card.append(h('div', { class: 'part-warn' }, '⚠ ' + warns.join(' ')));
       container.append(card);
@@ -446,7 +571,12 @@
           r.cap.setAttribute('r', part.value ? 12 : 14);
           r.cap.setAttribute('fill', part.value ? '#9f1239' : '#e11d48');
           const pm = sim.pins[part.pin];
-          r.state.textContent = run && pm && pm.mode !== null ? (sim.inputLevel(part.pin) ? 'HIGH' : 'LOW') : (part.value ? 'pressed' : 'released');
+          let st = part.value ? 'pressed' : 'released';
+          if (run && pm && pm.mode !== null) {
+            if (part.value) st = 'LOW';
+            else st = pm.mode === 5 ? 'HIGH' : pm.mode === 9 ? 'LOW' : 'floating';   // INPUT_PULLUP / INPUT_PULLDOWN
+          }
+          r.state.textContent = st;
           break;
         }
         case 'pot': {
@@ -490,6 +620,49 @@
           setTone(part.id, part.sound && freq ? freq : 0);
           break;
         }
+        case 'hcsr04': {
+          const d = +part.value;
+          r.num.textContent = d + ' cm' + (d < 2 || d > 400 ? ' (out of range)' : '');
+          r.echo.textContent = d < 2 || d > 400 ? 'none' : Math.round(d * 2 / 0.0343) + ' µs';
+          const trig = sim.pins[part.pin];
+          const pulsing = run && trig && trig.fellAt && performance.now() - trig.fellAt < 150;
+          r.wave.setAttribute('opacity', pulsing ? 0.9 : 0);
+          break;
+        }
+        case 'ir':
+          r.led.setAttribute('fill', part.value ? '#22c55e' : '#4b5563');
+          r.obj.setAttribute('opacity', part.value ? 1 : 0);
+          r.state.textContent = part.value ? 'LOW' : 'HIGH';
+          r.btn.setAttribute('aria-pressed', String(!!part.value));
+          break;
+        case 'lcd': {
+          const l = run ? sim.lcdFor(part) : null;
+          const on = !!(l && l.on);
+          r.screen.classList.toggle('lit', !!(l && l.light));
+          const cols = l ? Math.min(20, l.cols) : 16;
+          const nRows = l ? Math.min(4, l.rows) : 2;
+          for (let i = 0; i < 4; i++) {
+            r.rows[i].hidden = i >= nRows;
+            if (i >= nRows) continue;
+            const txt = on ? (l.buf[i] || '').slice(0, cols).padEnd(cols, ' ') : ' '.repeat(cols);
+            if (r.rows[i].textContent !== txt) r.rows[i].textContent = txt;
+          }
+          break;
+        }
+        case 'motor': {
+          const m = run ? sim.motorState(part) : { dir: 0, speed: 0, brake: false };
+          r.rot = (r.rot + m.dir * m.speed * 24) % 360;
+          r.fan.setAttribute('transform', 'rotate(' + r.rot.toFixed(1) + ' 48 35)');
+          r.state.textContent = m.brake ? 'brake' : !m.dir || m.speed <= 0 ? 'stopped' : (m.dir > 0 ? 'forward' : 'reverse') + ' · ' + Math.round(m.speed * 100) + ' %';
+          break;
+        }
+        case 'rain':
+        case 'soil':
+          r.num.textContent = Math.round(part.value) + ' % wet';
+          r.adc.textContent = String(sim.analogValue(part));
+          if (r.drops) r.drops.setAttribute('opacity', (Math.min(1, part.value / 60)).toFixed(2));
+          if (r.dirt) r.dirt.setAttribute('fill', part.value > 60 ? '#451a03' : part.value > 30 ? '#713f12' : '#a16207');
+          break;
         case 'servo': {
           const a = run ? sim.servoAngle(part.pin) : null;
           const ang = a === null ? 90 : a;

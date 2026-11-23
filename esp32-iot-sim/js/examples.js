@@ -435,6 +435,936 @@ void onAutoModeChange()  {
         'arduino_secrets.h': SECRETS,
       },
     },
+    /* ================= MECH 3241 · Slides 6 — ESP32 exercises ================= */
+    {
+      id: 'm6-boom-gate',
+      group: 'MECH 3241 · ESP32 exercises (slides 6)',
+      title: 'Ex 2 · Boom gate (IR + servo + LCD)',
+      blurb: 'Press "Object in front" on the IR sensor: the green LED turns on, the servo lifts the gate and the LCD shows "Gate Open". Otherwise red LED, gate down, "Gate Closed".',
+      baud: 115200,
+      parts: [{ type: 'ir', pin: 27 }, { type: 'led', pin: 25, color: 'green' }, { type: 'led', pin: 26, color: 'red' }, { type: 'servo', pin: 18 }, { type: 'lcd', pin: 21, pin2: 22, addr: '0x27' }],
+      files: {
+        'sketch.ino': `// MECH 3241 · Exercise 2: Boom Gate
+// IR obstacle sensor -> green/red LED, servo gate and I2C LCD
+#include <ESP32Servo.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+#define IR_PIN     27   // IR sensor OUT: LOW when an object is detected
+#define GREEN_LED  25
+#define RED_LED    26
+#define SERVO_PIN  18
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);   // address 0x27, 16 columns, 2 rows
+Servo gate;
+
+bool lastDetected = false;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(IR_PIN, INPUT);
+  pinMode(GREEN_LED, OUTPUT);
+  pinMode(RED_LED, OUTPUT);
+
+  gate.attach(SERVO_PIN);
+  lcd.init();
+  lcd.backlight();
+
+  closeGate();
+}
+
+void loop() {
+  bool detected = (digitalRead(IR_PIN) == LOW);
+
+  if (detected != lastDetected) {     // act only when the state changes
+    lastDetected = detected;
+    if (detected) {
+      openGate();
+    } else {
+      closeGate();
+    }
+  }
+  delay(50);
+}
+
+void openGate() {
+  digitalWrite(GREEN_LED, HIGH);
+  digitalWrite(RED_LED, LOW);
+  gate.write(90);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Gate Open");
+  Serial.println("Object detected -> Gate Open");
+}
+
+void closeGate() {
+  digitalWrite(GREEN_LED, LOW);
+  digitalWrite(RED_LED, HIGH);
+  gate.write(0);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Gate Closed");
+  Serial.println("No object -> Gate Closed");
+}
+`,
+      },
+    },
+    {
+      id: 'm6-parking',
+      group: 'MECH 3241 · ESP32 exercises (slides 6)',
+      title: 'Ex 3 · Smart parking assistant (HC-SR04)',
+      blurb: 'Drag the ultrasonic distance slider. Green = safe, yellow = getting close, red + buzzer = stop (closer than 20 cm).',
+      baud: 115200,
+      parts: [{ type: 'hcsr04', pin: 5, pin2: 18, value: 80 }, { type: 'led', pin: 25, color: 'green' }, { type: 'led', pin: 26, color: 'yellow' }, { type: 'led', pin: 27, color: 'red' }, { type: 'buzzer', pin: 13 }],
+      files: {
+        'sketch.ino': `// MECH 3241 · Exercise 3: Smart Parking Assistant
+// HC-SR04 ultrasonic sensor + three LEDs + buzzer
+
+const int trigPin  = 5;
+const int echoPin  = 18;
+const int greenLed = 25;
+const int yellowLed = 26;
+const int redLed   = 27;
+const int buzzer   = 13;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(greenLed, OUTPUT);
+  pinMode(yellowLed, OUTPUT);
+  pinMode(redLed, OUTPUT);
+  pinMode(buzzer, OUTPUT);
+}
+
+float readDistanceCm() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);        // 10 us trigger pulse
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  long duration = pulseIn(echoPin, HIGH, 30000);   // 30 ms timeout (about 5 m)
+  if (duration == 0) return -1;                      // no echo
+  return duration * 0.0343 / 2;                      // speed of sound, there and back
+}
+
+void setLeds(int g, int y, int r) {
+  digitalWrite(greenLed, g);
+  digitalWrite(yellowLed, y);
+  digitalWrite(redLed, r);
+}
+
+void loop() {
+  float distance = readDistanceCm();
+
+  if (distance < 0) {
+    Serial.println("Out of range");
+    setLeds(LOW, LOW, LOW);
+    noTone(buzzer);
+  } else {
+    Serial.print("Distance: ");
+    Serial.print(distance);
+    Serial.println(" cm");
+
+    if (distance < 20) {            // STOP
+      setLeds(LOW, LOW, HIGH);
+      tone(buzzer, 2000);
+    } else if (distance < 50) {     // getting close
+      setLeds(LOW, HIGH, LOW);
+      noTone(buzzer);
+    } else {                        // safe
+      setLeds(HIGH, LOW, LOW);
+      noTone(buzzer);
+    }
+  }
+  delay(200);
+}
+`,
+      },
+    },
+    {
+      id: 'm6-traffic',
+      group: 'MECH 3241 · ESP32 exercises (slides 6)',
+      title: 'Ex 4 · Pedestrian traffic light (IR + LCD)',
+      blurb: 'Red 5 s → green 5 s → yellow 2 s. Press "Object in front" on the IR sensor during red and the light switches to green for the pedestrian. The LCD counts down to red.',
+      baud: 115200,
+      parts: [{ type: 'led', pin: 25, color: 'red' }, { type: 'led', pin: 26, color: 'yellow' }, { type: 'led', pin: 27, color: 'green' }, { type: 'ir', pin: 14 }, { type: 'lcd', pin: 21, pin2: 22, addr: '0x27' }],
+      files: {
+        'sketch.ino': `// MECH 3241 · Exercise 4: Pedestrian Traffic Light
+// Red 5 s, green 5 s, yellow 2 s. A pedestrian at the IR sensor
+// switches the light to green. The LCD counts down to red.
+// Written with millis() (no long delay) so the IR sensor is always checked.
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+#define RED_LED     25
+#define YELLOW_LED  26
+#define GREEN_LED   27
+#define IR_PIN      14     // LOW = pedestrian detected
+
+const int RED = 0, GREEN = 1, YELLOW = 2;
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+int phase = RED;
+unsigned long phaseStart = 0;
+unsigned long phaseLen = 5000;
+int lastShown = -1;
+
+void setLights(int p) {
+  digitalWrite(RED_LED,    p == RED    ? HIGH : LOW);
+  digitalWrite(GREEN_LED,  p == GREEN  ? HIGH : LOW);
+  digitalWrite(YELLOW_LED, p == YELLOW ? HIGH : LOW);
+}
+
+void startPhase(int p) {
+  phase = p;
+  phaseStart = millis();
+  if (p == YELLOW) phaseLen = 2000; else phaseLen = 5000;
+  setLights(p);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  if (p == RED)    lcd.print("RED    - WAIT");
+  if (p == GREEN)  lcd.print("GREEN  - CROSS");
+  if (p == YELLOW) lcd.print("YELLOW - HURRY");
+  lastShown = -1;
+  Serial.print("Phase: ");
+  Serial.println(p == RED ? "RED" : p == GREEN ? "GREEN" : "YELLOW");
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(RED_LED, OUTPUT);
+  pinMode(YELLOW_LED, OUTPUT);
+  pinMode(GREEN_LED, OUTPUT);
+  pinMode(IR_PIN, INPUT);
+  lcd.init();
+  lcd.backlight();
+  startPhase(RED);
+}
+
+void loop() {
+  bool pedestrian = (digitalRead(IR_PIN) == LOW);
+  if (pedestrian && phase == RED) {
+    Serial.println("Pedestrian detected -> green");
+    startPhase(GREEN);
+  }
+
+  unsigned long elapsed = millis() - phaseStart;
+  if (elapsed >= phaseLen) {
+    if (phase == RED) startPhase(GREEN);
+    else if (phase == GREEN) startPhase(YELLOW);
+    else startPhase(RED);
+    return;
+  }
+
+  // countdown on line 2 before the light turns red
+  if (phase != RED) {
+    int left = (phaseLen - elapsed + 999) / 1000;
+    if (phase == GREEN) left = left + 2;      // the 2 s yellow comes before red
+    if (left != lastShown) {
+      lastShown = left;
+      lcd.setCursor(0, 1);
+      lcd.print("Red in ");
+      lcd.print(left);
+      lcd.print(" s   ");
+    }
+  }
+  delay(20);
+}
+`,
+      },
+    },
+
+    /* ================= MECH 3241 · Slides 7–8 — Arduino Cloud ================= */
+    {
+      id: 'm7-iot-led',
+      group: 'MECH 3241 · Arduino Cloud (slides 7–8)',
+      title: 'S7 Activity 1 · IoT switch → LED (lED1)',
+      blurb: 'The sample code from slides 7. The Thing has one READ/WRITE bool called lED1. Flip the switch on the dashboard: onLED1Change() runs and the LED on GPIO 2 turns on.',
+      baud: 9600,
+      parts: [{ type: 'led', pin: 2, color: 'red' }],
+      widgets: { lED1: ['switch', 'status'] },
+      files: {
+        'sketch.ino': `/*
+  Sketch generated by the Arduino IoT Cloud Thing "Untitled 12"
+
+  Arduino IoT Cloud Variables description
+
+  The following variables are automatically generated and updated when changes are made to the Thing
+
+  bool lED1;
+
+  Variables which are marked as READ/WRITE in the Cloud Thing will also have functions
+  which are called when their values are changed from the Dashboard.
+  These functions are generated with the Thing and added at the end of this sketch.
+*/
+
+#include "thingProperties.h"
+
+// Define LED pin (change according to your board, e.g. D2 for MKR, 13 for UNO)
+#define LED_PIN 2
+
+void setup() {
+  // Initialize serial and wait for port to open:
+  Serial.begin(9600);
+  delay(1500);
+
+  // Initialize the properties
+  initProperties();
+
+  // Set LED pin as OUTPUT
+  pinMode(LED_PIN, OUTPUT);
+
+  // Connect to Arduino IoT Cloud
+  ArduinoCloud.begin(ArduinoIoTPreferredConnection);
+
+  setDebugMessageLevel(2);
+  ArduinoCloud.printDebugInfo();
+}
+
+void loop() {
+  ArduinoCloud.update();
+  // You can also mirror LED status here if needed
+  digitalWrite(LED_PIN, lED1 ? HIGH : LOW);
+}
+
+/*
+  Since lED1 is READ_WRITE variable, onLED1Change() is
+  executed every time a new value is received from IoT Cloud.
+*/
+void onLED1Change()  {
+  // Act upon LED1 change
+  if (lED1) {
+    Serial.println("LED turned ON from Cloud");
+    digitalWrite(LED_PIN, HIGH);
+  } else {
+    Serial.println("LED turned OFF from Cloud");
+    digitalWrite(LED_PIN, LOW);
+  }
+}
+`,
+        'thingProperties.h': thing('bool lED1;', 'void onLED1Change();', '  ArduinoCloud.addProperty(lED1, READWRITE, ON_CHANGE, onLED1Change);'),
+        'arduino_secrets.h': SECRETS,
+      },
+    },
+    {
+      id: 'm8-three-leds',
+      group: 'MECH 3241 · Arduino Cloud (slides 7–8)',
+      title: 'S8 · 1 Three LEDs from the cloud',
+      blurb: 'Hands-on 1: LEDs on GPIO 14, 15 and 16, each with its own READ/WRITE bool and switch on one dashboard.',
+      baud: 9600,
+      parts: [{ type: 'led', pin: 14, color: 'red' }, { type: 'led', pin: 15, color: 'yellow' }, { type: 'led', pin: 16, color: 'green' }],
+      widgets: { led1: ['switch'], led2: ['switch'], led3: ['switch'] },
+      files: {
+        'sketch.ino': `/*
+  Hands-on 1: LED Control via Arduino Cloud
+  Cloud variables (all bool, READ/WRITE, on change): led1, led2, led3
+  Wiring: GPIO 14 / 15 / 16 -> 220 ohm -> LED -> GND
+*/
+#include "thingProperties.h"
+
+#define LED1_PIN 14
+#define LED2_PIN 15
+#define LED3_PIN 16
+
+void setup() {
+${CLOUD_SETUP}
+
+  pinMode(LED1_PIN, OUTPUT);
+  pinMode(LED2_PIN, OUTPUT);
+  pinMode(LED3_PIN, OUTPUT);
+
+${CLOUD_BEGIN}
+}
+
+void loop() {
+  ArduinoCloud.update();
+}
+
+void onLed1Change() {
+  digitalWrite(LED1_PIN, led1 ? HIGH : LOW);
+  Serial.print("LED 1: ");
+  Serial.println(led1 ? "ON" : "OFF");
+}
+
+void onLed2Change() {
+  digitalWrite(LED2_PIN, led2 ? HIGH : LOW);
+  Serial.print("LED 2: ");
+  Serial.println(led2 ? "ON" : "OFF");
+}
+
+void onLed3Change() {
+  digitalWrite(LED3_PIN, led3 ? HIGH : LOW);
+  Serial.print("LED 3: ");
+  Serial.println(led3 ? "ON" : "OFF");
+}
+`,
+        'thingProperties.h': thing('bool led1;\nbool led2;\nbool led3;', 'void onLed1Change();\nvoid onLed2Change();\nvoid onLed3Change();',
+          '  ArduinoCloud.addProperty(led1, READWRITE, ON_CHANGE, onLed1Change);\n  ArduinoCloud.addProperty(led2, READWRITE, ON_CHANGE, onLed2Change);\n  ArduinoCloud.addProperty(led3, READWRITE, ON_CHANGE, onLed3Change);'),
+        'arduino_secrets.h': SECRETS,
+      },
+    },
+    {
+      id: 'm8-servo',
+      group: 'MECH 3241 · Arduino Cloud (slides 7–8)',
+      title: 'S8 · 2 Remote servo (slider)',
+      blurb: 'Hands-on 2: a slider sets the int variable angle (0–180). onAngleChange() moves the servo on GPIO 13, and the gauge shows the angle.',
+      baud: 9600,
+      parts: [{ type: 'servo', pin: 13 }],
+      widgets: { angle: ['slider', 'gauge'] },
+      sliders: { angle: [0, 180] },
+      files: {
+        'sketch.ino': `/*
+  Hands-on 2: Remote Servo Motor Control
+  Cloud variable: int angle (READ/WRITE, on change) -> Slider + Gauge widgets
+  Wiring: Signal -> GPIO 13, VCC -> 5V, GND -> GND
+*/
+#include "thingProperties.h"
+#include <ESP32Servo.h>
+
+#define SERVO_PIN 13
+
+Servo myServo;
+
+void setup() {
+${CLOUD_SETUP}
+
+  myServo.attach(SERVO_PIN);
+  myServo.write(90);
+
+${CLOUD_BEGIN}
+}
+
+void loop() {
+  ArduinoCloud.update();
+}
+
+void onAngleChange() {
+  angle = constrain(angle, 0, 180);
+  myServo.write(angle);
+  Serial.print("Servo angle: ");
+  Serial.println(angle);
+}
+`,
+        'thingProperties.h': thing('int angle;', 'void onAngleChange();', '  ArduinoCloud.addProperty(angle, READWRITE, ON_CHANGE, onAngleChange);'),
+        'arduino_secrets.h': SECRETS,
+      },
+    },
+    {
+      id: 'm8-distance',
+      group: 'MECH 3241 · Arduino Cloud (slides 7–8)',
+      title: 'S8 · 3 Distance on the dashboard (HC-SR04)',
+      blurb: 'Hands-on 3: TRIG on GPIO 4 (D4), ECHO on GPIO 5 (D5). The float distance (READ only) is sent every second to a gauge, value and chart. On real hardware put a 1k/2k divider on ECHO, because it outputs 5 V.',
+      baud: 9600,
+      parts: [{ type: 'hcsr04', pin: 4, pin2: 5, value: 75 }],
+      widgets: { distance: ['gauge', 'value', 'chart'] },
+      sliders: { distance: [0, 400] },
+      files: {
+        'sketch.ino': `/*
+  Hands-on 3: Distance Monitoring with Cloud Dashboard
+  Cloud variable: float distance (READ only, every 1 s) -> Value or Gauge widget
+  Wiring: VCC -> 5V, GND -> GND, TRIG -> D4 (GPIO 4), ECHO -> D5 (GPIO 5)
+  CAUTION: powered from 5 V the ECHO pin outputs 5 V, above the ESP32's 3.3 V limit.
+           Put a divider on ECHO: ECHO -> 1k -> GPIO 5 -> 2k -> GND.
+*/
+#include "thingProperties.h"
+
+const int trigPin = 4;
+const int echoPin = 5;
+
+void setup() {
+${CLOUD_SETUP}
+
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+${CLOUD_BEGIN}
+}
+
+void loop() {
+  ArduinoCloud.update();
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  long duration = pulseIn(echoPin, HIGH, 30000);
+  distance = duration * 0.0343 / 2;
+
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+  delay(500);
+}
+`,
+        'thingProperties.h': thing('float distance;', '', '  ArduinoCloud.addProperty(distance, READ, 1 * SECONDS, NULL);'),
+        'arduino_secrets.h': SECRETS,
+      },
+    },
+    {
+      id: 'm8-distance-leds',
+      group: 'MECH 3241 · Arduino Cloud (slides 7–8)',
+      title: 'S8 · 4 Distance + close / mid / far LEDs',
+      blurb: 'Hands-on 4: adds three LEDs with threshold logic: red when closer than 15 cm, yellow up to 40 cm, green when far.',
+      baud: 9600,
+      parts: [{ type: 'hcsr04', pin: 4, pin2: 5, value: 30 }, { type: 'led', pin: 25, color: 'red' }, { type: 'led', pin: 26, color: 'yellow' }, { type: 'led', pin: 27, color: 'green' }],
+      widgets: { distance: ['gauge', 'chart'] },
+      sliders: { distance: [0, 400] },
+      files: {
+        'sketch.ino': `/*
+  Hands-on 4: Distance Monitoring + three indicator LEDs
+  Cloud variable: float distance (READ only, every 1 s)
+  Wiring: TRIG -> GPIO 4, ECHO -> GPIO 5 (through a 1k / 2k divider: ECHO is 5 V)
+          LEDs: close (red) GPIO 25, intermediate (yellow) GPIO 26, far (green) GPIO 27
+*/
+#include "thingProperties.h"
+
+const int trigPin = 4;
+const int echoPin = 5;
+const int closeLed = 25;
+const int midLed = 26;
+const int farLed = 27;
+
+const float CLOSE_CM = 15.0;
+const float FAR_CM = 40.0;
+
+void setup() {
+${CLOUD_SETUP}
+
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(closeLed, OUTPUT);
+  pinMode(midLed, OUTPUT);
+  pinMode(farLed, OUTPUT);
+
+${CLOUD_BEGIN}
+}
+
+float measureCm() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  long duration = pulseIn(echoPin, HIGH, 30000);
+  return duration * 0.0343 / 2;
+}
+
+void loop() {
+  ArduinoCloud.update();
+  distance = measureCm();
+
+  // threshold logic
+  digitalWrite(closeLed, distance > 0 && distance < CLOSE_CM ? HIGH : LOW);
+  digitalWrite(midLed, distance >= CLOSE_CM && distance < FAR_CM ? HIGH : LOW);
+  digitalWrite(farLed, distance >= FAR_CM ? HIGH : LOW);
+
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+  delay(300);
+}
+`,
+        'thingProperties.h': thing('float distance;', '', '  ArduinoCloud.addProperty(distance, READ, 1 * SECONDS, NULL);'),
+        'arduino_secrets.h': SECRETS,
+      },
+    },
+    {
+      id: 'm8-dht11',
+      group: 'MECH 3241 · Arduino Cloud (slides 7–8)',
+      title: 'S8 · 5 DHT11 temperature & humidity',
+      blurb: 'Hands-on 5: DHT11 data on GPIO 23. Two gauges, °C and %RH. Move the sliders on the sensor card and watch the dashboard follow. The DHT11 reports whole numbers.',
+      baud: 9600,
+      parts: [{ type: 'dht22', pin: 23, value: { t: 29, h: 72 } }],
+      widgets: { temperature: ['gauge', 'chart'], humidity: ['gauge', 'chart'] },
+      files: {
+        'sketch.ino': `/*
+  Hands-on 5: Temperature and Humidity Monitoring with Cloud Dashboard
+  Cloud variables: CloudTemperatureSensor temperature, CloudRelativeHumidity humidity (READ, on change)
+  Wiring: DHT11 data -> GPIO 23, VCC -> 5V, GND -> GND
+*/
+#include "thingProperties.h"
+#include <DHT.h>
+
+#define DHTPIN 23
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
+
+unsigned long lastRead = 0;
+
+void setup() {
+${CLOUD_SETUP}
+
+  dht.begin();
+
+${CLOUD_BEGIN}
+}
+
+void loop() {
+  ArduinoCloud.update();
+
+  // the DHT11 needs about 2 s between readings; do not block the cloud with delay()
+  if (millis() - lastRead >= 2000) {
+    lastRead = millis();
+    float h = dht.readHumidity();
+    float t = dht.readTemperature();
+
+    if (isnan(h) || isnan(t)) {
+      Serial.println("Failed to read from DHT sensor!");
+      return;
+    }
+    temperature = t;
+    humidity = h;
+
+    Serial.print("Humidity: ");
+    Serial.print(h);
+    Serial.print(" %  Temperature: ");
+    Serial.print(t);
+    Serial.println(" C");
+  }
+}
+`,
+        'thingProperties.h': thing('CloudTemperatureSensor temperature;\nCloudRelativeHumidity humidity;', '',
+          '  ArduinoCloud.addProperty(temperature, READ, ON_CHANGE, NULL);\n  ArduinoCloud.addProperty(humidity, READ, ON_CHANGE, NULL);'),
+        'arduino_secrets.h': SECRETS,
+      },
+    },
+    {
+      id: 'm8-level-up',
+      group: 'MECH 3241 · Arduino Cloud (slides 7–8)',
+      title: 'S8 · 6 Level up: PIR, rain, light, soil',
+      blurb: 'Hands-on 6 "mix & match": PIR on GPIO 13, rain sensor on A0 (GPIO 36), LDR on GPIO 39 and soil probe on GPIO 34. The ESP32 has no A1 or A2, so the slide pins are mapped to ADC1 pins.',
+      baud: 9600,
+      parts: [{ type: 'pir', pin: 13 }, { type: 'rain', pin: 36, value: 10 }, { type: 'ldr', pin: 39, value: 450 }, { type: 'soil', pin: 34, value: 45 }],
+      widgets: { motion: ['status'], rain_level: ['chart', 'value'], light: ['gauge'], isDay: ['status'], soil: ['gauge'], plantStatus: ['messenger'] },
+      sliders: { rain_level: [0, 4095], light: [0, 4095], soil: [0, 4095] },
+      files: {
+        'sketch.ino': `/*
+  Hands-on 6: Level Up - try more sensors (any two or more in one Thing)
+
+  PIR motion (HC-SR501)  GPIO 13 (D13)  -> bool motion
+  Rain sensor (YL-83)    A0 = GPIO 36   -> int rain_level (drops when wet)
+  Light level (LDR)      GPIO 39        -> int light, bool isDay
+  Soil moisture          GPIO 34        -> int soil, String plantStatus
+
+  Note: the slide says LDR on A1 and soil on A2, but the ESP32 core has
+  no A1/A2. Use ADC1 pins (32-39) because ADC2 stops working with Wi-Fi.
+*/
+#include "thingProperties.h"
+
+#define PIR_PIN   13
+#define RAIN_PIN  36   // A0
+#define LDR_PIN   39   // A3
+#define SOIL_PIN  34   // A6
+
+bool wasThirsty = false;
+
+void setup() {
+${CLOUD_SETUP}
+
+  pinMode(PIR_PIN, INPUT);
+
+${CLOUD_BEGIN}
+}
+
+void loop() {
+  ArduinoCloud.update();
+
+  motion = digitalRead(PIR_PIN) == HIGH;
+  rain_level = analogRead(RAIN_PIN);
+  light = analogRead(LDR_PIN);
+  isDay = light > 1500;
+  soil = analogRead(SOIL_PIN);
+
+  bool thirsty = soil > 3000;           // a dry probe reads high
+  if (thirsty != wasThirsty) {
+    wasThirsty = thirsty;
+    plantStatus = thirsty ? "The plant is thirsty - water me!" : "Soil is moist, plant is happy";
+  }
+  delay(200);
+}
+`,
+        'thingProperties.h': thing('bool motion;\nint rain_level;\nint light;\nbool isDay;\nint soil;\nString plantStatus;', '',
+          '  ArduinoCloud.addProperty(motion, READ, ON_CHANGE, NULL);\n  ArduinoCloud.addProperty(rain_level, READ, 2 * SECONDS, NULL);\n  ArduinoCloud.addProperty(light, READ, 2 * SECONDS, NULL);\n  ArduinoCloud.addProperty(isDay, READ, ON_CHANGE, NULL);\n  ArduinoCloud.addProperty(soil, READ, 2 * SECONDS, NULL);\n  ArduinoCloud.addProperty(plantStatus, READ, ON_CHANGE, NULL);'),
+        'arduino_secrets.h': SECRETS,
+      },
+    },
+    {
+      id: 'm8-trigger',
+      group: 'MECH 3241 · Arduino Cloud (slides 7–8)',
+      title: 'S8 · 7 Cloud trigger: the sensor texts you',
+      blurb: 'Hands-on 7: bool motion from a PIR on GPIO 13. A trigger "when motion is true → email + push" is already set up in the Triggers tab. Press "Wave a hand" and watch the alert arrive.',
+      baud: 9600,
+      parts: [{ type: 'pir', pin: 13 }],
+      widgets: { motion: ['status', 'chart'] },
+      triggers: [{ name: 'motion', when: 'true', email: true, push: true, msg: 'Motion detected at the lab door! motion = {variable.value}' }],
+      files: {
+        'sketch.ino': `/*
+  Hands-on 7: Cloud Triggers - let the sensor text you
+  1. Make it a boolean: bool motion (READ, on change)
+  2. Upload and check that motion flips between false and true
+  3-6. Triggers page -> when motion is true -> Email / Push -> message with {variable.value}
+  (Only bool and String variables can fire a trigger.)
+*/
+#include "thingProperties.h"
+
+#define PIR_PIN 13
+
+void setup() {
+${CLOUD_SETUP}
+
+  pinMode(PIR_PIN, INPUT);
+
+${CLOUD_BEGIN}
+}
+
+void loop() {
+  ArduinoCloud.update();
+
+  bool now = digitalRead(PIR_PIN) == HIGH;
+  if (now != motion) {
+    motion = now;
+    Serial.println(motion ? "Motion detected!" : "All quiet");
+  }
+}
+`,
+        'thingProperties.h': thing('bool motion;', '', '  ArduinoCloud.addProperty(motion, READ, ON_CHANGE, NULL);'),
+        'arduino_secrets.h': SECRETS,
+      },
+    },
+
+    /* ================= MECH 3241 · sample codes from the course folder ================= */
+    {
+      id: 'c-dht11',
+      group: 'MECH 3241 · Sample codes (ported to ESP32)',
+      title: 'DHT11 sensor test',
+      blurb: 'DHT11.txt on the ESP32. Data moved from pin 2 to GPIO 4, because GPIO 2 is a boot strapping pin with the on-board LED.',
+      baud: 9600,
+      parts: [{ type: 'dht22', pin: 4, value: { t: 26, h: 65 } }],
+      files: {
+        'sketch.ino': `#include <DHT.h>
+
+// Define pin and sensor type
+#define DHTPIN 4        // was pin 2 on the Arduino UNO; GPIO 4 on the ESP32
+#define DHTTYPE DHT11   // DHT11 sensor
+
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+  Serial.println("DHT11 Sensor Test");
+}
+
+void loop() {
+  // Read humidity
+  float humidity = dht.readHumidity();
+
+  // Read temperature in Celsius
+  float temperature = dht.readTemperature();
+
+  // Check if any reads failed
+  if (isnan(humidity) || isnan(temperature)) {
+    Serial.println("Failed to read from DHT sensor!");
+    delay(2000);
+    return;
+  }
+
+  // Print results
+  Serial.print("Humidity: ");
+  Serial.print(humidity);
+  Serial.print(" %\\t");
+
+  Serial.print("Temperature: ");
+  Serial.print(temperature);
+  Serial.println(" °C");
+
+  delay(2000); // DHT11 requires ~2 seconds delay
+}
+`,
+      },
+    },
+    {
+      id: 'c-ultrasonic',
+      group: 'MECH 3241 · Sample codes (ported to ESP32)',
+      title: 'Ultrasonic distance (HC-SR04)',
+      blurb: 'The distance code from "IR sensor.txt". On the ESP32 the UNO pins 9 and 10 belong to the flash chip, so TRIG is GPIO 5 and ECHO is GPIO 18.',
+      baud: 9600,
+      parts: [{ type: 'hcsr04', pin: 5, pin2: 18, value: 42 }],
+      files: {
+        'sketch.ino': `const int trigPin = 5;    // was 9 on the UNO (GPIO 9 is a flash pin on the ESP32)
+const int echoPin = 18;   // was 10 on the UNO
+long duration;
+float distance;
+
+void setup() {
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Send trigger pulse
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  // Read echo pulse
+  duration = pulseIn(echoPin, HIGH);
+
+  // Calculate distance in cm
+  distance = duration * 0.0343 / 2;
+
+  // Print result
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  delay(500); // Wait half a second before next reading
+}
+`,
+      },
+    },
+    {
+      id: 'c-i2c-scan',
+      group: 'MECH 3241 · Sample codes (ported to ESP32)',
+      title: 'I2C scanner (find the LCD address)',
+      blurb: 'LCDAdress.txt, unchanged. It finds the LCD backpack at 0x27. Switch the LCD card to address 0x3F, or move SDA off GPIO 21, and scan again.',
+      baud: 9600,
+      parts: [{ type: 'lcd', pin: 21, pin2: 22, addr: '0x27' }],
+      files: {
+        'sketch.ino': `#include <Wire.h>
+
+void setup() {
+  Wire.begin();          // ESP32 default: SDA = GPIO 21, SCL = GPIO 22
+  Serial.begin(9600);
+  Serial.println("I2C Scanner");
+}
+
+void loop() {
+  byte error, address;
+  int count = 0;
+
+  for (address = 1; address < 127; address++) {
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+
+    if (error == 0) {
+      Serial.print("I2C device found at address 0x");
+      Serial.println(address, HEX);
+      count++;
+    }
+  }
+
+  if (count == 0)
+    Serial.println("No I2C devices found");
+  else
+    Serial.println("Done");
+
+  delay(5000);
+}
+`,
+      },
+    },
+    {
+      id: 'c-lcd-hello',
+      group: 'MECH 3241 · Sample codes (ported to ESP32)',
+      title: 'LCD 16×2 I2C: hello + counter',
+      blurb: 'The basic LiquidCrystal_I2C calls: init, backlight, setCursor and print, on SDA 21 / SCL 22.',
+      baud: 9600,
+      parts: [{ type: 'lcd', pin: 21, pin2: 22, addr: '0x27' }],
+      files: {
+        'sketch.ino': `#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+// use the address the I2C scanner found (usually 0x27 or 0x3F)
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+int count = 0;
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("Hello, MECH3241");
+}
+
+void loop() {
+  lcd.setCursor(0, 1);
+  lcd.print("Count: ");
+  lcd.print(count);
+  count++;
+  delay(1000);
+}
+`,
+      },
+    },
+    {
+      id: 'c-servo',
+      group: 'MECH 3241 · Sample codes (ported to ESP32)',
+      title: 'Servo sweep 0° / 90° / 135°',
+      blurb: 'Servo.txt on the ESP32: the ESP32Servo library replaces Servo.h (older Servo versions do not support the ESP32), and the signal moves from pin 9 (a flash pin) to GPIO 18.',
+      baud: 9600,
+      parts: [{ type: 'servo', pin: 18 }],
+      files: {
+        'sketch.ino': `#include <ESP32Servo.h>   // older Servo.h versions only support AVR boards like the UNO
+
+Servo myServo;
+
+void setup() {
+  myServo.attach(18);       // was pin 9 on the UNO
+}
+
+void loop() {
+  myServo.write(0);   // Move to 0°
+  delay(2000);
+
+  myServo.write(90);   // Move to 90°
+  delay(2000);
+
+  myServo.write(135);  // Move to 135°
+  delay(2000);
+}
+`,
+      },
+    },
+    {
+      id: 'c-dcmotor',
+      group: 'MECH 3241 · Sample codes (ported to ESP32)',
+      title: 'DC motor with L298N',
+      blurb: 'DCMotor.txt with ESP32 pins: IN1 → GPIO 27, IN2 → GPIO 26, ENA → GPIO 14 (PWM). Edit the speed or swap HIGH/LOW to reverse.',
+      baud: 9600,
+      parts: [{ type: 'motor', pin: 27, pin2: 26, pin3: 14 }],
+      files: {
+        'sketch.ino': `int in1 = 27;   // was 6 on the UNO (GPIO 6 is a flash pin on the ESP32)
+int in2 = 26;   // was 5
+int enA = 14;   // was 9; optional if you control speed via PWM
+
+void setup() {
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+  pinMode(enA, OUTPUT);
+}
+
+void loop() {
+  // Set direction
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+
+  // Run at maximum speed
+  analogWrite(enA, 255); // 255 = 100% PWM = full voltage
+  // Motor keeps running at full speed
+}
+`,
+      },
+    },
   ];
 
   root.SIM_EXAMPLES = EXAMPLES;
