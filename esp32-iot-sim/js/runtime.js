@@ -155,6 +155,13 @@
       const parts = this.partsOn(n);
       for (const part of parts) {
         if (part.type === 'button') {
+          if (part.activeHigh) {                             // other leg on 3.3 V / 5 V
+            if (part.value) return 1;
+            if (p.mode === C.INPUT_PULLDOWN) return 0;
+            if (p.mode === C.INPUT_PULLUP) return 1;
+            this.warnOnce('floatH' + n, 'GPIO ' + n + ': the button is wired to the supply but the pin has no pull-down, so it floats when released. Use pinMode(' + n + ', INPUT_PULLDOWN) or add a 10 kΩ resistor to GND.');
+            return Math.random() < 0.5 ? 1 : 0;
+          }
           if (part.value) return 0;                        // wired to GND
           if (p.mode === C.INPUT_PULLUP) return 1;
           if (p.mode === C.INPUT_PULLDOWN) return 0;
@@ -174,7 +181,13 @@
     }
 
     analogValue(part) {
-      if (part.type === 'pot') return Math.round(+part.value || 0);
+      const raw = this.analogRaw(part);
+      // a module powered from 5 V drives its output above the 3.3 V ADC range
+      const k = part.supplyV && part.supplyV > 3.4 ? part.supplyV / 3.3 : 1;
+      return Math.max(0, Math.min(4095, Math.round(raw * k)));
+    }
+    analogRaw(part) {
+      if (part.type === 'pot') return Math.round(part.potReversed ? 4095 - (+part.value || 0) : (+part.value || 0));
       if (part.type === 'ldr') {
         // brighter light → lower LDR resistance → higher voltage on a 10k divider
         const lux = Math.max(0, +part.value || 0);
@@ -371,7 +384,9 @@
       const c = this.cloud;
       const lat = Math.max(0, +this.network.latency || 0);
       const v = typeof value === 'number' || typeof value === 'boolean' ? value : String(value);
+      const store = this.cloudStore;
       setTimeout(() => {
+        if (this.cloudStore !== store || this.cloud !== c) return;   // project reloaded or board restarted meanwhile
         const rec = this.cloudStore[prop.name] || (this.cloudStore[prop.name] = { value: null, t: 0, history: [] });
         rec.value = v;
         rec.t = Date.now();
