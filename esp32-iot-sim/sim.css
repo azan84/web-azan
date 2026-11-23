@@ -511,3 +511,6 @@ button:disabled { cursor: default; }
   .ac-tr > :nth-child(3):not(:last-child) { display: none; }
   .ac-table.vars .ac-tr { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) 30px; }
 }
+
+/* pins plugged straight into a header hole / breadboard hole */
+.term.plugged { fill: rgba(22, 163, 74, .28); stroke: #16a34a; stroke-width: 1.2; }

@@ -216,12 +216,12 @@
       },
     },
     resistor: {
-      name: 'Resistor', prefix: 'R', cat: 'Basic', w: 84, h: 20,
-      terms: { A: { x: 0, y: 10, label: 'Terminal 1' }, B: { x: 84, y: 10, label: 'Terminal 2' } },
+      name: 'Resistor', prefix: 'R', cat: 'Basic', w: 88, h: 20, onPitch: true,
+      terms: { A: { x: 0, y: 10, label: 'Terminal 1' }, B: { x: 88, y: 10, label: 'Terminal 2' } },
       draw(g) {
-        el('line', { x1: 0, y1: 10, x2: 84, y2: 10, stroke: '#a3a9b0', 'stroke-width': 2.4 }, g);
-        el('rect', { x: 20, y: 3, width: 44, height: 14, rx: 6, fill: '#d9c08f', stroke: '#9c8458' }, g);
-        [['#d32f2f', 27], ['#d32f2f', 34], ['#6d4c41', 41], ['#c9a227', 54]].forEach(([c, x]) => el('rect', { x, y: 3.5, width: 4, height: 13, fill: c }, g));
+        el('line', { x1: 0, y1: 10, x2: 88, y2: 10, stroke: '#a3a9b0', 'stroke-width': 2.4 }, g);
+        el('rect', { x: 22, y: 3, width: 44, height: 14, rx: 6, fill: '#d9c08f', stroke: '#9c8458' }, g);
+        [['#d32f2f', 29], ['#d32f2f', 36], ['#6d4c41', 43], ['#c9a227', 56]].forEach(([c, x]) => el('rect', { x, y: 3.5, width: 4, height: 13, fill: c }, g));
         return {};
       },
     },
@@ -441,6 +441,68 @@
       },
     },
   };
+  /* ---------- breadboard (half size, 30 columns, 0.1" = P) ---------- */
+  const BB_COLS = 30;
+  const BB_ROWS = 'abcdefghij';
+  const BB_RAILS = { TN: [22, 'Top − rail (blue)'], TP: [44, 'Top + rail (red)'], BP: [352, 'Bottom + rail (red)'], BN: [374, 'Bottom − rail (blue)'] };
+  const bbRowY = (i) => (i < 5 ? 88 + i * P : 220 + (i - 5) * P);
+  const bbHasRail = (c) => (c - 1) % 6 !== 5;
+  const bbTerms = {};
+  for (let c = 1; c <= BB_COLS; c++) {
+    const x = c * P;
+    BB_ROWS.split('').forEach((r, i) => { bbTerms[r + c] = { x, y: bbRowY(i), label: 'Hole ' + r + c + ' (column ' + c + ', ' + (i < 5 ? 'a–e' : 'f–j') + ' strip)' }; });
+    if (bbHasRail(c)) Object.keys(BB_RAILS).forEach((k) => { bbTerms[k + c] = { x, y: BB_RAILS[k][0], label: BB_RAILS[k][1] }; });
+  }
+  TYPES.breadboard = {
+    name: 'Breadboard (half size)', short: 'Breadboard', prefix: 'BB', cat: 'Basic', w: (BB_COLS + 1) * P, h: 396, grid: true,
+    terms: bbTerms,
+    draw(g) {
+      el('rect', { x: 0, y: 0, width: (BB_COLS + 1) * P, height: 396, rx: 6, fill: '#ececec', stroke: '#c9c9c9' }, g);
+      el('rect', { x: 8, y: 194, width: (BB_COLS + 1) * P - 16, height: 8, rx: 2, fill: '#d6d6d6' }, g);
+      const W = (BB_COLS + 1) * P;
+      [[11, '#3b82f6'], [55, '#ef4444'], [341, '#ef4444'], [385, '#3b82f6']].forEach(([y, c]) => el('line', { x1: 14, y1: y, x2: W - 14, y2: y, stroke: c, 'stroke-width': 1.6 }, g));
+      [['−', 22, '#3b82f6'], ['+', 44, '#ef4444'], ['+', 352, '#ef4444'], ['−', 374, '#3b82f6']].forEach(([s, y, c]) => { txt(g, 9, y + 4, s, { 'font-size': 11, fill: c, 'font-weight': 700 }); txt(g, W - 9, y + 4, s, { 'font-size': 11, fill: c, 'font-weight': 700 }); });
+      BB_ROWS.split('').forEach((r, i) => { txt(g, 9, bbRowY(i) + 3, r, { 'font-size': 8, fill: '#8a8a8a' }); txt(g, W - 9, bbRowY(i) + 3, r, { 'font-size': 8, fill: '#8a8a8a' }); });
+      for (let c = 1; c <= BB_COLS; c++) if (c === 1 || c % 5 === 0) { txt(g, c * P, 73, String(c), { 'font-size': 7.5, fill: '#8a8a8a' }); txt(g, c * P, 330, String(c), { 'font-size': 7.5, fill: '#8a8a8a' }); }
+      Object.keys(bbTerms).forEach((k) => { const t = bbTerms[k]; el('rect', { x: t.x - 3.5, y: t.y - 3.5, width: 7, height: 7, rx: 1, fill: '#3a3a3a' }, g); });
+      return {};
+    },
+  };
+
+  /* ---------- leads on the 0.1" pitch ----------
+     Parts are drawn at their own size, but every leg/pin that sits on the bottom
+     (or left) edge is re-spaced to the header pitch P and extended by a short bent
+     lead, so a part can be plugged straight into header holes or a breadboard. */
+  const LEAD = 12;
+  Object.keys(TYPES).forEach((k) => {
+    const t = TYPES[k];
+    if (t.grid || t.onPitch) return;
+    const ks = Object.keys(t.terms);
+    const respace = (list, axis) => {
+      const ord = list.slice().sort((a, b) => t.terms[a][axis] - t.terms[b][axis]);
+      const mean = Math.round(ord.reduce((s, q) => s + t.terms[q][axis], 0) / ord.length);
+      ord.forEach((q, i) => { const tm = t.terms[q]; tm.from = { x: tm.x, y: tm.y }; tm[axis] = mean + (i - (ord.length - 1) / 2) * P; });
+    };
+    const bottom = ks.filter((q) => t.terms[q].y === t.h);
+    const left = ks.filter((q) => t.terms[q].x === 0);
+    if (bottom.length) { respace(bottom, 'x'); bottom.forEach((q) => { t.terms[q].y = t.h + LEAD; t.terms[q].edge = 'b'; }); }
+    if (left.length) { respace(left, 'y'); left.forEach((q) => { t.terms[q].x = -LEAD; t.terms[q].edge = 'l'; }); }
+  });
+  function drawPart(g, part) {
+    const t = TYPES[part.type];
+    const refs = t.draw(g, part) || {};
+    Object.keys(t.terms).forEach((k) => {
+      const tm = t.terms[k];
+      if (!tm.from) return;
+      const f = tm.from;
+      const d = tm.edge === 'l'
+        ? 'M' + f.x + ' ' + f.y + ' H' + (f.x - 4) + ' L' + (tm.x + 4) + ' ' + tm.y + ' H' + tm.x
+        : 'M' + f.x + ' ' + f.y + ' V' + (f.y + 4) + ' L' + tm.x + ' ' + (tm.y - 4) + ' V' + tm.y;
+      el('path', { d, fill: 'none', stroke: '#a3a9b0', 'stroke-width': 2.2, 'stroke-linejoin': 'round' }, g);
+    });
+    return refs;
+  }
+
   const CATS = ['Basic', 'Sensors', 'Output'];
 
   function defaultValue(type) {
@@ -504,6 +566,61 @@
     return { x: part.x + (t.w - w) / 2, y: part.y + (t.h - h) / 2, w, h };
   }
 
+  /* ---------- sockets: header holes on the board, holes on breadboards ---------- */
+  function sockets(state, skipId) {
+    const out = [];
+    Object.keys(BT).forEach((k) => out.push({ key: 'B:' + k, host: 'board', x: state.board.x + BT[k].x, y: state.board.y + BT[k].y }));
+    state.parts.forEach((p) => {
+      if (p.type !== 'breadboard' || p.id === skipId) return;
+      Object.keys(bbTerms).forEach((k) => { const q = termPos(p, k); out.push({ key: p.id + ':' + k, host: p.id, x: q.x, y: q.y }); });
+    });
+    return out;
+  }
+  const PLUG_TOL = 1.5;
+  // pins of `part` that sit in a socket: [{ term, key, host }]
+  function pluggedPins(state, part, socks) {
+    if (part.type === 'breadboard') return [];
+    socks = socks || sockets(state, part.id);
+    const res = [];
+    Object.keys(TYPES[part.type].terms).forEach((k) => {
+      const q = termPos(part, k);
+      const s = socks.find((o) => Math.abs(o.x - q.x) < PLUG_TOL && Math.abs(o.y - q.y) < PLUG_TOL);
+      if (s) res.push({ term: k, key: s.key, host: s.host });
+    });
+    return res;
+  }
+  // move `part` so its nearest pin lands exactly in a socket (within r); true if snapped
+  function snapToSocket(state, part, r) {
+    if (part.type === 'breadboard') return false;
+    const socks = sockets(state, part.id);
+    let best = null;
+    Object.keys(TYPES[part.type].terms).forEach((k) => {
+      const q = termPos(part, k);
+      socks.forEach((o) => {
+        const d = Math.hypot(o.x - q.x, o.y - q.y);
+        if (d < (r || 10) && (!best || d < best.d)) best = { d, dx: o.x - q.x, dy: o.y - q.y };
+      });
+    });
+    if (!best) return false;
+    part.x += best.dx; part.y += best.dy;
+    return true;
+  }
+  // rotate a part by 90°; if it is plugged in, keep its first plugged pin in the same hole
+  function rotatePart(state, part) {
+    const pins = pluggedPins(state, part);
+    const anchor = pins.length ? termPos(part, pins[0].term) : null;
+    part.rot = ((part.rot || 0) + 90) % 360;
+    if (anchor) {
+      const q = termPos(part, pins[0].term);
+      part.x += anchor.x - q.x; part.y += anchor.y - q.y;
+    } else snapToSocket(state, part, 12);
+  }
+  // parts with at least one pin in a socket of `host` ('board' or a breadboard id)
+  function ridersOf(state, host) {
+    const socks = sockets(state).filter((o) => o.host === host);
+    return state.parts.filter((p) => p.id !== host && p.type !== 'breadboard' && pluggedPins(state, p, socks).length);
+  }
+
   /* ================================================================
      Netlist: union-find over terminals, then decide each part's pins
      ================================================================ */
@@ -522,6 +639,26 @@
     const wires = state.wires.filter((w) => (w.a.part === 'board' || partsById[w.a.part]) && (w.b.part === 'board' || partsById[w.b.part]));
     wires.forEach((w) => union(key(w.a), key(w.b)));
 
+    // breadboard strips: a–e and f–j of each column, and each rail along its length
+    const bbIds = new Set();
+    state.parts.forEach((p) => {
+      if (p.type !== 'breadboard') return;
+      bbIds.add(p.id);
+      for (let c = 1; c <= BB_COLS; c++) {
+        for (let i = 1; i < 5; i++) { union(p.id + ':a' + c, p.id + ':' + BB_ROWS[i] + c); union(p.id + ':f' + c, p.id + ':' + BB_ROWS[5 + i] + c); }
+        if (bbHasRail(c)) Object.keys(BB_RAILS).forEach((r) => union(p.id + ':' + r + '1', p.id + ':' + r + c));
+      }
+    });
+    // pins plugged straight into a header hole or breadboard hole
+    const plugged = new Set();
+    const allSocks = sockets(state);
+    state.parts.forEach((p) => {
+      pluggedPins(state, p, allSocks.filter((o) => o.host !== p.id)).forEach((s) => {
+        union(p.id + ':' + s.term, s.key);
+        plugged.add(p.id + ':' + s.term); plugged.add(s.key);
+      });
+    });
+
     // nets before resistors are bridged (to know if an LED has a series resistor)
     const preRoot = {};
     const resistorKeys = [];
@@ -530,7 +667,12 @@
     state.parts.forEach((p) => Object.keys(TYPES[p.type].terms).forEach((k) => allKeys.add(p.id + ':' + k)));
     Object.keys(BT).forEach((k) => allKeys.add('B:' + k));
     allKeys.forEach((k) => { preRoot[k] = find(k); });
-    const resistorNets = new Set(resistorKeys.map((k) => preRoot[k]));
+    const resistorNets = new Set();
+    state.parts.forEach((p) => {
+      if (p.type !== 'resistor') return;
+      const a = preRoot[p.id + ':A'], b = preRoot[p.id + ':B'];
+      if (a !== b) { resistorNets.add(a); resistorNets.add(b); } // shorted-out resistor does not count
+    });
     state.parts.forEach((p) => { if (p.type === 'resistor') union(p.id + ':A', p.id + ':B'); });
 
     // describe each net
@@ -550,6 +692,7 @@
     const netOf = (part, term) => nets[find(part.id + ':' + term)];
     const wired = new Set();
     wires.forEach((w) => { wired.add(key(w.a)); wired.add(key(w.b)); });
+    plugged.forEach((k) => wired.add(k));
 
     // shorts are judged on nets before resistors are bridged (a resistor is not a wire)
     const preNets = {};
@@ -570,7 +713,7 @@
       else if (n.supplies.size > 1) issues.push({ level: 'err', msg: 'Short circuit: the 3.3 V and 5 V supplies are wired together.' });
       if (n.gpios.size > 1) issues.push({ level: 'warn', msg: 'GPIO ' + Array.from(n.gpios).join(' and ') + ' are wired together.' });
       if (n.gpios.size && (n.gnd || n.supplies.size) && n.members.length > 1) {
-        const onlyBoard = n.members.every((m) => m.startsWith('B:') || /:(GND|VCC|K|N|T1|T2)$/.test(m));
+        const onlyBoard = n.members.every((m) => m.startsWith('B:') || bbIds.has(m.split(':')[0]) || /:(GND|VCC|K|N|T1|T2)$/.test(m));
         if (onlyBoard) issues.push({ level: 'warn', msg: 'GPIO ' + Array.from(n.gpios).join(', ') + ' is wired straight to ' + (n.gnd ? 'GND' : 'the supply') + '.' });
       }
     });
@@ -585,7 +728,7 @@
       if (n.supplies.size) bits.push(Array.from(n.supplies).map((v) => (v === 5 ? '5V' : '3.3V')).join(' + '));
       if (n.gnd) bits.push('GND');
       if (n.en) bits.push('EN');
-      const others = n.members.filter((m) => m !== selfKey && !m.startsWith('B:')).map((m) => {
+      const others = n.members.filter((m) => m !== selfKey && !m.startsWith('B:') && !bbIds.has(m.split(':')[0])).map((m) => {
         const [pid, t] = m.split(':');
         const pp = partsById[pid];
         return pp ? pp.label + ' ' + t : m;
@@ -596,6 +739,10 @@
 
     state.parts.forEach((p) => {
       const t = TYPES[p.type];
+      if (p.type === 'breadboard') {
+        info[p.id] = { conns: {}, issues: [], powered: true, supplyV: null, out: { pin: null, pin2: null, pin3: null, activeHigh: false, alwaysOn: false, reversed: false, potReversed: false, supplyV: null } };
+        return;
+      }
       const inf = { conns: {}, issues: [], powered: true, supplyV: null };
       Object.keys(t.terms).forEach((k) => {
         const kk = p.id + ':' + k;
@@ -641,7 +788,8 @@
       } else if (p.type === 'led') {
         const a = netOf(p, 'A'), k = netOf(p, 'K');
         const ga = gpioOf(a), gk = gpioOf(k);
-        if (ga !== null && k.gnd) out.pin = ga;
+        if (preRoot[p.id + ':A'] === preRoot[p.id + ':K'] && (wired.has(p.id + ':A') || wired.has(p.id + ':K'))) inf.issues.push('Both legs are in the same connected strip, so the LED is shorted out. Put the legs in different columns.');
+        else if (ga !== null && k.gnd) out.pin = ga;
         else if (supplyOf(a) && k.gnd) out.alwaysOn = true;
         else if (gk !== null && a.gnd) { out.reversed = true; inf.issues.push('The LED is in backwards: the long leg (anode) must go to the GPIO, the short leg (cathode) to GND.'); }
         else if (ga !== null && !k.gnd) inf.issues.push('The cathode (−) is not connected to GND.');
@@ -702,7 +850,7 @@
       if (list.length > 1 && !list.every((p) => p.type === 'lcd')) list.forEach((p) => info[p.id].issues.push('Shares GPIO ' + n + ' with ' + list.filter((q) => q !== p).map((q) => q.label).join(', ') + '.'));
     });
 
-    return { info, issues, nets, find, jumperV };
+    return { info, issues, nets, find, jumperV, plugged };
   }
 
   // write derived pins onto the part objects the runtime reads
@@ -801,7 +949,7 @@
         const r = makePart('resistor', parts, 0, 0, { label: 'R' + (parts.filter((q) => q.type === 'resistor').length + 1) });
         const k = termPos(p, 'K');
         r.rot = 90;
-        // a vertical resistor spans y-32 … y+52 around its own origin
+        // a vertical resistor spans y-34 … y+54 around its own origin
         r.x = Math.round(k.x - TYPES.resistor.w / 2);
         r.y = p._side === 'top' ? Math.round(k.y + 50) : Math.round(k.y - 70);
         parts.push(r);
@@ -856,7 +1004,8 @@
   }
 
   root.CircuitModel = {
-    TYPES, CATS, BOARD, BT, LED_COLORS, el, txt, drawBoard, makePart, termPos, boardTermPos, endPos, partBox,
+    TYPES, CATS, BOARD, BT, LED_COLORS, el, txt, drawBoard, drawPart, makePart, termPos, boardTermPos, endPos, partBox,
+    sockets, pluggedPins, snapToSocket, ridersOf, rotatePart,
     solve, applySolve, autoBuild, boardTermInfo, rotPt,
   };
 })(window);

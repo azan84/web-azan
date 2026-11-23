@@ -43,6 +43,7 @@
     const short = ex.title.replace(/^[\w\s]*·\s*/, '');
     return {
       v: 2,
+      geom: 2,
       exampleId: ex.id,
       project: short,
       thingName: tm ? tm[1] : short,
@@ -70,6 +71,11 @@
           s.parts = s.parts.filter((p) => M.TYPES[p.type]);
           s.wires = Array.isArray(s.wires) ? s.wires : [];
           s.board = Object.assign({ x: 0, y: 0, jumper: '3V3' }, s.board || {});
+          if (!s.geom) {
+            // saved before parts had plug-in leads: a half-pitch nudge keeps them unplugged
+            s.parts.forEach((p) => { if (M.pluggedPins(s, p).length) { p.x += 11; p.y += 11; } });
+            s.geom = 2;
+          }
           s.view = Object.assign({ x: 40, y: 40, z: 0.8 }, s.view || {});
           s.dashboard = s.dashboard && Array.isArray(s.dashboard.widgets) ? s.dashboard : { name: 'Dashboard', widgets: [] };
           s.triggers = Array.isArray(s.triggers) ? s.triggers : [];
@@ -172,7 +178,7 @@
     changed(kind) {
       save();
       renderIssues();
-      if (kind === 'wire' && sim.running) sim.partChanged();
+      if ((kind === 'wire' || kind === 'move') && sim.running) sim.partChanged(); // a move can plug/unplug pins
     },
     input() { sim.partChanged(); save(); },
     reset() { if (sim.running) run(); else toast('Board', 'EN pressed. Start the simulation to run the sketch.'); },
@@ -183,7 +189,7 @@
     historyChanged(u, r) { $('tbUndo').disabled = !u; $('tbRedo').disabled = !r; },
     selection(sel) {
       const isPart = sel && sel.kind === 'part';
-      $('tbRotate').disabled = !isPart;
+      $('tbRotate').disabled = !isPart || (state.parts.find((p) => p.id === sel.id) || {}).type === 'breadboard';
       $('tbDelete').disabled = !sel || sel.kind === 'board';
     },
     wireColor() { syncWireSel(); },

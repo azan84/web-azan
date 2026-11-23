@@ -695,22 +695,37 @@
       s.setAttribute('class', 'w-chart');
       [0.25, 0.5, 0.75].forEach((f) => svg('line', { x1: 0, x2: W_, y1: H_ * f, y2: H_ * f, stroke: '#e6eded', 'vector-effect': 'non-scaling-stroke' }, s));
       const area = svg('path', { d: '', fill: 'rgba(0,129,132,.10)' }, s);
-      const line = svg('polyline', { points: '', fill: 'none', stroke: '#008184', 'stroke-width': 2, 'vector-effect': 'non-scaling-stroke', 'stroke-linejoin': 'round' }, s);
+      const line = svg('polyline', { points: '', fill: 'none', stroke: '#008184', 'stroke-width': 2, 'vector-effect': 'non-scaling-stroke', 'stroke-linejoin': kindOf(p) === 'bool' ? 'miter' : 'round' }, s);
       const axis = h('div', { class: 'w-axis' }, h('span'), h('span'), h('span'));
       body.append(s, axis);
       update = (rec) => {
         lastRec = rec;
         const now = Date.now();
-        const hist = rec ? rec.history.filter((x) => typeof x.v === 'number' && Number.isFinite(x.v) && x.t >= now - SPANS[span]).slice(-240) : [];
+        const num = rec ? rec.history.filter((x) => typeof x.v === 'number' && Number.isFinite(x.v)) : [];
+        const cut = now - SPANS[span];
+        const hist = num.filter((x) => x.t >= cut).slice(-240);
+        const before = num.filter((x) => x.t < cut).pop();
+        if (before) hist.unshift({ t: cut, v: before.v }); // value held from before the window
         if (!hist.length) { line.setAttribute('points', ''); area.setAttribute('d', ''); axis.children[1].textContent = 'Waiting for data'; axis.children[0].textContent = ''; axis.children[2].textContent = ''; return; }
-        let mn = Math.min(...hist.map((x) => x.v)), mx = Math.max(...hist.map((x) => x.v));
-        if (mx - mn < 1e-9) { mn -= 1; mx += 1; }
-        const pad = (mx - mn) * 0.12; mn -= pad; mx += pad;
+        const digital = kindOf(p) === 'bool';
+        let mn, mx;
+        if (digital) { mn = -0.15; mx = 1.15; } // fixed OFF/ON rails for a square-wave plot
+        else {
+          mn = Math.min(...hist.map((x) => x.v)); mx = Math.max(...hist.map((x) => x.v));
+          if (mx - mn < 1e-9) { mn -= 1; mx += 1; }
+          const pad = (mx - mn) * 0.12; mn -= pad; mx += pad;
+        }
         const t1 = now, t0 = span === 'LIVE' ? Math.min(hist[0].t, t1 - 60000) : t1 - SPANS[span];
         const X = (t) => ((t - t0) / (t1 - t0 || 1)) * W_;
         const Y = (v) => H_ - ((v - mn) / (mx - mn)) * H_;
-        const pts = hist.map((x) => X(x.t).toFixed(1) + ',' + Y(x.v).toFixed(1));
-        pts.push(W_ + ',' + Y(hist[hist.length - 1].v).toFixed(1));
+        const pts = [];
+        hist.forEach((x, i) => {
+          // bool: hold the previous level until the change, then jump vertically (step / square signal)
+          if (digital && i > 0) pts.push(X(x.t).toFixed(1) + ',' + Y(hist[i - 1].v ? 1 : 0).toFixed(1));
+          pts.push(X(x.t).toFixed(1) + ',' + Y(digital ? (x.v ? 1 : 0) : x.v).toFixed(1));
+        });
+        const lastV = hist[hist.length - 1].v;
+        pts.push(W_ + ',' + Y(digital ? (lastV ? 1 : 0) : lastV).toFixed(1));
         line.setAttribute('points', pts.join(' '));
         area.setAttribute('d', 'M' + X(hist[0].t).toFixed(1) + ',' + H_ + ' L' + pts.join(' L') + ' L' + W_ + ',' + H_ + ' Z');
         const tf = (t) => new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });

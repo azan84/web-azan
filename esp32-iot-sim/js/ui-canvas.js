@@ -133,11 +133,12 @@
 
     // parts
     for (const k of Object.keys(partRefs)) delete partRefs[k];
-    S.parts.forEach((p) => {
+    // breadboards first, so parts plugged into them are drawn on top
+    S.parts.slice().sort((a, b) => (b.type === 'breadboard') - (a.type === 'breadboard')).forEach((p) => {
       const t = TYPES[p.type];
       const g = el('g', { class: 'part', 'data-part': p.id, transform: 'translate(' + p.x + ' ' + p.y + ') rotate(' + (p.rot || 0) + ' ' + t.w / 2 + ' ' + t.h / 2 + ')' }, layers.parts);
-      el('rect', { x: -4, y: -4, width: t.w + 8, height: t.h + 8, fill: 'transparent' }, g);
-      partRefs[p.id] = t.draw(g, p) || {};
+      el('rect', { x: -16, y: -4, width: t.w + 20, height: t.h + 20, fill: 'transparent' }, g); // includes the plug-in leads
+      partRefs[p.id] = M.drawPart(g, p);
       const inf = solved.info[p.id];
       if (inf && inf.issues.length) {
         const b = M.partBox(p);
@@ -161,7 +162,7 @@
       const t = M.BT[k];
       termEl(S.board.x + t.x, S.board.y + t.y, { part: 'board', term: k });
     });
-    S.parts.forEach((p) => Object.keys(TYPES[p.type].terms).forEach((k) => {
+    S.parts.slice().sort((a, b) => (b.type === 'breadboard') - (a.type === 'breadboard')).forEach((p) => Object.keys(TYPES[p.type].terms).forEach((k) => {
       const pos = M.termPos(p, k);
       termEl(pos.x, pos.y, { part: p.id, term: k });
     }));
@@ -170,7 +171,8 @@
   }
 
   function termEl(x, y, end) {
-    const r = el('rect', { x: x - 5.5, y: y - 5.5, width: 11, height: 11, class: 'term', 'data-term': endKey(end) }, layers.terms);
+    const k = endKey(end);
+    const r = el('rect', { x: x - 5.5, y: y - 5.5, width: 11, height: 11, class: 'term' + (solved && solved.plugged && solved.plugged.has(k) ? ' plugged' : ''), 'data-term': k }, layers.terms);
     r._end = end;
     return r;
   }
@@ -418,6 +420,13 @@
       box.append(h('div', { class: 'insp-row' }, h('span', null, 'Obstacle'), h('label', { class: 'chk' }, cb, ' object in front')));
     }
     if (p.type === 'button') box.append(h('p', { class: 'insp-note muted' }, 'Press and hold the button cap on the canvas.'));
+    if (p.type === 'breadboard') {
+      box.append(h('p', { class: 'insp-note' }, 'The five holes a–e of each numbered column are joined, and so are f–j. The gap in the middle separates them. Each + and − rail is joined along its whole length.'),
+        h('p', { class: 'insp-note muted' }, 'Drag a part so its legs drop into the holes (they turn green when plugged in). Parts plugged in move with the breadboard.'),
+        h('div', { class: 'insp-actions' },
+          h('button', { class: 'tc-btn', type: 'button', onclick: removeSelected }, 'Delete')));
+      return;
+    }
 
     inspLive = h('span', { class: 'mono live' }, p._live || '—');
     box.append(h('div', { class: 'insp-row' }, h('span', null, 'State'), inspLive));
@@ -469,15 +478,17 @@
     const p = S.parts.find((x) => x.id === sel.id);
     if (!p) return;
     pushUndo();
-    p.rot = ((p.rot || 0) + 90) % 360;
+    if (p.type === 'breadboard') return; // riders would be left behind
+    M.rotatePart(S, p);
     render();
     hooks.changed('move');
   }
-  function addPart(type, x, y) {
+  function addPart(type, x, y, plug) {
     const t = TYPES[type];
     pushUndo();
     const p = M.makePart(type, S.parts, snap(x - t.w / 2), snap(y - t.h / 2));
     S.parts.push(p);
+    if (plug) M.snapToSocket(S, p, 12);
     sel = { kind: 'part', id: p.id };
     render();
     hooks.changed('wire');
@@ -617,14 +628,14 @@
       if (!sel || sel.id !== p.id) select({ kind: 'part', id: p.id });
       if (p.type === 'pir' && hooks.isRunning()) triggerPir(p);
       if (p.type === 'ir' && hooks.isRunning()) { p.value = p.value ? 0 : 1; hooks.input(); renderInspector(); }
-      drag = { kind: 'part', part: p, ox: w.x - p.x, oy: w.y - p.y, moved: false, snap: snapshot() };
+      drag = { kind: 'part', part: p, ox: w.x - p.x, oy: w.y - p.y, moved: false, snap: snapshot(), riders: p.type === 'breadboard' ? M.ridersOf(S, p.id) : [] };
       dom.svg.setPointerCapture(e.pointerId);
       return;
     }
     const bg = tgt.closest && tgt.closest('[data-board]');
     if (bg) {
       if (!sel || sel.kind !== 'board') select({ kind: 'board' });
-      drag = { kind: 'board', ox: w.x - S.board.x, oy: w.y - S.board.y, moved: false, snap: snapshot() };
+      drag = { kind: 'board', ox: w.x - S.board.x, oy: w.y - S.board.y, moved: false, snap: snapshot(), riders: M.ridersOf(S, 'board') };
       dom.svg.setPointerCapture(e.pointerId);
       return;
     }
@@ -653,15 +664,23 @@
       drag.moved = true;
       applyView();
     } else if (drag.kind === 'part') {
-      const nx = snap(w.x - drag.ox), ny = snap(w.y - drag.oy);
-      if (nx === drag.part.x && ny === drag.part.y) return;
-      drag.part.x = nx; drag.part.y = ny; drag.moved = true;
+      const p = drag.part;
+      const ox = p.x, oy = p.y;
+      p.x = snap(w.x - drag.ox); p.y = snap(w.y - drag.oy);
+      // like Tinkercad: a pin that comes near a header hole or breadboard hole drops into it
+      if (p.type !== 'breadboard') M.snapToSocket(S, p, 10);
+      if (p.x === ox && p.y === oy) return;
+      drag.riders.forEach((q) => { q.x += p.x - ox; q.y += p.y - oy; });
+      // bends of wires plugged into a dragged breadboard move with it
+      if (p.type === 'breadboard') S.wires.forEach((wr) => { if (wr.a.part === p.id || wr.b.part === p.id) wr.pts = wr.pts.map(([x, y]) => [x + p.x - ox, y + p.y - oy]); });
+      drag.moved = true;
       renderFast();
     } else if (drag.kind === 'board') {
       const nx = snap(w.x - drag.ox), ny = snap(w.y - drag.oy);
       if (nx === S.board.x && ny === S.board.y) return;
       const dx = nx - S.board.x, dy = ny - S.board.y;
       S.board.x = nx; S.board.y = ny; drag.moved = true;
+      drag.riders.forEach((q) => { q.x += dx; q.y += dy; });
       // bends of wires plugged into the board move with it
       S.wires.forEach((wr) => { if (wr.a.part === 'board' || wr.b.part === 'board') wr.pts = wr.pts.map(([x, y]) => [x + dx, y + dy]); });
       renderFast();
@@ -700,7 +719,7 @@
     s.setAttribute('viewBox', (-pad - (type === 'ir' ? 0 : 0)) + ' ' + (-pad - (type === 'hcsr04' || type === 'ir' ? 10 : 0)) + ' ' + (t.w + pad * 2) + ' ' + (t.h + pad * 2 + (type === 'hcsr04' || type === 'ir' ? 10 : 0)));
     s.setAttribute('aria-hidden', 'true');
     const g = el('g', {}, s);
-    t.draw(g, { color: 'red', value: 0 });
+    M.drawPart(g, { type, color: 'red', value: 0 });
     return s;
   }
   function renderPalette() {
@@ -747,7 +766,7 @@
         const r = dom.svg.getBoundingClientRect();
         if (ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom) {
           const w = toWorld(ev.clientX, ev.clientY);
-          addPart(type, w.x, w.y);
+          addPart(type, w.x, w.y, true);
           hooks.paletteAdded && hooks.paletteAdded();
         }
       } else {
