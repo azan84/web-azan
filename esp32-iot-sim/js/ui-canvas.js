@@ -293,16 +293,19 @@
           p._live = d < 2 || d > 400 ? 'out of range: no echo' : 'echo ' + Math.round(d * 2 / 0.0343) + ' µs';
           break;
         }
-        case 'lcd': {
+        case 'lcd':
+        case 'lcd2004': {
+          const dim = TYPES[p.type].lcd;
           const l = run && p.pin !== null ? sim.lcdFor(p) : null;
           const on = !!(l && l.on);
           const lit = !!(l && l.light);
           r.scr.setAttribute('fill', lit ? '#4c6ef5' : '#22356f');
-          for (let i = 0; i < 2; i++) {
-            const s = on ? (l.buf[i] || '').slice(0, 16).padEnd(16, ' ') : '';
+          for (let i = 0; i < dim.rows; i++) {
+            const s = on ? (l.buf[i] || '').slice(0, dim.cols).padEnd(dim.cols, ' ') : '';
             if (r.rows[i].textContent !== s) r.rows[i].textContent = s;
           }
-          p._live = l ? (lit ? 'backlight on' : 'backlight off') : run ? 'not initialised' : '—';
+          const mismatch = l && (l.cols !== dim.cols || l.rows !== dim.rows) ? ' · sketch says ' + l.cols + '×' + l.rows + ', this LCD is ' + dim.cols + '×' + dim.rows : '';
+          p._live = l ? (lit ? 'backlight on' : 'backlight off') + mismatch : run ? 'not initialised' : '—';
           break;
         }
         case 'motor': {
@@ -379,7 +382,7 @@
       box.append(h('div', { class: 'insp-row' }, h('span', null, 'Color'), s));
     }
     if (p.type === 'resistor') box.append(h('div', { class: 'insp-row' }, h('span', null, 'Resistance'), h('span', { class: 'mono' }, '220 Ω')));
-    if (p.type === 'lcd') {
+    if (t.lcd) {
       const s = h('select', { 'aria-label': 'I2C address' }, ...['0x27', '0x3F'].map((a) => h('option', { value: a, selected: (p.addr || '0x27') === a ? '' : null }, a)));
       s.addEventListener('change', () => { p.addr = s.value; hooks.changed('look'); });
       box.append(h('div', { class: 'insp-row' }, h('span', null, 'I2C address'), s));

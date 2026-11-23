@@ -203,7 +203,7 @@
   const TYPES = {
     led: {
       name: 'LED', prefix: 'LED', cat: 'Basic', w: 40, h: 84,
-      terms: { A: { x: 14, y: 84, label: 'Anode (+, long leg)' }, K: { x: 28, y: 84, label: 'Cathode (−)' } },
+      terms: { A: { x: 10, y: 84, label: 'Anode (+, long leg)' }, K: { x: 28, y: 84, label: 'Cathode (−)' } },
       draw(g, part) {
         const r = {};
         el('path', { d: 'M14 46 V60 l-4 6 V84', fill: 'none', stroke: '#a3a9b0', 'stroke-width': 2.4 }, g);
@@ -404,7 +404,7 @@
       },
     },
     lcd: {
-      name: 'LCD 16×2 (I2C backpack)', short: 'LCD 16×2 I2C', prefix: 'LCD', cat: 'Output', w: 206, h: 96,
+      name: 'LCD 16×2 (I2C backpack)', short: 'LCD 16×2 I2C', prefix: 'LCD', cat: 'Output', w: 206, h: 96, lcd: { cols: 16, rows: 2 },
       power: { vcc: 'VCC', gnd: 'GND', need: 5, soft: true }, roles: { pin: 'SDA', pin2: 'SCL' },
       terms: { GND: { x: 0, y: 26, label: 'GND' }, VCC: { x: 0, y: 40, label: 'VCC (5V)' }, SDA: { x: 0, y: 54, label: 'SDA' }, SCL: { x: 0, y: 68, label: 'SCL' } },
       draw(g) {
@@ -415,6 +415,22 @@
         el('rect', { x: 32, y: 14, width: 166, height: 68, rx: 3, fill: '#0b0f13' }, g);
         r.scr = el('rect', { x: 38, y: 20, width: 154, height: 56, rx: 2, fill: '#3b5bdb' }, g);
         r.rows = [0, 1].map((i) => txt(g, 42, 42 + i * 22, '', { 'font-size': 15, fill: '#e0e7ff', 'text-anchor': 'start', 'font-family': 'Consolas, "Courier New", monospace', style: 'white-space:pre' }));
+        return r;
+      },
+    },
+    lcd2004: {
+      name: 'LCD 20×4 (I2C backpack)', short: 'LCD 20×4 I2C', prefix: 'LCD', cat: 'Output', w: 262, h: 140, lcd: { cols: 20, rows: 4 },
+      power: { vcc: 'VCC', gnd: 'GND', need: 5, soft: true }, roles: { pin: 'SDA', pin2: 'SCL' },
+      terms: { GND: { x: 0, y: 48, label: 'GND' }, VCC: { x: 0, y: 62, label: 'VCC (5V)' }, SDA: { x: 0, y: 76, label: 'SDA' }, SCL: { x: 0, y: 90, label: 'SCL' } },
+      draw(g) {
+        const r = {};
+        el('rect', { x: 12, y: 0, width: 250, height: 140, rx: 4, fill: '#15803d' }, g);
+        [[20, 8], [254, 8], [20, 132], [254, 132]].forEach(([x, y]) => el('circle', { cx: x, cy: y, r: 3.5, fill: '#e5e7eb', stroke: '#14532d' }, g));
+        el('rect', { x: 0, y: 40, width: 24, height: 58, rx: 2, fill: '#111827' }, g);
+        [['GND', 48], ['VCC', 62], ['SDA', 76], ['SCL', 90]].forEach(([s, y]) => { el('rect', { x: 0, y: y - 3, width: 10, height: 6, fill: '#c9a24a' }, g); txt(g, 18, y + 2, s, { 'font-size': 4.5 }); });
+        el('rect', { x: 32, y: 14, width: 222, height: 112, rx: 3, fill: '#0b0f13' }, g);
+        r.scr = el('rect', { x: 38, y: 20, width: 210, height: 100, rx: 2, fill: '#3b5bdb' }, g);
+        r.rows = [0, 1, 2, 3].map((i) => txt(g, 44, 40 + i * 23, '', { 'font-size': 15, fill: '#e0e7ff', 'text-anchor': 'start', 'font-family': 'Consolas, "Courier New", monospace', style: 'white-space:pre' }));
         return r;
       },
     },
@@ -526,7 +542,7 @@
       type, label: t.prefix + n, x: Math.round(x || 0), y: Math.round(y || 0), rot: 0,
       value: defaultValue(type), hue: HUES[parts.length % HUES.length],
     };
-    if (type === 'lcd') p.addr = '0x27';
+    if (TYPES[type].lcd) p.addr = '0x27';
     if (type === 'led') p.color = 'red';
     if (type === 'buzzer') p.sound = false;
     if (type === 'dht22') p.model = 'DHT22';
@@ -713,8 +729,7 @@
       else if (n.supplies.size > 1) issues.push({ level: 'err', msg: 'Short circuit: the 3.3 V and 5 V supplies are wired together.' });
       if (n.gpios.size > 1) issues.push({ level: 'warn', msg: 'GPIO ' + Array.from(n.gpios).join(' and ') + ' are wired together.' });
       if (n.gpios.size && (n.gnd || n.supplies.size) && n.members.length > 1) {
-        const onlyBoard = n.members.every((m) => m.startsWith('B:') || bbIds.has(m.split(':')[0]) || /:(GND|VCC|K|N|T1|T2)$/.test(m));
-        if (onlyBoard) issues.push({ level: 'warn', msg: 'GPIO ' + Array.from(n.gpios).join(', ') + ' is wired straight to ' + (n.gnd ? 'GND' : 'the supply') + '.' });
+        issues.push({ level: 'warn', msg: 'GPIO ' + Array.from(n.gpios).join(', ') + ' is wired straight to ' + (n.gnd ? 'GND' : 'the supply') + '.' });
       }
     });
 
@@ -794,7 +809,11 @@
         else if (gk !== null && a.gnd) { out.reversed = true; inf.issues.push('The LED is in backwards: the long leg (anode) must go to the GPIO, the short leg (cathode) to GND.'); }
         else if (ga !== null && !k.gnd) inf.issues.push('The cathode (−) is not connected to GND.');
         else if (wired.has(p.id + ':A') || wired.has(p.id + ':K')) inf.issues.push('Connect the anode (+) to a GPIO S pin and the cathode (−) to GND.');
-        if ((out.pin !== null || out.alwaysOn) && !resistorNets.has(preRoot[p.id + ':A']) && !resistorNets.has(preRoot[p.id + ':K'])) {
+        const guards = (term) => {
+          const r = preRoot[p.id + ':' + term], n = preNets[r];
+          return resistorNets.has(r) && n && !n.gpios.size && !n.supplies.size && !n.gnd;
+        };
+        if ((out.pin !== null || out.alwaysOn) && !guards('A') && !guards('K')) {
           inf.issues.push('No series resistor: add a 220 Ω resistor or the LED (and the GPIO) can be damaged.');
         }
       } else if (p.type === 'button') {
@@ -833,8 +852,8 @@
       if (p.type === 'motor') [out.pin, out.pin2, out.pin3].forEach((n) => { if (n !== null && n !== '' && (GPIO[n] || {}).inputOnly) inf.issues.push('GPIO ' + n + ' is input-only, so it cannot drive the L298N.'); });
       if (p.type === 'hcsr04' && out.pin !== null && (GPIO[out.pin] || {}).inputOnly) inf.issues.push('TRIG is on input-only GPIO ' + out.pin + ', so the sensor is never triggered.');
       if (p.type === 'dht22' && out.pin !== null && info2.inputOnly) inf.issues.push('GPIO ' + out.pin + ' is input-only, but the DHT data line must also be driven by the ESP32 to start a reading.');
-      if (p.type === 'lcd' && [out.pin, out.pin2].some((n) => n !== null && (GPIO[n] || {}).inputOnly)) inf.issues.push('I2C needs pins that can drive the line; GPIO 34–39 are input-only.');
-      if (p.type === 'lcd' && out.pin !== null && (out.pin !== 21 || out.pin2 !== 22)) inf.issues.push('SDA/SCL are not on GPIO 21/22. Call Wire.begin(' + out.pin + ', ' + out.pin2 + ') before lcd.init().');
+      if (t.lcd && [out.pin, out.pin2].some((n) => n !== null && (GPIO[n] || {}).inputOnly)) inf.issues.push('I2C needs pins that can drive the line; GPIO 34–39 are input-only.');
+      if (t.lcd && out.pin !== null && (out.pin !== 21 || out.pin2 !== 22)) inf.issues.push('SDA/SCL are not on GPIO 21/22. Call Wire.begin(' + out.pin + ', ' + out.pin2 + ') before lcd.init().');
       if ((out.pin === 1 || out.pin === 3) && p.type !== 'resistor') inf.issues.push('GPIO ' + out.pin + ' is the USB serial line, which clashes with the Serial Monitor.');
       if ([0, 2, 5, 12, 15].includes(out.pin) && ['button', 'pir', 'ir', 'dht22'].includes(p.type)) inf.issues.push('GPIO ' + out.pin + ' is a strapping pin: holding it at boot can stop the ESP32 from starting or uploading.');
 
@@ -847,7 +866,7 @@
     state.parts.forEach((p) => { const o = info[p.id].out; [o.pin, o.pin2, o.pin3].forEach((n) => { if (n !== null && n !== '' && n !== undefined) (byPin[n] = byPin[n] || []).push(p); }); });
     Object.keys(byPin).forEach((n) => {
       const list = byPin[n];
-      if (list.length > 1 && !list.every((p) => p.type === 'lcd')) list.forEach((p) => info[p.id].issues.push('Shares GPIO ' + n + ' with ' + list.filter((q) => q !== p).map((q) => q.label).join(', ') + '.'));
+      if (list.length > 1 && !list.every((p) => TYPES[p.type].lcd)) list.forEach((p) => info[p.id].issues.push('Shares GPIO ' + n + ' with ' + list.filter((q) => q !== p).map((q) => q.label).join(', ') + '.'));
     });
 
     return { info, issues, nets, find, jumperV, plugged };
@@ -890,7 +909,7 @@
     parts.forEach((p) => {
       const t = TYPES[p.type];
       const c = colOf(p._want.pin) || { side: 'top', x: 300 };
-      const side = p.type === 'lcd' ? 'right' : c.side;
+      const side = t.lcd ? 'right' : c.side;
       p._side = side;
       p._cx = c.x;
     });
@@ -972,7 +991,7 @@
         route(P_('T1'), gndFor(), '#1f2937');
         route(P_('W'), B_('S' + near(want.pin)), '#16a34a');
         route(P_('T2'), B_('PWR_3V3_' + (bendStep % 2 + 1)), '#dc2626');
-      } else if (p.type === 'lcd') {
+      } else if (t.lcd) {
         mkWireL(p, 'GND', 'I2C_GND1', '#1f2937');
         mkWireL(p, 'VCC', 'PWR_5V_1', '#dc2626');
         mkWireL(p, 'SDA', want.pin === 21 ? 'I2C_SDA1' : 'S' + near(want.pin), '#2563eb');

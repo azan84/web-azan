@@ -203,7 +203,7 @@ body .nav-links a.active::after, body.has-tokens .nav-links a.active::after { ba
 
 .v3-portrait { margin: 0; justify-self: center; text-align: center; }
 .v3-portrait img {
-  width: clamp(200px, 24vw, 320px);
+  width: clamp(100px, 12vw, 160px);
   height: auto;
   aspect-ratio: 1;
   border-radius: 50%;
@@ -339,7 +339,7 @@ body .footer, body.has-tokens .footer {
   .v3-hero { padding-top: 6.5rem; min-height: auto; }
   .v3-hero-grid { grid-template-columns: 1fr; }
   .v3-portrait { grid-row: 1; justify-self: start; text-align: left; }
-  .v3-portrait img { width: 132px; }
+  .v3-portrait img { width: 66px; }
   .v3-portrait figcaption { display: none; }
   .v3-about-grid { grid-template-columns: 1fr; }
   .v3-legend { position: static; margin-top: 2.5rem; padding: 0; }

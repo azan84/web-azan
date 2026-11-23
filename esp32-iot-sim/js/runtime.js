@@ -172,7 +172,7 @@
         if (part.type === 'ir') return part.value ? 0 : 1;          // FC-51 style: OUT goes LOW when an object is seen
         if (part.type === 'dht22') return 1;
         if (part.type === 'hcsr04') return 0;                        // ECHO idles LOW
-        if (part.type === 'lcd') return 1;                           // I2C lines have pull-ups
+        if (/^lcd/.test(part.type)) return 1;                           // I2C lines have pull-ups
         if (ANALOG_TYPES.includes(part.type)) return this.analogValue(part) > 2048 ? 1 : 0;
       }
       if (p.mode === C.INPUT_PULLUP) return 1;
@@ -912,7 +912,7 @@
       api.pulseInLong = api.pulseIn;
 
       /* I2C bus (Wire) */
-      const i2cDevices = () => sim.parts.filter((x) => x.type === 'lcd' && +x.pin === +sim.wire.sda && +x.pin2 === +sim.wire.scl).map((x) => parseInt(x.addr || '0x27', 16));
+      const i2cDevices = () => sim.parts.filter((x) => /^lcd/.test(x.type) && +x.pin === +sim.wire.sda && +x.pin2 === +sim.wire.scl).map((x) => parseInt(x.addr || '0x27', 16));
       const wireBegin = (sda, scl) => {
         sim.wire.begun = true;
         if (sda !== undefined && sda !== null && +sda >= 0) sim.wire.sda = +sda;
